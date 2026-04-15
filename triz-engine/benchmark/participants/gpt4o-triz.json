@@ -1,0 +1,13 @@
+{
+  "name": "gpt4o-triz",
+  "version": "1.0.0",
+  "description": "GPT-4o with identical TRIZ system prompt (external competitor, requires OPENAI_API_KEY)",
+  "type": "external",
+  "invocation": {
+    "command": "python3",
+    "args": ["benchmark/runners/openai_runner.py", "--model", "gpt-4o", "--system-prompt-file", "commands/analyze.md", "--problem-file", "{problem_file}"],
+    "timeout_seconds": 180,
+    "requires_env": ["OPENAI_API_KEY"]
+  },
+  "features": ["system_prompt", "external_model"]
+}

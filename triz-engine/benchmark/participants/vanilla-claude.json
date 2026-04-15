@@ -1,0 +1,12 @@
+{
+  "name": "vanilla-claude",
+  "version": "1.0.0",
+  "description": "Base Claude with no TRIZ knowledge, plugins, or system prompt (floor baseline)",
+  "type": "baseline",
+  "invocation": {
+    "command": "claude",
+    "args": ["--headless", "--prompt-file", "{problem_file}"],
+    "timeout_seconds": 120
+  },
+  "features": []
+}

@@ -1,0 +1,12 @@
+{
+  "name": "tot-augmented",
+  "version": "1.0.0",
+  "description": "Tree-of-thought multi-path reasoning with no TRIZ knowledge (reasoning baseline)",
+  "type": "baseline",
+  "invocation": {
+    "command": "claude",
+    "args": ["--headless", "--system-prompt", "Explore multiple solution paths simultaneously. For each problem: 1) Generate 3 independent solution branches, 2) Evaluate each branch on feasibility and quality, 3) Select the most promising branch, 4) Refine and present the final solution.", "--prompt-file", "{problem_file}"],
+    "timeout_seconds": 120
+  },
+  "features": ["tree_of_thought"]
+}

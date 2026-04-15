@@ -1,0 +1,12 @@
+{
+  "name": "triz-prompt-only",
+  "version": "1.0.0",
+  "description": "Only the /triz:analyze system prompt, no agents or MCP (ablation test)",
+  "type": "ablation",
+  "invocation": {
+    "command": "claude",
+    "args": ["--headless", "--system-prompt-file", "commands/analyze.md", "--prompt-file", "{problem_file}"],
+    "timeout_seconds": 120
+  },
+  "features": ["system_prompt"]
+}

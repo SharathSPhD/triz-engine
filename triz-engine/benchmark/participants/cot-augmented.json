@@ -1,0 +1,12 @@
+{
+  "name": "cot-augmented",
+  "version": "1.0.0",
+  "description": "Chain-of-thought prompting with no TRIZ knowledge (reasoning baseline)",
+  "type": "baseline",
+  "invocation": {
+    "command": "claude",
+    "args": ["--headless", "--system-prompt", "Think step by step. For each problem: 1) Identify the core tension, 2) List possible approaches, 3) Evaluate each approach, 4) Select the best solution with justification.", "--prompt-file", "{problem_file}"],
+    "timeout_seconds": 120
+  },
+  "features": ["chain_of_thought"]
+}

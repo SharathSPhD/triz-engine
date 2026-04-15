@@ -1,0 +1,96 @@
+name: TRIZ Arena
+
+on:
+  schedule:
+    - cron: '0 3 * * *'  # Nightly at 3 AM UTC
+  workflow_dispatch:
+    inputs:
+      participants:
+        description: 'Comma-separated participant names (empty = all)'
+        required: false
+        default: ''
+      problems:
+        description: 'Comma-separated problem IDs (empty = all)'
+        required: false
+        default: ''
+
+permissions:
+  contents: write
+
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        working-directory: triz-engine
+        run: pip install -e ".[dev,benchmark]"
+
+      - name: Run tests
+        working-directory: triz-engine
+        run: pytest --tb=short
+
+      - name: Run TRIZ Arena benchmark
+        working-directory: triz-engine
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+        run: |
+          python3 -c "
+          import json
+          from pathlib import Path
+          from benchmark.elo import run_tournament
+          from benchmark.leaderboard import generate_leaderboard
+
+          # Load participant configs
+          participants_dir = Path('benchmark/participants')
+          participants = []
+          for f in sorted(participants_dir.glob('*.json')):
+              with open(f) as fh:
+                  config = json.load(fh)
+                  # Skip external participants without API keys
+                  invocation = config.get('invocation', {})
+                  requires_env = invocation.get('requires_env', [])
+                  import os
+                  if all(os.environ.get(e) for e in requires_env):
+                      participants.append(config['name'])
+
+          problem_ids = [f'TB-{i:02d}' for i in range(1, 13)]
+
+          # Placeholder scores for CI pipeline validation
+          # In production, these would come from actual benchmark runs
+          scores = {}
+          for p in participants:
+              for pid in problem_ids:
+                  scores[(p, pid)] = 50.0  # Placeholder
+
+          if len(participants) >= 2:
+              result = run_tournament(participants, problem_ids, scores)
+              generate_leaderboard(
+                  ratings=result['ratings'],
+                  confidence_intervals=result['confidence_intervals'],
+                  problem_scores=scores,
+                  problem_ids=problem_ids,
+                  output_path=Path('LEADERBOARD.md'),
+              )
+              print('Leaderboard generated successfully')
+          else:
+              print('Not enough participants to run tournament')
+          "
+
+      - name: Commit leaderboard
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add triz-engine/LEADERBOARD.md triz-engine/ratings/ || true
+          git diff --cached --quiet || git commit -m "chore: update TRIZ Arena leaderboard [skip ci]"
+          git push || true
