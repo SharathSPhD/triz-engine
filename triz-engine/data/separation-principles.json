@@ -1,0 +1,118 @@
+{
+  "schema_version": "1.0",
+  "description": "TRIZ Separation Principles for resolving physical contradictions",
+  "separation_principles": [
+    {
+      "type": "time",
+      "name": "Separation in Time",
+      "description": "The system satisfies contradictory requirements at different times. The parameter has value A during time period T1 and value NOT-A during time period T2.",
+      "when_to_use": [
+        "The contradictory requirements occur during different phases of operation",
+        "The system has distinct operating modes or states",
+        "The parameter can be toggled between values"
+      ],
+      "related_principles": [15, 10, 11, 16, 19, 20, 21, 34, 9],
+      "principle_rationale": {
+        "15": "Dynamics — make the object adaptive, changing properties over time",
+        "10": "Preliminary Action — perform the change in advance of when it's needed",
+        "11": "Beforehand Cushioning — prepare the alternate state before the transition",
+        "16": "Partial or Excessive Action — use slightly more or less during the transition window",
+        "19": "Periodic Action — alternate between the two states periodically",
+        "20": "Continuity of Useful Action — maintain one state continuously until switch is needed",
+        "21": "Skipping — rush through the undesirable state at high speed",
+        "34": "Discarding and Recovering — dissolve the current state and restore the needed one",
+        "9": "Preliminary Anti-action — counter the upcoming state change in advance"
+      },
+      "software_examples": [
+        "Feature flags: enabled in testing, disabled in production",
+        "Blue-green deployment: old version serves traffic, then instant cutover",
+        "Scheduled scaling: more instances during peak hours, fewer during off-peak",
+        "Circuit breaker: closed during normal operation, open during failure"
+      ]
+    },
+    {
+      "type": "space",
+      "name": "Separation in Space",
+      "description": "Different parts of the system satisfy different contradictory requirements. Value A exists in spatial region R1 and value NOT-A in region R2.",
+      "when_to_use": [
+        "Different parts of the system have different operating requirements",
+        "The contradictory properties are needed in different locations",
+        "The system can be partitioned into zones"
+      ],
+      "related_principles": [1, 2, 3, 4, 7, 17, 13, 24, 30],
+      "principle_rationale": {
+        "1": "Segmentation — divide the system so each segment has the needed property",
+        "2": "Taking Out — extract the part that needs the different property",
+        "3": "Local Quality — optimize each region for its specific requirement",
+        "4": "Asymmetry — use different properties in different spatial directions",
+        "7": "Nested Doll — nest one spatial region inside another",
+        "17": "Another Dimension — move the separation into a different dimension",
+        "13": "The Other Way Around — invert which region has which property",
+        "24": "Intermediary — insert a buffer zone between contradictory regions",
+        "30": "Flexible Shells — use flexible boundaries between regions"
+      },
+      "software_examples": [
+        "Microservices: each service optimized for its own requirement",
+        "CDN + origin: cached content at edge, dynamic content at origin",
+        "Read replicas: write consistency at primary, read throughput at replicas",
+        "Tiered storage: hot data in memory, cold data on disk"
+      ]
+    },
+    {
+      "type": "condition",
+      "name": "Separation upon Condition",
+      "description": "The system satisfies contradictory requirements under different conditions. Value A under condition C1 and value NOT-A under condition C2.",
+      "when_to_use": [
+        "The contradictory requirements depend on external conditions or inputs",
+        "The system can sense conditions and adapt its behavior",
+        "Different user contexts require different properties"
+      ],
+      "related_principles": [15, 35, 22, 23, 37, 36, 28, 32, 6],
+      "principle_rationale": {
+        "15": "Dynamics — adapt the property based on current conditions",
+        "35": "Parameter Changes — change physical or logical state based on conditions",
+        "22": "Blessing in Disguise — use the condition itself as the trigger for beneficial change",
+        "23": "Feedback — use sensing to detect conditions and switch between properties",
+        "37": "Thermal Expansion — expand or contract resources based on load conditions",
+        "36": "Phase Transitions — transition between states based on threshold conditions",
+        "28": "Mechanics Substitution — use different interaction mechanisms under different conditions",
+        "32": "Color Changes — change visual or logical indicators based on conditions",
+        "6": "Universality — make the component serve both conditions through multi-function design"
+      },
+      "software_examples": [
+        "Adaptive bitrate: high quality on fast connections, lower on slow",
+        "Graceful degradation: full features for capable clients, basic for limited",
+        "A/B testing: different behavior based on user cohort",
+        "Rate limiting: permissive under normal load, restrictive under heavy load"
+      ]
+    },
+    {
+      "type": "system_level",
+      "name": "Separation between System Levels",
+      "description": "The whole system has one property while its parts have the opposite. Value A at the macro/system level and value NOT-A at the micro/component level (or vice versa).",
+      "when_to_use": [
+        "The contradiction exists between the system's emergent behavior and its component behavior",
+        "Individual parts need one property but the aggregate needs the opposite",
+        "The system can achieve macro-level properties from micro-level opposites"
+      ],
+      "related_principles": [5, 33, 40, 1, 12, 26, 31, 7, 25],
+      "principle_rationale": {
+        "5": "Merging — combine simple parts to achieve complex emergent behavior",
+        "33": "Homogeneity — uniform parts create heterogeneous system behavior",
+        "40": "Composite Materials — combine different materials for dual properties",
+        "1": "Segmentation — individual segments have opposite property from the whole",
+        "12": "Equipotentiality — individual components reach equilibrium at system level",
+        "26": "Copying — copies at component level create redundancy at system level",
+        "31": "Porous Materials — porous at micro level, solid at macro level",
+        "7": "Nested Doll — nested components have opposite properties from container",
+        "25": "Self-service — components self-organize to produce system-level property"
+      },
+      "software_examples": [
+        "Distributed system: eventually consistent globally, strongly consistent locally",
+        "Chain of responsibility: rigid individual handlers, flexible chain behavior",
+        "MapReduce: simple map operations, complex aggregate results",
+        "Blockchain: trustless individual nodes, trustworthy system consensus"
+      ]
+    }
+  ]
+}
