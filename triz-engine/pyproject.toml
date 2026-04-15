@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "triz-engine"
+version = "1.0.0"
+description = "TRIZ 40 Inventive Principles engine for systematic contradiction resolution"
+license = "MIT"
+requires-python = ">=3.11"
+authors = [{ name = "triz-engine contributors" }]
+dependencies = [
+    "fastmcp>=2.0",
+    "jsonschema>=4.20",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.23",
+    "ruff>=0.4",
+]
+benchmark = [
+    "numpy>=1.26",
+    "pandas>=2.1",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+pythonpath = ["."]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["servers*", "benchmark*"]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W"]

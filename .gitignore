@@ -45,3 +45,4 @@ node_modules/
 # Benchmark results (generated)
 results/
 ratings/
+.venv/
