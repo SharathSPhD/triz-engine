@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "triz-knowledge": {
+      "command": "python3",
+      "args": ["${CLAUDE_PLUGIN_ROOT}/servers/triz_server.py"],
+      "env": {
+        "TRIZ_MODE": "full"
+      },
+      "transport": "stdio"
+    }
+  }
+}
