@@ -1,0 +1,30 @@
+{
+  "name": "triz-engine",
+  "version": "1.0.0",
+  "description": "TRIZ 40 Inventive Principles engine for systematic contradiction resolution",
+  "author": "triz-engine contributors",
+  "license": "MIT",
+  "commands": [
+    { "name": "analyze", "description": "Analyse a problem using TRIZ contradiction framework" },
+    { "name": "principles", "description": "Browse or search the 40 Inventive Principles" },
+    { "name": "matrix", "description": "Navigate the TRIZ Contradiction Matrix" },
+    { "name": "ifr", "description": "Formulate the Ideal Final Result for your problem" },
+    { "name": "ariz", "description": "Full ARIZ-85C step-by-step analysis" },
+    { "name": "benchmark", "description": "Run TRIZBENCH evaluation on current session" }
+  ],
+  "agents": [
+    { "name": "contradiction-agent", "description": "Identifies and classifies engineering contradictions" },
+    { "name": "solution-agent", "description": "Generates principle-based solution sketches" },
+    { "name": "evaluator-agent", "description": "Scores solutions on TRIZBENCH dimensions" }
+  ],
+  "mcpServers": {
+    "triz-knowledge": {
+      "command": "${CLAUDE_PLUGIN_ROOT}/servers/triz_server.py",
+      "transport": "stdio"
+    }
+  },
+  "hooks": {
+    "PreToolUse": "${CLAUDE_PLUGIN_ROOT}/hooks/pre-tool-use.json",
+    "PostToolUse": "${CLAUDE_PLUGIN_ROOT}/hooks/post-tool-use.json"
+  }
+}

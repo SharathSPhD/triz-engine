@@ -1,0 +1,13 @@
+{
+  "hooks": [
+    {
+      "type": "postToolUse",
+      "event": "triz",
+      "action": {
+        "type": "tool",
+        "toolName": "log_session_entry",
+        "description": "Log TRIZ analysis to session innovation ledger"
+      }
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "hooks": [
+    {
+      "type": "preToolUse",
+      "event": "Write",
+      "matcher": {
+        "toolName": "Write",
+        "pathPattern": "src/**"
+      },
+      "action": {
+        "type": "prompt",
+        "message": "Architectural change detected. Would you like a TRIZ contradiction check before proceeding? Use /triz:analyze to identify potential contradictions in this change."
+      }
+    }
+  ]
+}
