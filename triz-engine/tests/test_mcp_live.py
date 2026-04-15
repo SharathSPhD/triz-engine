@@ -33,6 +33,7 @@ class TestMCPServerLive:
             "search_principles",
             "lookup_matrix",
             "list_parameters",
+            "suggest_parameters",
             "get_separation_principles",
             "score_solution",
             "log_session_entry",

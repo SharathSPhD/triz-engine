@@ -8,18 +8,17 @@ Scoring dimensions and weights:
   IFR (Ideal Final Result)           — 10%
 
 SN and CR support LLM-as-judge scoring via Claude CLI (--print mode).
-Position-swap bias mitigation: each judgment runs twice with solution order
-swapped, then the worse (more conservative) classification is used.
+Single rubric prompt per dimension with classification + rationale.
 Falls back to deterministic string-mapping when Claude CLI is unavailable.
 """
 
 from __future__ import annotations
 
 import json
+import logging
 import re
 import shutil
 import subprocess
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -43,6 +42,42 @@ SN_RUBRIC = {
 
 CR_LEVELS = ["fails", "manages", "reduces", "eliminates"]
 SN_LEVELS = ["restatement", "standard", "novel_combination", "non_obvious"]
+
+CR_CALIBRATION = [
+    {
+        "problem": "A web cache must serve stale data during backend outages but also serve fresh data for real-time dashboards.",
+        "solution": "Implement a dual-channel architecture where the cache automatically routes time-sensitive dashboard queries to a hot-standby backend while serving stale data for non-critical pages, eliminating the freshness vs availability contradiction.",
+        "expected": "eliminates",
+    },
+    {
+        "problem": "An API needs backward compatibility while adding new features.",
+        "solution": "Version the API endpoints and maintain both v1 and v2 simultaneously, accepting the maintenance overhead as a trade-off.",
+        "expected": "manages",
+    },
+    {
+        "problem": "A search engine needs both high recall and high precision.",
+        "solution": "Use a two-stage retrieval: a broad recall-oriented first pass followed by a precision-focused reranker, significantly reducing the precision-recall tension.",
+        "expected": "reduces",
+    },
+]
+
+SN_CALIBRATION = [
+    {
+        "problem": "IoT sensors need continuous data but have limited battery.",
+        "solution": "Apply TRIZ Principle 19 (Periodic Action): transmit data only when values change beyond a threshold, making the sensor self-regulating and eliminating continuous transmission without losing information fidelity.",
+        "expected": "non_obvious",
+    },
+    {
+        "problem": "A database needs ACID transactions and horizontal scaling.",
+        "solution": "Use a distributed database with eventual consistency for reads and strong consistency for writes.",
+        "expected": "standard",
+    },
+    {
+        "problem": "Authentication must be secure but also user-friendly.",
+        "solution": "The system should be more secure and more user-friendly.",
+        "expected": "restatement",
+    },
+]
 
 
 def _claude_available() -> bool:
@@ -86,64 +121,138 @@ def _call_claude_judge(prompt: str, budget: float = 0.20, retries: int = 2) -> s
 
 
 def _extract_level(raw: str, valid_levels: list[str]) -> str | None:
+    """Extract a classification level from judge output.
+
+    Matches whole words to avoid substring collisions
+    (e.g., 'novel_combination' should not match 'standard').
+    """
     raw_lower = raw.lower()
     for level in reversed(valid_levels):
-        if level in raw_lower:
+        pattern = r'\b' + re.escape(level) + r'\b'
+        if re.search(pattern, raw_lower):
             return level
     return None
 
 
-def _judge_cr_once(problem: str, solution: str, ground_truth: str) -> str:
+def _judge_cr(problem: str, solution: str, ground_truth: str) -> str:
+    """Judge contradiction resolution quality with a single rubric prompt."""
     prompt = (
-        "You are a TRIZ evaluation judge. Classify how well the solution resolves "
-        "the stated contradiction.\n\n"
+        "You are a TRIZ evaluation judge. Classify how well the SOLUTION "
+        "resolves the stated contradiction in the PROBLEM.\n\n"
         f"PROBLEM:\n{problem}\n\n"
         f"GROUND TRUTH CONTRADICTION:\n{ground_truth}\n\n"
         f"SOLUTION:\n{solution}\n\n"
-        "Respond with EXACTLY ONE of these classifications:\n"
-        "- eliminates: The contradiction is fully eliminated, not traded off\n"
-        "- reduces: The contradiction is significantly reduced but not eliminated\n"
-        "- manages: The contradiction is managed through compromise or trade-off\n"
-        "- fails: The solution does not address the contradiction\n\n"
-        "Reply with only the classification word, nothing else."
+        "Classification rubric:\n"
+        "- eliminates: The contradiction is fully eliminated — both requirements "
+        "are simultaneously satisfied without any trade-off.\n"
+        "- reduces: The contradiction is significantly reduced but a minor "
+        "residual tension remains.\n"
+        "- manages: The contradiction is managed through compromise, trade-off, "
+        "or accepting degradation on one dimension.\n"
+        "- fails: The solution does not meaningfully address the contradiction, "
+        "or merely restates the problem.\n\n"
+        "Reply in this exact format:\n"
+        "CLASSIFICATION: <one of: eliminates, reduces, manages, fails>\n"
+        "RATIONALE: <one sentence explaining why>"
     )
     raw = _call_claude_judge(prompt)
     level = _extract_level(raw, CR_LEVELS)
     if level is None:
-        raise ValueError(f"Could not parse CR level from: {raw[:100]}")
+        raise ValueError(f"Could not parse CR level from: {raw[:200]}")
     return level
 
 
-def _judge_sn_once(problem: str, solution: str, ground_truth: str) -> str:
+def _judge_sn(problem: str, solution: str, ground_truth: str) -> str:
+    """Judge solution novelty with a single rubric prompt."""
     prompt = (
-        "You are a TRIZ evaluation judge. Classify the novelty of the solution "
-        "relative to the stated problem.\n\n"
+        "You are a TRIZ evaluation judge. Classify the novelty and inventiveness "
+        "of the SOLUTION relative to the PROBLEM.\n\n"
         f"PROBLEM:\n{problem}\n\n"
         f"GROUND TRUTH PRINCIPLES:\n{ground_truth}\n\n"
         f"SOLUTION:\n{solution}\n\n"
-        "Respond with EXACTLY ONE of these classifications:\n"
-        "- non_obvious: Solution applies TRIZ principles in a surprising, inventive way\n"
-        "- novel_combination: Solution combines known techniques in a new way\n"
-        "- standard: Solution uses a well-known approach for this type of problem\n"
-        "- restatement: Solution merely restates the problem or describes the obvious\n\n"
-        "Reply with only the classification word, nothing else."
+        "Classification rubric:\n"
+        "- non_obvious: The solution applies TRIZ principles in a surprising, "
+        "inventive way that a domain expert would not immediately think of.\n"
+        "- novel_combination: The solution combines known techniques in a new "
+        "or creative way, showing insight beyond standard practice.\n"
+        "- standard: The solution uses a well-known, established approach for "
+        "this type of problem — competent but not inventive.\n"
+        "- restatement: The solution merely restates the problem, describes "
+        "the obvious, or provides a vague aspiration without concrete mechanism.\n\n"
+        "Reply in this exact format:\n"
+        "CLASSIFICATION: <one of: non_obvious, novel_combination, standard, restatement>\n"
+        "RATIONALE: <one sentence explaining why>"
     )
     raw = _call_claude_judge(prompt)
     level = _extract_level(raw, SN_LEVELS)
     if level is None:
-        raise ValueError(f"Could not parse SN level from: {raw[:100]}")
+        raise ValueError(f"Could not parse SN level from: {raw[:200]}")
     return level
 
 
-def _conservative_level(a: str, b: str, ordered_levels: list[str]) -> str:
-    """Position-swap bias mitigation: return the lower (more conservative) of two levels."""
-    idx_a = ordered_levels.index(a)
-    idx_b = ordered_levels.index(b)
-    return ordered_levels[min(idx_a, idx_b)]
+def validate_judge_calibration(dimension: str = "both") -> dict:
+    """Run calibration set and return agreement metrics.
+
+    Returns dict with 'cr' and/or 'sn' keys, each containing
+    'total', 'correct', 'accuracy', and per-sample results.
+    """
+    results = {}
+
+    if dimension in ("both", "cr"):
+        cr_results = []
+        for cal in CR_CALIBRATION:
+            try:
+                predicted = _judge_cr(cal["problem"], cal["solution"], "")
+                cr_results.append({
+                    "expected": cal["expected"],
+                    "predicted": predicted,
+                    "correct": predicted == cal["expected"],
+                })
+            except Exception as e:
+                cr_results.append({
+                    "expected": cal["expected"],
+                    "predicted": None,
+                    "error": str(e),
+                    "correct": False,
+                })
+        correct = sum(1 for r in cr_results if r["correct"])
+        results["cr"] = {
+            "total": len(cr_results),
+            "correct": correct,
+            "accuracy": correct / len(cr_results) if cr_results else 0,
+            "details": cr_results,
+        }
+
+    if dimension in ("both", "sn"):
+        sn_results = []
+        for cal in SN_CALIBRATION:
+            try:
+                predicted = _judge_sn(cal["problem"], cal["solution"], "")
+                sn_results.append({
+                    "expected": cal["expected"],
+                    "predicted": predicted,
+                    "correct": predicted == cal["expected"],
+                })
+            except Exception as e:
+                sn_results.append({
+                    "expected": cal["expected"],
+                    "predicted": None,
+                    "error": str(e),
+                    "correct": False,
+                })
+        correct = sum(1 for r in sn_results if r["correct"])
+        results["sn"] = {
+            "total": len(sn_results),
+            "correct": correct,
+            "accuracy": correct / len(sn_results) if sn_results else 0,
+            "details": sn_results,
+        }
+
+    return results
 
 
 def score_cr_llm(problem: str, solution: str, ground_truth: str) -> tuple[float, str]:
-    """Score CR via LLM-as-judge with position-swap debiasing.
+    """Score CR via LLM-as-judge with single rubric prompt.
 
     Returns (score, level). Falls back to deterministic if Claude unavailable.
     """
@@ -152,9 +261,7 @@ def score_cr_llm(problem: str, solution: str, ground_truth: str) -> tuple[float,
         return CR_RUBRIC.get("manages", 32.0), "manages"
 
     try:
-        level_forward = _judge_cr_once(problem, solution, ground_truth)
-        level_reverse = _judge_cr_once(problem, ground_truth, solution)
-        level = _conservative_level(level_forward, level_reverse, CR_LEVELS)
+        level = _judge_cr(problem, solution, ground_truth)
         return CR_RUBRIC[level], level
     except Exception as e:
         logger.warning(f"LLM CR judge failed, falling back: {e}")
@@ -162,7 +269,7 @@ def score_cr_llm(problem: str, solution: str, ground_truth: str) -> tuple[float,
 
 
 def score_sn_llm(problem: str, solution: str, ground_truth: str) -> tuple[float, str]:
-    """Score SN via LLM-as-judge with position-swap debiasing.
+    """Score SN via LLM-as-judge with single rubric prompt.
 
     Returns (score, level). Falls back to deterministic if Claude unavailable.
     """
@@ -171,9 +278,7 @@ def score_sn_llm(problem: str, solution: str, ground_truth: str) -> tuple[float,
         return SN_RUBRIC.get("standard", 32.0), "standard"
 
     try:
-        level_forward = _judge_sn_once(problem, solution, ground_truth)
-        level_reverse = _judge_sn_once(problem, ground_truth, solution)
-        level = _conservative_level(level_forward, level_reverse, SN_LEVELS)
+        level = _judge_sn(problem, solution, ground_truth)
         return SN_RUBRIC[level], level
     except Exception as e:
         logger.warning(f"LLM SN judge failed, falling back: {e}")
@@ -187,13 +292,24 @@ def score_ci(submission: dict, ground_truth: dict) -> float:
     Partial credit for type match + partial param match.
     Zero for wrong contradiction type.
     """
-    if submission["contradiction_type"] != ground_truth["contradiction_type"]:
+    sub_type = submission.get("contradiction_type")
+    gt_type = ground_truth.get("contradiction_type")
+    if sub_type != gt_type:
         return 0.0
 
-    sub_params = {submission["triz_param_a"], submission["triz_param_b"]}
-    gt_params = {ground_truth["triz_param_a"], ground_truth["triz_param_b"]}
+    sub_params = {
+        submission.get("triz_param_a"),
+        submission.get("triz_param_b"),
+    }
+    gt_params = {
+        ground_truth.get("triz_param_a"),
+        ground_truth.get("triz_param_b"),
+    }
 
-    if sub_params == gt_params:
+    sub_params.discard(None)
+    gt_params.discard(None)
+
+    if sub_params == gt_params and len(sub_params) == 2:
         return 100.0
 
     overlap = len(sub_params & gt_params)

@@ -127,15 +127,23 @@ def run_tournament(
 
     scores: dict mapping (participant, problem_id) -> TRIZBENCH score (0-100).
     Each problem creates pairwise matchups between all participants.
+    Pairs where either participant has no score for a problem are skipped.
     """
     calc = EloCalculator(participants=participants)
 
     match_results = []
+    skipped_pairs = 0
     for pid in problem_ids:
         for i, p_a in enumerate(participants):
             for p_b in participants[i + 1:]:
-                s_a = scores.get((p_a, pid), 0.0)
-                s_b = scores.get((p_b, pid), 0.0)
+                key_a = (p_a, pid)
+                key_b = (p_b, pid)
+                if key_a not in scores or key_b not in scores:
+                    skipped_pairs += 1
+                    continue
+
+                s_a = scores[key_a]
+                s_b = scores[key_b]
 
                 if s_a > s_b:
                     outcome = 1.0
@@ -157,4 +165,5 @@ def run_tournament(
         "rankings": calc.get_rankings(),
         "confidence_intervals": ci,
         "match_count": len(match_results),
+        "skipped_pairs": skipped_pairs,
     }

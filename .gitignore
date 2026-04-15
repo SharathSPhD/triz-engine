@@ -42,7 +42,12 @@ Thumbs.db
 # Node (if any tooling)
 node_modules/
 
-# Benchmark results (generated)
-results/
-ratings/
+# Benchmark runtime artifacts (generated at runtime, machine-specific)
+results/.mcp-runtime.json
+triz-engine/results/.mcp-runtime.json
+
+# External benchmark raw datasets (large, downloadable)
+triz-engine/benchmark/external/data/
+
+# Duplicate venv entry
 .venv/

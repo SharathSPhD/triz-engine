@@ -5,7 +5,6 @@
   "type": "baseline",
   "invocation": {
     "command": "claude",
-    "args": ["--headless", "--prompt-file", "{problem_file}"],
     "timeout_seconds": 120
   },
   "features": []

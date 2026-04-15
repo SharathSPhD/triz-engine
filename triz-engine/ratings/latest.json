@@ -1,0 +1,30 @@
+{
+  "ratings": {
+    "triz-engine": 1016.0,
+    "vanilla-claude": 984.0
+  },
+  "rankings": [
+    [
+      "triz-engine",
+      1016.0
+    ],
+    [
+      "vanilla-claude",
+      984.0
+    ]
+  ],
+  "confidence_intervals": {
+    "triz-engine": {
+      "lower": 1016.0,
+      "median": 1016.0,
+      "upper": 1016.0
+    },
+    "vanilla-claude": {
+      "lower": 984.0,
+      "median": 984.0,
+      "upper": 984.0
+    }
+  },
+  "match_count": 1,
+  "skipped_pairs": 2
+}

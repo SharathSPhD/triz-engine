@@ -9,6 +9,9 @@ from benchmark.scorer import (
     score_ps,
     score_sn,
     compute_final_score,
+    _extract_level,
+    CR_LEVELS,
+    SN_LEVELS,
 )
 
 
@@ -165,3 +168,38 @@ class TestFinalScore:
         final = compute_final_score(ci=80.0, ps=60.0, sn=40.0, cr=100.0, ifr=75.0)
         expected = 0.25 * 80 + 0.20 * 60 + 0.20 * 40 + 0.25 * 100 + 0.10 * 75
         assert abs(final - expected) < 0.01
+
+
+class TestCISafeAccess:
+    """Verify score_ci handles missing fields gracefully."""
+
+    def test_missing_param_a(self):
+        submission = {"contradiction_type": "physical", "triz_param_b": 35}
+        ground_truth = {"contradiction_type": "physical", "triz_param_a": 27, "triz_param_b": 35}
+        score = score_ci(submission, ground_truth)
+        assert 50.0 <= score <= 80.0
+
+    def test_missing_both_params(self):
+        submission = {"contradiction_type": "physical"}
+        ground_truth = {"contradiction_type": "physical", "triz_param_a": 27, "triz_param_b": 35}
+        score = score_ci(submission, ground_truth)
+        assert 20.0 <= score <= 50.0
+
+
+class TestExtractLevel:
+    """Test level extraction from judge output."""
+
+    def test_exact_cr_level(self):
+        assert _extract_level("CLASSIFICATION: eliminates", CR_LEVELS) == "eliminates"
+
+    def test_embedded_cr_level(self):
+        assert _extract_level("The solution reduces the contradiction significantly", CR_LEVELS) == "reduces"
+
+    def test_no_match(self):
+        assert _extract_level("This is excellent work", CR_LEVELS) is None
+
+    def test_sn_non_obvious(self):
+        assert _extract_level("CLASSIFICATION: non_obvious\nRATIONALE: creative", SN_LEVELS) == "non_obvious"
+
+    def test_prefers_higher_level(self):
+        assert _extract_level("It eliminates the issue, doesn't merely manage it", CR_LEVELS) == "eliminates"

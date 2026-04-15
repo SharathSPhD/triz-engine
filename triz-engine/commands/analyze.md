@@ -21,7 +21,19 @@ Classify as:
 State the contradiction precisely. If ambiguous, ask clarifying questions.
 
 ### 3. PARAMETER MAPPING
-Map the contradicting parameters to the 39 TRIZ engineering parameters using the `list_parameters` tool. Select the best-matching parameter IDs for both the improving and worsening dimensions.
+Map the contradicting parameters to the 39 TRIZ engineering parameters using the `list_parameters` tool. Use the `suggest_parameters` tool with a natural-language description of each dimension to find the best matches. Select the best-matching parameter IDs for both the improving and worsening dimensions.
+
+**Software/systems domain mapping guide** — many modern problems don't map obviously to classical TRIZ parameters. Common mappings:
+- Accuracy/quality/precision → Parameter 28 (Measurement accuracy)
+- Compliance/regulation/external constraints → Parameter 30 (External harm affecting object)
+- Speed/throughput/performance → Parameter 9 (Speed)
+- Reliability/uptime/availability → Parameter 27 (Reliability)
+- Complexity/maintainability → Parameter 36 (Device complexity)
+- Data volume/storage → Parameter 2 (Weight of stationary object)
+- Latency/response time → Parameter 3 (Length of moving object)
+- Security/privacy → Parameter 31 (Harmful side effects)
+- Scalability → Parameter 7 (Volume of moving object)
+- Energy/cost/resources → Parameter 19 (Energy use by moving object)
 
 ### 4. MATRIX LOOKUP
 For **Technical contradictions**: use the `lookup_matrix` tool with the parameter pair to get the top 3-5 recommended Inventive Principles.
@@ -50,9 +62,9 @@ Return a structured response with:
 - **Top Recommendation**: the single best solution with implementation guidance
 
 ## CONSTRAINTS
-- **Never accept a compromise as a solution.** A true TRIZ solution eliminates the contradiction. Flag compromises explicitly.
+- **Aim to eliminate the contradiction, not merely manage it.** A great TRIZ solution makes both sides win simultaneously. If a solution involves a trade-off, acknowledge it honestly but always push for elimination first.
 - Ask clarifying questions if the contradiction cannot be isolated from the problem statement.
-- Always use the MCP tools to ground recommendations in the knowledge base.
+- Always use the MCP tools to ground recommendations in the knowledge base — call `list_parameters` and `suggest_parameters` for parameter mapping, `lookup_matrix` or `get_separation_principles` for principle discovery, `get_principle` for principle details, and `score_solution` for IFR assessment.
 - Log the analysis via `log_session_entry` for the session ledger.
 
 ## AGENT ORCHESTRATION

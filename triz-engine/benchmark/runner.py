@@ -1,8 +1,7 @@
 """TRIZBENCH runner — invokes participants on problems and scores results.
 
-Supports two participant modes:
-  - triz-engine: Claude CLI with TRIZ MCP tools and system prompt
-  - vanilla-claude: Claude CLI with no system prompt or tools
+Dynamically loads participant configs from benchmark/participants/*.json.
+Generates portable MCP config at runtime. Structured failure handling.
 
 Outputs per-problem result JSON to triz-engine/results/{participant}/{problem_id}.json.
 """
@@ -10,19 +9,164 @@ Outputs per-problem result JSON to triz-engine/results/{participant}/{problem_id
 from __future__ import annotations
 
 import json
+import os
 import re
 import subprocess
 import sys
+import tempfile
 import time
+from enum import Enum
 from pathlib import Path
 
-from benchmark.scorer import compute_final_score, score_ci, score_ifr, score_ps
+from benchmark.scorer import (
+    compute_final_score,
+    score_ci,
+    score_cr,
+    score_cr_llm,
+    score_ifr,
+    score_ps,
+    score_sn,
+    score_sn_llm,
+)
 
 ROOT = Path(__file__).parent.parent
 PROBLEMS_DIR = ROOT / "benchmark" / "problems"
 RESULTS_DIR = ROOT / "results"
-MCP_CONFIG = ROOT / "mcp-standalone.json"
+PARTICIPANTS_DIR = ROOT / "benchmark" / "participants"
 SYSTEM_PROMPT_PATH = ROOT / "commands" / "analyze.md"
+
+
+class RunStatus(str, Enum):
+    SUCCESS = "success"
+    INFRA_FAILURE = "infra_failure"
+    PARSE_FAILURE = "parse_failure"
+    TIMEOUT_FAILURE = "timeout_failure"
+
+
+def _generate_mcp_config() -> Path:
+    """Generate a portable MCP config at runtime with resolved paths."""
+    python_bin = sys.executable
+    server_script = str(ROOT / "servers" / "triz_server.py")
+
+    if not Path(python_bin).exists():
+        raise RuntimeError(f"Python binary not found: {python_bin}")
+    if not Path(server_script).exists():
+        raise RuntimeError(f"MCP server script not found: {server_script}")
+
+    config = {
+        "mcpServers": {
+            "triz-knowledge": {
+                "command": python_bin,
+                "args": [server_script],
+                "env": {
+                    "TRIZ_MODE": "full",
+                    "TRIZ_SESSION_DIR": str(ROOT),
+                },
+            }
+        }
+    }
+
+    config_dir = RESULTS_DIR
+    config_dir.mkdir(parents=True, exist_ok=True)
+    config_path = config_dir / ".mcp-runtime.json"
+    config_path.write_text(json.dumps(config, indent=2))
+    return config_path
+
+
+def load_participant_configs() -> dict[str, dict]:
+    """Load all participant configs from benchmark/participants/*.json.
+
+    Returns dict mapping participant name to its parsed config.
+    Each config includes: name, type, invocation, features, and derived
+    fields use_mcp, system_prompt_source, runner_module.
+    """
+    configs = {}
+    for path in sorted(PARTICIPANTS_DIR.glob("*.json")):
+        with open(path) as f:
+            cfg = json.load(f)
+
+        name = cfg["name"]
+        ptype = cfg.get("type", "baseline")
+        features = cfg.get("features", [])
+        invocation = cfg.get("invocation", {})
+
+        use_mcp = "mcp_tools" in features
+        system_prompt_source = None
+        runner_module = None
+
+        if ptype == "plugin":
+            system_prompt_source = "commands/analyze.md"
+            use_mcp = True
+        elif ptype == "ablation":
+            args = invocation.get("args", [])
+            for i, arg in enumerate(args):
+                if arg in ("--system-prompt-file", "--system-prompt") and i + 1 < len(args):
+                    system_prompt_source = args[i + 1]
+                    break
+        elif ptype == "baseline":
+            args = invocation.get("args", [])
+            for i, arg in enumerate(args):
+                if arg == "--system-prompt" and i + 1 < len(args):
+                    system_prompt_source = args[i + 1]
+                    break
+        elif ptype == "external":
+            args = invocation.get("args", [])
+            if args:
+                runner_module = args[0]
+
+        configs[name] = {
+            **cfg,
+            "use_mcp": use_mcp,
+            "system_prompt_source": system_prompt_source,
+            "runner_module": runner_module,
+            "config_path": str(path),
+        }
+
+    return configs
+
+
+def is_participant_available(cfg: dict) -> tuple[bool, str]:
+    """Check if a participant can run in the current environment."""
+    ptype = cfg.get("type", "baseline")
+    invocation = cfg.get("invocation", {})
+
+    if ptype == "external":
+        required_env = invocation.get("requires_env", [])
+        missing = [e for e in required_env if not os.environ.get(e)]
+        if missing:
+            return False, f"Missing env vars: {', '.join(missing)}"
+        if cfg.get("runner_module"):
+            runner_path = ROOT / cfg["runner_module"]
+            if not runner_path.exists():
+                return False, f"Runner script not found: {runner_path}"
+    else:
+        command = invocation.get("command", "claude")
+        from shutil import which
+        if not which(command):
+            return False, f"Command not found: {command}"
+
+    return True, "available"
+
+
+def load_system_prompt(source: str | None = None) -> str | None:
+    """Load a system prompt from file or return inline text.
+
+    If source is a file path (contains / or ends with .md), load from file.
+    Otherwise return the string as-is (inline system prompt).
+    """
+    if source is None:
+        return None
+
+    if "/" in source or source.endswith(".md"):
+        path = ROOT / source
+        if not path.exists():
+            return None
+        text = path.read_text()
+        if text.startswith("---"):
+            _, _, text = text.split("---", 2)
+        return text.strip()
+
+    return source
 
 
 def load_problem(problem_id: str) -> dict:
@@ -34,7 +178,18 @@ def load_problem(problem_id: str) -> dict:
 
 def format_prompt(problem: dict) -> str:
     return (
-        f"Analyze this problem using TRIZ methodology. "
+        f"Analyze this problem using TRIZ methodology.\n\n"
+        f"## TRIZ Analysis Framework\n"
+        f"1. **Identify the contradiction**: Is it technical (improving X worsens Y) "
+        f"or physical (X must be both A and not-A)?\n"
+        f"2. **Map to TRIZ parameters**: Select the best-matching parameter IDs (1-39) "
+        f"for both the improving and worsening dimensions.\n"
+        f"3. **Apply inventive principles**: Use the contradiction matrix or separation "
+        f"principles to find the most relevant TRIZ principles.\n"
+        f"4. **Generate a concrete solution**: Not generic TRIZ language — a domain-specific "
+        f"solution that eliminates (not manages) the contradiction.\n"
+        f"5. **Evaluate against IFR**: Does the solution minimize new components, cost, "
+        f"and side-effects while being self-resolving?\n\n"
         f"You MUST return your analysis in the following JSON format at the end of your response, "
         f"enclosed in ```json code fences:\n\n"
         f"```json\n"
@@ -56,6 +211,7 @@ def invoke_claude(
     prompt: str,
     *,
     use_mcp: bool = False,
+    mcp_config_path: Path | None = None,
     system_prompt: str | None = None,
     model: str = "haiku",
     budget_usd: float = 2.00,
@@ -75,8 +231,8 @@ def invoke_claude(
         "--dangerously-skip-permissions",
     ]
 
-    if use_mcp and MCP_CONFIG.exists():
-        cmd.extend(["--mcp-config", str(MCP_CONFIG)])
+    if use_mcp and mcp_config_path and mcp_config_path.exists():
+        cmd.extend(["--mcp-config", str(mcp_config_path)])
 
     if system_prompt:
         cmd.extend(["--append-system-prompt", system_prompt])
@@ -116,17 +272,72 @@ def invoke_claude(
     )
 
 
+def invoke_external_runner(
+    cfg: dict,
+    prompt: str,
+    system_prompt: str | None = None,
+) -> str:
+    """Invoke an external runner module (OpenAI, Gemini, etc.)."""
+    runner_module = cfg.get("runner_module")
+    if not runner_module:
+        raise RuntimeError(f"No runner_module for external participant {cfg['name']}")
+
+    module_path = ROOT / runner_module
+    module_name = module_path.stem
+
+    import importlib.util
+    spec = importlib.util.spec_from_file_location(module_name, str(module_path))
+    if spec is None or spec.loader is None:
+        raise RuntimeError(f"Cannot load runner module: {module_path}")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+
+    if not hasattr(mod, "invoke"):
+        raise RuntimeError(f"Runner module {module_path} has no invoke() function")
+
+    return mod.invoke(prompt, system_prompt=system_prompt)
+
+
 def parse_submission(raw_output: str) -> dict:
-    """Extract the JSON submission block from Claude's output."""
+    """Extract the JSON submission block from model output."""
     json_match = re.search(r"```json\s*\n(.*?)\n```", raw_output, re.DOTALL)
     if json_match:
         return json.loads(json_match.group(1))
 
-    json_match = re.search(r"\{[^{}]*\"contradiction_type\"[^{}]*\}", raw_output, re.DOTALL)
+    json_match = re.search(
+        r"\{[^{}]*\"contradiction_type\"[^{}]*\}", raw_output, re.DOTALL
+    )
     if json_match:
         return json.loads(json_match.group(0))
 
-    raise ValueError("Could not extract JSON submission from Claude output")
+    raise ValueError("Could not extract JSON submission from model output")
+
+
+def validate_submission(submission: dict) -> list[str]:
+    """Validate submission against expected schema. Returns list of issues."""
+    issues = []
+    required_fields = [
+        "contradiction_type", "triz_param_a", "triz_param_b",
+        "principles_applied", "solution_summary",
+    ]
+    for field in required_fields:
+        if field not in submission:
+            issues.append(f"Missing required field: {field}")
+
+    ct = submission.get("contradiction_type")
+    if ct and ct not in ("technical", "physical"):
+        issues.append(f"Invalid contradiction_type: {ct}")
+
+    for param in ("triz_param_a", "triz_param_b"):
+        val = submission.get(param)
+        if val is not None and (not isinstance(val, int) or val < 1 or val > 39):
+            issues.append(f"Invalid {param}: {val} (must be int 1-39)")
+
+    principles = submission.get("principles_applied")
+    if principles is not None and not isinstance(principles, list):
+        issues.append(f"principles_applied must be a list, got {type(principles).__name__}")
+
+    return issues
 
 
 def score_submission(
@@ -148,8 +359,6 @@ def score_submission(
 
     solution_text = submission.get("solution_summary", "")
     ifr_val = submission.get("ifr_score", 0)
-
-    from benchmark.scorer import score_cr, score_sn, score_cr_llm, score_sn_llm
 
     gt_description = json.dumps({
         "contradiction_type": ground_truth.get("contradiction_type"),
@@ -196,38 +405,79 @@ def score_submission(
 def run_problem(
     problem_id: str,
     participant: str,
+    cfg: dict,
     *,
-    use_mcp: bool = True,
-    system_prompt: str | None = None,
+    mcp_config_path: Path | None = None,
     budget_usd: float = 2.00,
+    use_llm_judge: bool = True,
 ) -> dict:
-    """Run a single problem for a participant and return scored result."""
+    """Run a single problem for a participant and return scored result.
+
+    Returns a result dict with 'status' field indicating success or failure type.
+    Never raises — all errors are captured in the result.
+    """
     problem = load_problem(problem_id)
     prompt = format_prompt(problem)
+    sys_prompt = load_system_prompt(cfg.get("system_prompt_source"))
 
     t0 = time.time()
-    raw_output = invoke_claude(
-        prompt,
-        use_mcp=use_mcp,
-        system_prompt=system_prompt,
-        budget_usd=budget_usd,
-    )
+
+    try:
+        if cfg.get("type") == "external":
+            raw_output = invoke_external_runner(cfg, prompt, system_prompt=sys_prompt)
+        else:
+            raw_output = invoke_claude(
+                prompt,
+                use_mcp=cfg.get("use_mcp", False),
+                mcp_config_path=mcp_config_path,
+                system_prompt=sys_prompt,
+                budget_usd=budget_usd,
+            )
+    except subprocess.TimeoutExpired as e:
+        elapsed = time.time() - t0
+        return _failure_result(
+            problem, participant, RunStatus.TIMEOUT_FAILURE,
+            f"Timed out after {elapsed:.0f}s", elapsed,
+        )
+    except RuntimeError as e:
+        elapsed = time.time() - t0
+        return _failure_result(
+            problem, participant, RunStatus.INFRA_FAILURE,
+            str(e), elapsed,
+        )
+    except Exception as e:
+        elapsed = time.time() - t0
+        return _failure_result(
+            problem, participant, RunStatus.INFRA_FAILURE,
+            f"{type(e).__name__}: {e}", elapsed,
+        )
+
     elapsed = time.time() - t0
 
-    submission = parse_submission(raw_output)
+    try:
+        submission = parse_submission(raw_output)
+    except (ValueError, json.JSONDecodeError) as e:
+        return _failure_result(
+            problem, participant, RunStatus.PARSE_FAILURE,
+            f"Parse error: {e}", elapsed, raw_output=raw_output,
+        )
+
+    validation_issues = validate_submission(submission)
     scores = score_submission(
         submission,
         problem["ground_truth"],
         problem_statement=problem["problem_statement"],
-        use_llm_judge=use_mcp,
+        use_llm_judge=use_llm_judge,
     )
 
     result = {
+        "status": RunStatus.SUCCESS,
         "participant": participant,
         "problem_id": problem_id,
         "problem_title": problem["title"],
         "domain": problem["domain"],
         "submission": submission,
+        "validation_issues": validation_issues,
         "scores": scores,
         "final_score": scores["final_score"],
         "raw_output": raw_output,
@@ -235,78 +485,142 @@ def run_problem(
         "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
     }
 
-    out_dir = RESULTS_DIR / participant
-    out_dir.mkdir(parents=True, exist_ok=True)
-    out_path = out_dir / f"{problem_id}.json"
-    out_path.write_text(json.dumps(result, indent=2))
-
+    _save_result(result)
     return result
 
 
-def load_system_prompt() -> str:
-    """Load the analyze.md system prompt, stripping YAML frontmatter."""
-    text = SYSTEM_PROMPT_PATH.read_text()
-    if text.startswith("---"):
-        _, _, text = text.split("---", 2)
-    return text.strip()
+def _failure_result(
+    problem: dict,
+    participant: str,
+    status: RunStatus,
+    error: str,
+    elapsed: float,
+    raw_output: str = "",
+) -> dict:
+    """Build a failure result dict."""
+    result = {
+        "status": status,
+        "participant": participant,
+        "problem_id": problem["id"],
+        "problem_title": problem["title"],
+        "domain": problem["domain"],
+        "error": error,
+        "final_score": None,
+        "raw_output": raw_output,
+        "elapsed_seconds": round(elapsed, 1),
+        "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+    }
+    _save_result(result)
+    return result
 
 
-PARTICIPANTS = {
-    "triz-engine": {"use_mcp": True, "system_prompt_fn": load_system_prompt},
-    "vanilla-claude": {"use_mcp": False, "system_prompt_fn": lambda: None},
-}
+def _save_result(result: dict) -> None:
+    """Write result JSON to disk."""
+    out_dir = RESULTS_DIR / result["participant"]
+    out_dir.mkdir(parents=True, exist_ok=True)
+    out_path = out_dir / f"{result['problem_id']}.json"
+    serializable = {
+        k: (v.value if isinstance(v, RunStatus) else v)
+        for k, v in result.items()
+    }
+    out_path.write_text(json.dumps(serializable, indent=2))
 
 
 def run_benchmark(
     problem_ids: list[str] | None = None,
     participant_names: list[str] | None = None,
     budget_usd: float = 2.00,
-) -> dict[tuple[str, str], float]:
+    use_llm_judge: bool = True,
+) -> dict[tuple[str, str], dict]:
     """Run benchmark for specified problems and participants.
 
-    Returns dict mapping (participant, problem_id) -> final_score.
+    Returns dict mapping (participant, problem_id) -> result dict.
+    Results include 'status' and 'final_score' (None for failures).
     """
-    if problem_ids is None:
-        problem_ids = sorted(
-            p.stem for p in PROBLEMS_DIR.glob("TB-*.json")
-        )
-    if participant_names is None:
-        participant_names = list(PARTICIPANTS.keys())
+    all_configs = load_participant_configs()
 
-    all_scores: dict[tuple[str, str], float] = {}
+    if problem_ids is None:
+        problem_ids = sorted(p.stem for p in PROBLEMS_DIR.glob("TB-*.json"))
+
+    if participant_names is None:
+        participant_names = [
+            name for name, cfg in all_configs.items()
+            if cfg.get("type") != "external"
+        ]
+
+    mcp_config_path = None
+    needs_mcp = any(
+        all_configs.get(name, {}).get("use_mcp", False) for name in participant_names
+    )
+    if needs_mcp:
+        mcp_config_path = _generate_mcp_config()
+        print(f"  MCP config generated: {mcp_config_path}", file=sys.stderr)
+
+    all_results: dict[tuple[str, str], dict] = {}
+    skipped = []
 
     for pname in participant_names:
-        cfg = PARTICIPANTS.get(pname)
+        cfg = all_configs.get(pname)
         if cfg is None:
-            print(f"Unknown participant: {pname}, skipping", file=sys.stderr)
-            continue
+            raise ValueError(
+                f"Unknown participant: {pname}. "
+                f"Available: {', '.join(sorted(all_configs.keys()))}"
+            )
 
-        sys_prompt = cfg["system_prompt_fn"]()
+        available, reason = is_participant_available(cfg)
+        if not available:
+            skipped.append((pname, reason))
+            print(f"  Skipping {pname}: {reason}", file=sys.stderr)
+            continue
 
         for pid in problem_ids:
             print(f"  Running {pname} on {pid}...", file=sys.stderr)
-            try:
-                result = run_problem(
-                    pid,
-                    pname,
-                    use_mcp=cfg["use_mcp"],
-                    system_prompt=sys_prompt,
-                    budget_usd=budget_usd,
-                )
-                all_scores[(pname, pid)] = result["final_score"]
+            result = run_problem(
+                pid, pname, cfg,
+                mcp_config_path=mcp_config_path,
+                budget_usd=budget_usd,
+                use_llm_judge=use_llm_judge,
+            )
+            all_results[(pname, pid)] = result
+
+            status = result["status"]
+            if isinstance(status, RunStatus):
+                status = status.value
+
+            if status == RunStatus.SUCCESS.value:
+                scores = result["scores"]
                 print(
                     f"    Score: {result['final_score']:.1f} "
-                    f"(CI={result['scores']['ci']:.0f} PS={result['scores']['ps']:.0f} "
-                    f"SN={result['scores']['sn']:.0f} CR={result['scores']['cr']:.0f} "
-                    f"IFR={result['scores']['ifr']:.0f}) "
+                    f"(CI={scores['ci']:.0f} PS={scores['ps']:.0f} "
+                    f"SN={scores['sn']:.0f} CR={scores['cr']:.0f} "
+                    f"IFR={scores['ifr']:.0f}) "
                     f"[{result['elapsed_seconds']:.0f}s]",
                     file=sys.stderr,
                 )
-            except Exception as e:
-                print(f"    FAILED: {e}", file=sys.stderr)
-                all_scores[(pname, pid)] = 0.0
+            else:
+                print(
+                    f"    {status}: {result.get('error', 'unknown')}",
+                    file=sys.stderr,
+                )
 
-    return all_scores
+    if skipped:
+        print(f"\n  Skipped {len(skipped)} participant(s):", file=sys.stderr)
+        for name, reason in skipped:
+            print(f"    - {name}: {reason}", file=sys.stderr)
+
+    return all_results
+
+
+def extract_scores(
+    results: dict[tuple[str, str], dict],
+) -> dict[tuple[str, str], float]:
+    """Extract final scores from results, excluding non-success runs."""
+    return {
+        key: r["final_score"]
+        for key, r in results.items()
+        if r.get("status") in (RunStatus.SUCCESS, RunStatus.SUCCESS.value)
+        and r.get("final_score") is not None
+    }
 
 
 if __name__ == "__main__":
@@ -315,24 +629,43 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="TRIZBENCH runner")
     parser.add_argument(
         "--problems", nargs="+", default=None,
-        help="Problem IDs to run (default: all)",
+        help="Problem IDs to run (default: all TB-*)",
     )
     parser.add_argument(
         "--participants", nargs="+", default=None,
-        help="Participant names to run (default: all)",
+        help="Participant names to run (default: all non-external)",
     )
     parser.add_argument(
         "--budget", type=float, default=2.00,
         help="Max USD budget per problem (default: 2.00)",
     )
+    parser.add_argument(
+        "--no-llm-judge", action="store_true",
+        help="Disable LLM-as-judge for SN/CR (use deterministic scoring)",
+    )
     args = parser.parse_args()
 
-    scores = run_benchmark(
+    results = run_benchmark(
         problem_ids=args.problems,
         participant_names=args.participants,
         budget_usd=args.budget,
+        use_llm_judge=not args.no_llm_judge,
     )
+
+    scores = extract_scores(results)
 
     print("\n=== RESULTS ===")
     for (participant, problem_id), score in sorted(scores.items()):
         print(f"  {participant:20s} | {problem_id} | {score:.1f}")
+
+    failures = {
+        k: v for k, v in results.items()
+        if v.get("status") not in (RunStatus.SUCCESS, RunStatus.SUCCESS.value)
+    }
+    if failures:
+        print(f"\n=== FAILURES ({len(failures)}) ===")
+        for (participant, problem_id), result in sorted(failures.items()):
+            status = result.get("status", "unknown")
+            if isinstance(status, RunStatus):
+                status = status.value
+            print(f"  {participant:20s} | {problem_id} | {status}: {result.get('error', '')}")

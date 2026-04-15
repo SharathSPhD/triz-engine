@@ -4,79 +4,71 @@
 
 ### 1. Fork this repository
 
-### 2. Create your participant directory
-```
-benchmark/participants/{your-name}/
-├── participant.json    # Metadata and invocation config
-└── system_prompt.md    # Your system prompt (if prompt-based)
-```
+### 2. Create your participant config
 
-Or for plugin-based participants:
-```
-benchmark/participants/{your-name}/
-├── participant.json    # Metadata and invocation config
-└── plugin.json         # Plugin manifest
-```
+Add a single JSON file at `triz-engine/benchmark/participants/{your-name}.json`:
 
-### 3. Define your participant config
-
-Your `participant.json` must follow this schema:
 ```json
 {
   "name": "your-participant-name",
   "version": "1.0.0",
   "description": "Brief description of your approach",
-  "type": "community",
+  "type": "baseline|ablation|external",
   "invocation": {
     "command": "claude",
-    "args": ["--headless", ...],
+    "args": ["--headless", "--system-prompt", "Your system prompt here", "--prompt-file", "{problem_file}"],
     "timeout_seconds": 120
   },
   "features": ["list", "of", "features"]
 }
 ```
 
-### 4. Open a Pull Request
-- CI runs a 3-problem qualification test on TB-01, TB-06, and TB-12
-- Your submission must produce valid JSON output matching the TRIZBENCH submission schema
-- Passing submissions are merged and added to the next nightly run
+**Participant types:**
+- `baseline` — Claude with a custom system prompt (no MCP tools)
+- `ablation` — Claude with a file-based system prompt (for A/B testing prompts)
+- `external` — Non-Claude model requiring a custom runner script (set `requires_env` in invocation)
+- `plugin` — Full plugin with MCP tools (reserved for triz-engine)
 
-### 5. Results
-- Results appear in `LEADERBOARD.md` within 24 hours of merge
+### 3. Open a Pull Request
+
+- The nightly CI run will include your participant in the next benchmark cycle
+- Your submission must produce valid JSON output matching the submission schema below
+- Passing submissions are merged and scored in the next nightly run
+
+### 4. Results
+
+- Results appear in `LEADERBOARD.md` after the next nightly run
 - ELO ratings include 95% bootstrap confidence intervals
+- Per-dimension breakdowns (CI, PS, SN, CR, IFR) are included
 
 ## Submission Schema
 
-Your participant must output JSON matching this schema for each problem:
+Your participant must output JSON matching this schema for each problem (enclosed in \`\`\`json fences):
+
 ```json
 {
-  "problem_id": "TB-XX",
-  "participant": "your-name@version",
   "contradiction_type": "technical|physical",
-  "parameter_a": "description",
-  "parameter_b": "description",
   "triz_param_a": 1-39,
   "triz_param_b": 1-39,
   "principles_applied": [1, 15, 35],
-  "solutions": [
-    {
-      "principle_id": 1,
-      "principle_name": "Segmentation",
-      "solution_sketch": "...",
-      "ifr_score": 0-4,
-      "ifr_rationale": "..."
-    }
-  ],
-  "recommended_solution": {
-    "principle_id": 15,
-    "rationale": "..."
-  },
-  "run_timestamp": "ISO 8601",
-  "latency_ms": 18240
+  "solution_summary": "2-3 sentence concrete solution",
+  "ifr_score": 0-4,
+  "contradiction_resolution": "eliminates|reduces|manages|fails",
+  "solution_novelty": "non_obvious|novel_combination|standard|restatement"
 }
 ```
 
+## Scoring
+
+Five dimensions, weighted:
+- **CI** (Contradiction Identification) — 25%: type match + parameter pair match
+- **PS** (Principle Selection) — 20%: Jaccard similarity with target principles
+- **SN** (Solution Novelty) — 20%: LLM-as-judge classification
+- **CR** (Contradiction Resolution) — 25%: LLM-as-judge classification
+- **IFR** (Ideal Final Result) — 10%: 0-4 scale mapped to 0-100
+
 ## Code of Conduct
+
 - No gaming: participant configs are reviewed on PR
-- Evaluation runs in a sandboxed environment with network isolation
 - Output format is validated before scoring
+- Infrastructure failures are excluded from ratings

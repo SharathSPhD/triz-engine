@@ -105,9 +105,81 @@ async def lookup_matrix(param_a: int, param_b: int) -> str:
 
 @mcp.tool()
 async def list_parameters() -> str:
-    """List all 39 TRIZ engineering parameters with IDs and descriptions."""
+    """List all 39 TRIZ engineering parameters with IDs, descriptions, and software equivalents.
+
+    Each parameter includes its classical TRIZ name, description, and
+    a software/systems engineering equivalent to help map modern problems
+    to the 39-parameter framework.
+    """
     matrix = _load_matrix()
-    return json.dumps({"parameters": matrix["parameters"]})
+    params = matrix["parameters"]
+    enriched = []
+    for p in params:
+        enriched.append({
+            "id": p["id"],
+            "name": p["name"],
+            "description": p.get("description", ""),
+            "software_equivalent": p.get("software_equivalent", ""),
+        })
+    return json.dumps({"parameters": enriched, "total": len(enriched)})
+
+
+@mcp.tool()
+async def suggest_parameters(description: str) -> str:
+    """Suggest the best-matching TRIZ parameters for a natural-language description.
+
+    Given a description of what is improving or worsening, returns the top-5
+    most relevant TRIZ parameters with match rationale. Use this when unsure
+    which of the 39 parameters best maps to your problem dimensions.
+    """
+    matrix = _load_matrix()
+    params = matrix["parameters"]
+    desc_lower = description.lower()
+    desc_words = set(desc_lower.split())
+
+    scored = []
+    for p in params:
+        score = 0.0
+        match_reasons = []
+
+        name_lower = p["name"].lower()
+        desc_field = p.get("description", "").lower()
+        sw_equiv = p.get("software_equivalent", "").lower()
+
+        searchable = f"{name_lower} {desc_field} {sw_equiv}"
+        searchable_words = set(searchable.split())
+
+        common = desc_words & searchable_words
+        filler = {"the", "a", "an", "of", "or", "and", "in", "to", "for", "is", "that"}
+        meaningful = common - filler
+        if meaningful:
+            score += len(meaningful) * 2
+            match_reasons.append(f"word overlap: {', '.join(sorted(meaningful))}")
+
+        for phrase_len in range(3, 0, -1):
+            desc_tokens = desc_lower.split()
+            for i in range(len(desc_tokens) - phrase_len + 1):
+                phrase = " ".join(desc_tokens[i:i + phrase_len])
+                if phrase in searchable and len(phrase) > 4:
+                    score += phrase_len * 3
+                    match_reasons.append(f"phrase: '{phrase}'")
+
+        if score > 0:
+            scored.append({
+                "id": p["id"],
+                "name": p["name"],
+                "description": p.get("description", ""),
+                "software_equivalent": p.get("software_equivalent", ""),
+                "relevance_score": round(score, 1),
+                "match_reasons": match_reasons[:3],
+            })
+
+    scored.sort(key=lambda x: x["relevance_score"], reverse=True)
+    return json.dumps({
+        "query": description,
+        "suggestions": scored[:5],
+        "note": "Use the parameter ID when calling lookup_matrix.",
+    })
 
 
 @mcp.tool()
@@ -189,54 +261,69 @@ async def get_separation_principles(contradiction: str) -> str:
 async def score_solution(problem: str, solution: str) -> str:
     """Score a solution against the Ideal Final Result (IFR) on a 0-4 scale.
 
-    IFR criteria — evaluated relative to the stated problem:
-    (i)   No additional components needed beyond what the problem already describes
-    (ii)  No additional cost introduced
-    (iii) No side-effects introduced
-    (iv)  System solves itself (self-resolving)
+    IFR criteria — evaluated semantically relative to the stated problem:
+    (i)   Leverages existing system resources rather than requiring wholly new infrastructure
+    (ii)  No significant additional cost or resource expenditure needed
+    (iii) Solution does not introduce new problems or degradations
+    (iv)  System becomes self-resolving — the contradiction disappears by design
     """
     sol_lower = solution.lower()
     prob_lower = problem.lower()
 
-    prob_components = set()
-    component_markers = [
-        "service", "server", "node", "cache", "database", "queue",
-        "proxy", "load balancer", "api", "layer", "module",
-    ]
-    for marker in component_markers:
-        if marker in prob_lower:
-            prob_components.add(marker)
+    sol_sentences = [s.strip() for s in solution.split('.') if s.strip()]
+    prob_sentences = [s.strip() for s in problem.split('.') if s.strip()]
 
-    new_component_phrases = [
-        "add new", "additional component", "extra layer", "new service",
-        "introduce a", "deploy a new", "create a new",
+    mechanism_indicators = [
+        "by", "through", "using", "via", "leverag", "repurpos",
+        "transform", "reconfigur", "adapt", "modify", "restructur",
     ]
-    adds_components = any(w in sol_lower for w in new_component_phrases)
-    reuses_existing = any(
-        c in sol_lower for c in prob_components
-    ) if prob_components else False
-    criterion_components = not adds_components or reuses_existing
+    has_concrete_mechanism = any(w in sol_lower for w in mechanism_indicators)
+
+    new_infra_indicators = [
+        "build a new", "deploy a separate", "purchase additional",
+        "requires new hardware", "buy a new", "acquire a new",
+        "install additional", "procure",
+    ]
+    adds_major_infra = any(phrase in sol_lower for phrase in new_infra_indicators)
+
+    cost_escalation_indicators = [
+        "significant cost", "major investment", "substantial budget",
+        "expensive infrastructure", "high upfront cost",
+    ]
+    has_cost_escalation = any(phrase in sol_lower for phrase in cost_escalation_indicators)
+
+    new_problem_indicators = [
+        "however this introduces", "but this creates",
+        "the downside is that it breaks", "at the expense of completely losing",
+    ]
+    introduces_new_problems = any(phrase in sol_lower for phrase in new_problem_indicators)
+
+    self_resolving_indicators = [
+        "eliminat", "dissolv", "disappear", "no longer exist",
+        "inherent", "by design", "self-", "automatic",
+        "without intervention", "naturally resolv",
+        "both requirements are satisfied", "simultaneously achiev",
+    ]
+    is_self_resolving = any(w in sol_lower for w in self_resolving_indicators)
 
     criteria = {
-        "no_additional_components": criterion_components,
-        "no_additional_cost": not any(
-            w in sol_lower for w in ("expensive", "costly", "budget", "purchase", "buy")
-        ),
-        "no_side_effects": not any(
-            w in sol_lower
-            for w in ("trade-off", "tradeoff", "downside", "drawback", "side effect")
-        ),
-        "self_solving": any(
-            w in sol_lower
-            for w in ("self-", "automatic", "inherent", "eliminat", "without intervention")
-        ),
+        "leverages_existing": has_concrete_mechanism and not adds_major_infra,
+        "minimal_cost": not has_cost_escalation,
+        "no_new_problems": not introduces_new_problems,
+        "self_resolving": is_self_resolving,
     }
 
     score = sum(1 for v in criteria.values() if v)
     met = [k for k, v in criteria.items() if v]
     unmet = [k for k, v in criteria.items() if not v]
 
-    labels = {0: "No IFR progress", 1: "Minimal IFR", 2: "Partial IFR", 3: "Near-IFR", 4: "Full IFR"}
+    labels = {
+        0: "No IFR progress",
+        1: "Minimal IFR",
+        2: "Partial IFR",
+        3: "Near-IFR",
+        4: "Full IFR",
+    }
 
     return json.dumps({
         "problem_context": problem[:200],
@@ -244,7 +331,10 @@ async def score_solution(problem: str, solution: str) -> str:
         "ifr_label": labels[score],
         "criteria_met": met,
         "criteria_unmet": unmet,
-        "rationale": f"Solution satisfies {score}/4 IFR criteria: {', '.join(met) if met else 'none'}.",
+        "rationale": (
+            f"Solution satisfies {score}/4 IFR criteria: "
+            f"{', '.join(met) if met else 'none'}."
+        ),
     })
 
 

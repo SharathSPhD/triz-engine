@@ -2,11 +2,11 @@ name: TRIZ Arena
 
 on:
   schedule:
-    - cron: '0 3 * * *'  # Nightly at 3 AM UTC
+    - cron: '0 3 * * *'
   workflow_dispatch:
     inputs:
       participants:
-        description: 'Comma-separated participant names (empty = all)'
+        description: 'Comma-separated participant names (empty = all non-external)'
         required: false
         default: ''
       problems:
@@ -47,69 +47,60 @@ jobs:
           GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
         run: |
           python3 -c "
-          import json, os, sys
+          import json, sys
           from pathlib import Path
+          from benchmark.runner import run_benchmark, extract_scores
           from benchmark.elo import run_tournament
-          from benchmark.leaderboard import generate_leaderboard
+          from benchmark.leaderboard import generate_leaderboard, load_dimension_scores
 
-          # Parse workflow inputs
           input_participants = '${{ github.event.inputs.participants }}'.strip()
           input_problems = '${{ github.event.inputs.problems }}'.strip()
 
-          # Determine participants
-          participants_dir = Path('benchmark/participants')
-          all_configs = {}
-          for f in sorted(participants_dir.glob('*.json')):
-              with open(f) as fh:
-                  config = json.load(fh)
-                  all_configs[config['name']] = config
-
+          participant_names = None
           if input_participants:
               participant_names = [p.strip() for p in input_participants.split(',')]
-          else:
-              participant_names = list(all_configs.keys())
 
-          # Filter to available participants (check API keys)
-          available = []
-          for name in participant_names:
-              config = all_configs.get(name)
-              if config is None:
-                  continue
-              requires_env = config.get('invocation', {}).get('requires_env', [])
-              if all(os.environ.get(e) for e in requires_env):
-                  available.append(name)
-          participant_names = available
-
-          # Determine problems
+          problem_ids = None
           if input_problems:
               problem_ids = [p.strip() for p in input_problems.split(',')]
-          else:
-              problem_ids = sorted(p.stem for p in Path('benchmark/problems').glob('TB-*.json'))
 
-          print(f'Participants: {participant_names}')
-          print(f'Problems: {problem_ids}')
-
-          if len(participant_names) < 2:
-              print('Not enough participants to run tournament')
-              sys.exit(0)
-
-          # Run benchmark using the real runner
-          from benchmark.runner import run_benchmark
-          scores = run_benchmark(
+          # Run benchmark (dynamic participant loading handles availability)
+          results = run_benchmark(
               problem_ids=problem_ids,
               participant_names=participant_names,
               budget_usd=2.00,
+              use_llm_judge=True,
           )
 
+          scores = extract_scores(results)
+
+          # Determine actual participants and problems from results
+          actual_participants = sorted(set(p for p, _ in scores))
+          actual_problems = sorted(set(pid for _, pid in scores))
+
+          if len(actual_participants) < 2:
+              print('Not enough participants with successful runs for tournament')
+              sys.exit(0)
+
           # Generate tournament and leaderboard
-          result = run_tournament(participant_names, problem_ids, scores)
+          result = run_tournament(actual_participants, actual_problems, scores)
+
+          # Collect dimension scores for per-dimension breakdown
+          dim_scores = {}
+          for (pname, pid), r in results.items():
+              if r.get('status') in ('success', 'RunStatus.SUCCESS'):
+                  dims = r.get('scores', {}).get('dimensions', {})
+                  if dims:
+                      dim_scores[(pname, pid)] = dims
+
           generate_leaderboard(
               ratings=result['ratings'],
               confidence_intervals=result['confidence_intervals'],
               problem_scores=scores,
-              problem_ids=problem_ids,
+              problem_ids=actual_problems,
               output_path=Path('LEADERBOARD.md'),
               match_count=result['match_count'],
+              dimension_scores=dim_scores,
           )
 
           # Save ratings

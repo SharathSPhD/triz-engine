@@ -1,12 +1,11 @@
 {
   "name": "triz-engine",
   "version": "1.0.0",
-  "description": "Full TRIZ Engine plugin with slash commands, 3-agent pipeline, MCP knowledge base, and session hooks",
+  "description": "Full TRIZ Engine plugin with MCP knowledge base tools and TRIZ analysis system prompt",
   "type": "plugin",
   "invocation": {
     "command": "claude",
-    "args": ["--headless", "--plugin", "triz-engine", "--prompt-file", "{problem_file}"],
-    "timeout_seconds": 120
+    "timeout_seconds": 180
   },
   "features": ["mcp_tools", "agents", "commands", "hooks", "knowledge_base"]
 }

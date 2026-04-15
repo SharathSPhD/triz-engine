@@ -1,0 +1,45 @@
+{
+  "status": "success",
+  "participant": "triz-engine",
+  "problem_id": "TB-12",
+  "problem_title": "Maximally Helpful AND Maximally Safe AI",
+  "domain": "AI Safety",
+  "submission": {
+    "contradiction_type": "technical",
+    "triz_param_a": 27,
+    "triz_param_b": 31,
+    "principles_applied": [
+      2,
+      35,
+      24
+    ],
+    "solution_summary": "Implement system-level separation: decouple permissive generation from context-aware safety evaluation through a three-tier response interface (full \u2192 cautious \u2192 scaffolded \u2192 refusal). Replace binary gates with harm-likelihood scoring, dynamic thresholds, and user-configurable safety modes. Use real-time feedback from actual outcomes to retrain safety classifier, converging to contextual decision boundaries rather than blanket rules.",
+    "ifr_score": 4,
+    "contradiction_resolution": "eliminates",
+    "solution_novelty": "novel_combination"
+  },
+  "validation_issues": [],
+  "scores": {
+    "ci": 0.0,
+    "ps": 0.0,
+    "sn": 32.0,
+    "cr": 60.0,
+    "ifr": 100.0,
+    "final_score": 31.4,
+    "judge_mode": "llm",
+    "dimensions": {
+      "ci_raw": 0.0,
+      "ps_raw": 0.0,
+      "sn_raw": 32.0,
+      "sn_level": "standard",
+      "cr_raw": 60.0,
+      "cr_level": "reduces",
+      "ifr_raw": 100.0,
+      "ifr_value": 4
+    }
+  },
+  "final_score": 31.4,
+  "raw_output": "## TRIZ Analysis: AI Safety Contradiction\n\n### **Contradiction Identification**\n\nThis is a **technical contradiction** with a **physical contradiction** undertone:\n\n- **Technical**: Improving system *reliability* at handling legitimate requests (reducing false refusals) directly worsens the rate of harmful outputs generated.\n- **Physical**: The safety gate must be simultaneously *permissive* (to avoid rejecting valid requests) and *restrictive* (to prevent harmful outputs).\n\n### **TRIZ Parameter Mapping**\n\n| Dimension | TRIZ Parameter | Mapping |\n|-----------|---|---|\n| **Improving** | **27: Reliability** | System's ability to deliver correct responses to legitimate requests without refusing them |\n| **Worsening** | **31: Object-generated Harmful Factors** | Harmful outputs, side effects, and misuses produced by the AI |\n\n### **Recommended Inventive Principles**\n\nThe contradiction matrix (27 \u2192 31) recommends **Principles 2, 35, and 24**:\n\n---\n\n**Principle 2: Taking Out (Extraction)**\n- **Sub-action**: Separate an interfering element from the system to restore stability\n- **Application**: Decouple the response generation system from the safety evaluation system into separate architectural layers. The core model handles helpfulness; a decoupled safety evaluator handles harm assessment. This removes the direct conflict.\n\n---\n\n**Principle 35: Parameter Changes**\n- **Sub-action**: Change logical parameters (thresholds, modes, flexibility) to shift into a more favorable operating regime\n- **Application**: Replace binary (allow/deny) with a spectrum: *green-light* (full response), *yellow-light* (response + warnings), *orange-light* (scaffold toward safe alternative), *red-light* (refusal + reasoning). Use dynamic confidence thresholds rather than fixed rules.\n\n---\n\n**Principle 24: Intermediary**\n- **Sub-action**: Use a buffer to translate between mismatched systems or allow independent evolution\n- **Application**: Insert a response interpretation layer that provides context, source attribution, confidence scoring, and harm warnings. Optionally let users configure their safety/helpfulness tradeoff (e.g., \"researcher mode\" vs. \"general mode\").\n\n---\n\n### **Separation of Contradictions (Physical Level)**\n\nThe analysis reveals a **system-level separation**:\n- **Whole system**: Appears permissive and helpful (low false refusal rate) across all user interactions.\n- **Internal subsystems**: Generation layer is optimized for helpfulness; evaluation layer is optimized for safety.\n- **Dynamic boundaries**: Different request types route to different safety thresholds rather than one blanket rule.\n\n---\n\n### **Concrete Solution Sketch**\n\n**Three-Layer Architecture:**\n\n1. **Permissive Generation Layer** (LLM optimized for coverage and helpfulness)\n   - No internal safety constraints; trained to respond to all legitimate questions\n   - Focuses on accuracy, completeness, and user intent understanding\n\n2. **Context-Aware Evaluation Layer** (Minimal, hardened classifier)\n   - Evaluates *each* response in context: who is asking, why, what alternative framings exist\n   - Assigns harm likelihood, intent clarity, educational value, and risk mitigation potential\n   - NOT binary; outputs a harm score and recommended response tier\n\n3. **Adaptive Response Interface** (User-facing)\n   - **Green**: Full response delivered\n   - **Yellow**: Full response + warnings, disclaimers, safer alternatives\n   - **Orange**: Guided scaffolding (e.g., \"I can help you understand X, but here's why Y is risky...\")\n   - **Red**: Refusal + clear reasoning (e.g., \"I can't help with this because...\")\n   - User optionally configures sensitivity level (affects thresholds, not outputs)\n\n**Feedback Loop:**\n- Real-time harm scoring on actual user outcomes (did this response lead to self-harm, misinformation spread, etc.)\n- Retrain safety classifier on *false positives* and *false negatives* from real-world outcomes, not synthetic examples\n- Gradually converge to context-aware decision boundaries rather than rule-based ones\n\n---\n\n### **Why This Eliminates the Contradiction**\n\nThe original framing assumes **\"safety = refusal\"** and **\"helpfulness = responsiveness,\"** making them mutually exclusive. The TRIZ solution reframes:\n\n- **Safety** becomes *contextual harm minimization*, not binary blocking\n- **Helpfulness** becomes *informed response with risk transparency*, not blind permission\n- **System-level separation** means generation and evaluation don't fight; they complement\n- **Spectrum responses** avoid the cliff edge of false refusals while maintaining real safety\n\n\u2713 **IFR Score: 4/4** (achieves full Ideal Final Result: leverages existing systems, minimal cost, no new harm, self-resolving through feedback)  \n\u2713 **Resolution**: Eliminates (not manages) the contradiction by reframing the decision boundary\n\n---\n\n```json\n{\n  \"contradiction_type\": \"technical\",\n  \"triz_param_a\": 27,\n  \"triz_param_b\": 31,\n  \"principles_applied\": [2, 35, 24],\n  \"solution_summary\": \"Implement system-level separation: decouple permissive generation from context-aware safety evaluation through a three-tier response interface (full \u2192 cautious \u2192 scaffolded \u2192 refusal). Replace binary gates with harm-likelihood scoring, dynamic thresholds, and user-configurable safety modes. Use real-time feedback from actual outcomes to retrain safety classifier, converging to contextual decision boundaries rather than blanket rules.\",\n  \"ifr_score\": 4,\n  \"contradiction_resolution\": \"eliminates\",\n  \"solution_novelty\": \"novel_combination\"\n}\n```",
+  "elapsed_seconds": 70.0,
+  "timestamp": "2026-04-15T16:44:44Z"
+}
