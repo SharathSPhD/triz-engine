@@ -1,0 +1,47 @@
+# Project initiation research docs
+project-initiation-docs/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+*.egg
+dist/
+build/
+.eggs/
+venv/
+.venv/
+*.whl
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# TRIZ session data
+.triz/
+
+# Environment
+.env
+.env.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Node (if any tooling)
+node_modules/
+
+# Benchmark results (generated)
+results/
+ratings/
