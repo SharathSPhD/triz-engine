@@ -1,0 +1,924 @@
+{
+  "schema_version": "1.0",
+  "principles": [
+    {
+      "id": 1,
+      "name": "Segmentation",
+      "description": "Divide the object into independent parts or make it easy to separate so each segment can be optimized, replaced, or scaled on its own. In software and systems, segmentation reduces coupling, localizes failure, and lets teams evolve subsystems without rewriting the whole.",
+      "sub_actions": [
+        "Divide an object into independent parts",
+        "Make an object easy to disassemble or separate",
+        "Increase the degree of fragmentation or segmentation"
+      ],
+      "categories": ["structural", "spatial"],
+      "contradiction_types": ["technical", "physical"],
+      "domains": ["software", "hardware", "process"],
+      "software_patterns": [
+        "Modular codebase",
+        "microservices",
+        "split tunneling"
+      ],
+      "examples": [
+        {
+          "domain": "software",
+          "example": "Split a monolith into bounded-context services so billing and catalog can deploy independently."
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Taking Out",
+      "description": "Extract a disturbing element or isolate only what is necessary so the core system stays stable. Removing interference, dead paths, or optional branches improves reliability and clarity without changing the essential function.",
+      "sub_actions": [
+        "Separate an interfering part or property from an object or system",
+        "Extract only the necessary part or property for the required function"
+      ],
+      "categories": ["functional"],
+      "contradiction_types": ["technical", "physical"],
+      "domains": ["software", "process"],
+      "software_patterns": [
+        "Feature flags",
+        "dead code elimination",
+        "tree-shaking"
+      ],
+      "examples": [
+        {
+          "domain": "software",
+          "example": "Strip experimental code behind flags and eliminate unreachable modules from the production bundle."
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "Local Quality",
+      "description": "Move from uniform structure to differentiated structure so each region or component operates under conditions best suited to its role. Heterogeneity trades global simplicity for local optima where it matters most.",
+      "sub_actions": [
+        "Change an object's structure from uniform to non-uniform",
+        "Make each part of an object fulfill a different and useful function",
+        "Place each part of an object under conditions most favorable for its operation"
+      ],
+      "categories": ["spatial", "behavioral"],
+      "contradiction_types": ["technical", "physical"],
+      "domains": ["software", "hardware", "process"],
+      "software_patterns": [
+        "Adaptive bitrate streaming",
+        "context-aware compression"
+      ],
+      "examples": [
+        {
+          "domain": "software",
+          "example": "Encode video at multiple bitrates and switch tracks per network conditions instead of one fixed rate for all clients."
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "name": "Asymmetry",
+      "description": "Replace symmetrical or reversible arrangements with deliberate asymmetry so direction, privilege, or cost differs by role. Asymmetry often strengthens security and simplifies protocols by making one path cheap and the reverse expensive or impossible.",
+      "sub_actions": [
+        "Replace symmetrical form or arrangement with asymmetrical form",
+        "If the object is already asymmetrical, increase the degree of asymmetry"
+      ],
+      "categories": ["functional", "informational"],
+      "contradiction_types": ["technical", "physical"],
+      "domains": ["software", "hardware", "business"],
+      "software_patterns": [
+        "Asymmetric encryption",
+        "one-way hash functions"
+      ],
+      "examples": [
+        {
+          "domain": "software",
+          "example": "Use public-key cryptography so anyone can encrypt but only holders of the private key can decrypt."
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "name": "Merging",
+      "description": "Bring related functions closer in space or time, or assemble identical units to act as one. Merging reduces handoffs, increases throughput, and amortizes overhead across parallel or consolidated resources.",
+      "sub_actions": [
+        "Bring closer together objects that perform related functions in space",
+        "Merge objects in time so operations occur in a coordinated sequence",
+        "Unite identical or similar objects to work in parallel or as an assembly"
+      ],
+      "categories": ["structural", "temporal"],
+      "contradiction_types": ["technical", "physical"],
+      "domains": ["software", "process", "hardware"],
+      "software_patterns": [
+        "RAID arrays",
+        "CI/CD pipeline parallelism"
+      ],
+      "examples": [
+        {
+          "domain": "software",
+          "example": "Run independent test shards in parallel on a build farm to shorten feedback time."
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "name": "Universality",
+      "description": "Design a part or subsystem to perform multiple functions so fewer specialized components are needed. Universality trades peak optimization in one role for flexibility, reuse, and simpler inventory of capabilities.",
+      "sub_actions": [
+        "Make a part of an object or system perform multiple functions, eliminating the need for other parts",
+        "Combine functions that are typically separated into a single unified mechanism"
+      ],
+      "categories": ["functional", "behavioral"],
+      "contradiction_types": ["technical", "physical"],
+      "domains": ["software", "hardware", "business"],
+      "software_patterns": [
+        "Swiss-army tool patterns",
+        "middleware abstraction"
+      ],
+      "examples": [
+        {
+          "domain": "software",
+          "example": "Use a single API gateway for authentication, rate limiting, and routing instead of three separate edge services."
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "name": "Nested Doll",
+      "description": "Place one object inside another so layers encapsulate concerns, isolate resources, or reuse infrastructure recursively. Nesting creates depth without flattening complexity into a single fragile surface.",
+      "sub_actions": [
+        "Place one object inside another",
+        "Make one object pass through a hollow space inside another object",
+        "Arrange nested layers so each shell adds isolation or structure"
+      ],
+      "categories": ["structural", "spatial"],
+      "contradiction_types": ["technical", "physical"],
+      "domains": ["software", "hardware", "process"],
+      "software_patterns": [
+        "Virtualization",
+        "containers inside containers"
+      ],
+      "examples": [
+        {
+          "domain": "software",
+          "example": "Run workloads in nested containers or VMs so each tenant gets an isolated runtime inside a shared host."
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "name": "Anti-weight",
+      "description": "Compensate for load or drag by merging with a lifting or balancing influence so net burden on the primary system decreases. The metaphor extends to latency, queue depth, and other intangible weights in distributed systems.",
+      "sub_actions": [
+        "Compensate for the weight of an object by merging it with another object that provides lift or buoyancy",
+        "Expose an object to aerodynamic or hydrodynamic forces that counteract its weight",
+        "Combine with environmental effects that reduce effective load on the system"
+      ],
+      "categories": ["energetic", "functional"],
+      "contradiction_types": ["technical", "physical"],
+      "domains": ["software", "hardware", "process"],
+      "software_patterns": [
+        "Load balancer offsetting backend latency"
+      ],
+      "examples": [
+        {
+          "domain": "software",
+          "example": "Place a cache or edge layer in front of slow origin servers so clients perceive lower effective latency."
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "name": "Preliminary Anti-action",
+      "description": "Counter harmful influences before they can stress the system by pre-emptive guards, limits, or opposing forces. Anti-action reduces the amplitude of failure modes rather than only reacting after damage occurs.",
+      "sub_actions": [
+        "Counter harmful influences before they can affect the object or process",
+        "Introduce opposing actions or constraints in advance of expected stress",
+        "Pre-compensate known failure modes with protective measures"
+      ],
+      "categories": ["behavioral", "temporal"],
+      "contradiction_types": ["technical", "physical"],
+      "domains": ["software", "process", "hardware"],
+      "software_patterns": [
+        "Circuit breakers",
+        "defensive programming"
+      ],
+      "examples": [
+        {
+          "domain": "software",
+          "example": "Trip a circuit breaker when error rates spike so cascading calls stop before they overwhelm dependencies."
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "name": "Preliminary Action",
+      "description": "Perform all or part of the required change before it is needed so critical paths stay short when demand arrives. Preliminary action trades idle-time work for predictable peak performance.",
+      "sub_actions": [
+        "Perform required changes in advance, either fully or partially",
+        "Pre-arrange objects so they can act from the best position without delay",
+        "Prepare resources ahead of the moment of need"
+      ],
+      "categories": ["temporal", "behavioral"],
+      "contradiction_types": ["technical", "physical"],
+      "domains": ["software", "process", "hardware"],
+      "software_patterns": [
+        "Pre-fetching",
+        "DB index warm-up",
+        "lazy loading inversion"
+      ],
+      "examples": [
+        {
+          "domain": "software",
+          "example": "Warm caches and precompute aggregates before a known traffic spike such as a product launch."
+        }
+      ]
+    },
+    {
+      "id": 11,
+      "name": "Beforehand Cushioning",
+      "description": "Prepare emergency means in advance so when disruption occurs recovery is cheap and controlled. Cushioning accepts that failures happen and invests in redundancy, rollback, and safe modes before they are needed.",
+      "sub_actions": [
+        "Prepare emergency means in advance to compensate for low reliability or high risk",
+        "Provide backup resources or alternate paths before failure occurs",
+        "Design graceful degradation modes ahead of incidents"
+      ],
+      "categories": ["temporal", "functional"],
+      "contradiction_types": ["technical", "physical"],
+      "domains": ["software", "process", "business"],
+      "software_patterns": [
+        "Backup systems",
+        "redundancy",
+        "idempotent APIs"
+      ],
+      "examples": [
+        {
+          "domain": "software",
+          "example": "Use multi-region replicas and tested restore runbooks so database loss triggers a rehearsed failover."
+        }
+      ]
+    },
+    {
+      "id": 12,
+      "name": "Equipotentiality",
+      "description": "Limit unnecessary changes in position or potential so work happens where conditions are already favorable. In information systems this maps to designs that avoid costly global coordination when local equivalence suffices.",
+      "sub_actions": [
+        "Change operating conditions so an object need not be raised or lowered in a potential field",
+        "Equalize potential across the working environment to reduce movement or effort",
+        "Place objects at the level where required work can occur without repositioning"
+      ],
+      "categories": ["functional", "spatial"],
+      "contradiction_types": ["technical", "physical"],
+      "domains": ["software", "process"],
+      "software_patterns": [
+        "Eventual consistency",
+        "CRDT structures"
+      ],
+      "examples": [
+        {
+          "domain": "software",
+          "example": "Use CRDTs so replicas converge without a single global lock or central coordinator for every edit."
+        }
+      ]
+    },
+    {
+      "id": 13,
+      "name": "The Other Way Around",
+      "description": "Invert the usual approach: fix what moved, move what was fixed, or reverse control flow so the hard problem becomes easier. Inversion often reveals simpler interfaces and better pull-based coordination.",
+      "sub_actions": [
+        "Invert the usual action: make moving parts fixed and fixed parts movable",
+        "Turn the object or process upside down or reverse its operational viewpoint",
+        "Swap producer and consumer roles or reverse the direction of dependency"
+      ],
+      "categories": ["behavioral", "informational"],
+      "contradiction_types": ["technical", "physical"],
+      "domains": ["software", "process", "business"],
+      "software_patterns": [
+        "Pull-based vs push-based data flow reversal"
+      ],
+      "examples": [
+        {
+          "domain": "software",
+          "example": "Replace push notifications to clients with pull-based polling or sync when the server cannot reliably push."
+        }
+      ]
+    },
+    {
+      "id": 14,
+      "name": "Spheroidality – Curvature",
+      "description": "Replace rectilinear or rigid paths with curved, spherical, or rotating patterns to distribute load and reduce sharp transitions. Curvature in scheduling and routing smooths hotspots compared with strict linear allocation.",
+      "sub_actions": [
+        "Replace linear parts with curved surfaces, rollers, balls, or spirals",
+        "Use rotation, cycloidal motion, or curved trajectories instead of straight-line motion",
+        "Adopt rounded or distributed paths to reduce stress concentrations"
+      ],
+      "categories": ["spatial", "behavioral"],
+      "contradiction_types": ["technical", "physical"],
+      "domains": ["software", "hardware", "process"],
+      "software_patterns": [
+        "Curved pipelines",
+        "round-robin scheduling"
+      ],
+      "examples": [
+        {
+          "domain": "software",
+          "example": "Use round-robin among healthy instances so traffic spreads evenly instead of always hitting the first peer."
+        }
+      ]
+    },
+    {
+      "id": 15,
+      "name": "Dynamics",
+      "description": "Make characteristics adaptive or self-tuning so the system finds better operating points as conditions change. Dynamic behavior targets optimality over time rather than a single static configuration.",
+      "sub_actions": [
+        "Make characteristics of an object or process optimal or change them according to external conditions",
+        "Divide an object into parts able to change position or properties relative to each other",
+        "Increase adaptability through adjustable parameters or reconfiguration"
+      ],
+      "categories": ["behavioral", "temporal"],
+      "contradiction_types": ["technical", "physical"],
+      "domains": ["software", "hardware", "process"],
+      "software_patterns": [
+        "Dynamic resource allocation",
+        "auto-scaling"
+      ],
+      "examples": [
+        {
+          "domain": "software",
+          "example": "Autoscale worker pools when queue depth grows and scale in when load returns to baseline."
+        }
+      ]
+    },
+    {
+      "id": 16,
+      "name": "Partial or Excessive Action",
+      "description": "If exactly full performance is hard to achieve, deliberately use slightly less or slightly more than one hundred percent to meet constraints. Margins absorb noise, burst demand, and model error.",
+      "sub_actions": [
+        "If it is difficult to obtain 100 percent of a desired effect, use slightly less or slightly more than required",
+        "Apply a little more than necessary to ensure the critical threshold is crossed reliably",
+        "Use partial completion when full completion is costly or risky"
+      ],
+      "categories": ["behavioral", "energetic"],
+      "contradiction_types": ["technical", "physical"],
+      "domains": ["software", "process", "hardware"],
+      "software_patterns": [
+        "Over-provisioning for burst capacity"
+      ],
+      "examples": [
+        {
+          "domain": "software",
+          "example": "Provision extra CPU headroom beyond average utilization so latency stays stable during short spikes."
+        }
+      ]
+    },
+    {
+      "id": 17,
+      "name": "Another Dimension",
+      "description": "Move the problem to additional dimensions—layers, degrees of freedom, or orthogonal axes—so constraints that conflict in one view can be satisfied in another. Higher-dimensional representations unlock separation of concerns.",
+      "sub_actions": [
+        "Move from one-dimensional to two-dimensional or three-dimensional arrangement",
+        "Use multi-level stacking or tilting to free motion along new axes",
+        "Introduce additional degrees of freedom to resolve spatial or logical conflicts"
+      ],
+      "categories": ["spatial", "structural"],
+      "contradiction_types": ["technical", "physical"],
+      "domains": ["software", "hardware", "process"],
+      "software_patterns": [
+        "3D data structures",
+        "tensor decomposition"
+      ],
+      "examples": [
+        {
+          "domain": "software",
+          "example": "Represent time-series features as tensors so models capture multi-axis structure beyond flat vectors."
+        }
+      ]
+    },
+    {
+      "id": 18,
+      "name": "Mechanical Vibration",
+      "description": "Introduce oscillation or raise frequency to overcome sticking, averaging, or stagnation. In software, rhythmic signals drive liveness checks, coordination, and adaptive retry pacing.",
+      "sub_actions": [
+        "Set an object into oscillation or vibration",
+        "Increase the frequency of vibration beyond normal ranges when needed",
+        "Use resonance or tuned oscillation to amplify useful effects"
+      ],
+      "categories": ["energetic", "temporal"],
+      "contradiction_types": ["technical", "physical"],
+      "domains": ["software", "hardware", "process"],
+      "software_patterns": [
+        "Heartbeat protocols",
+        "polling with backoff"
+      ],
+      "examples": [
+        {
+          "domain": "software",
+          "example": "Send periodic heartbeats between services and escalate alerts when pulses stop."
+        }
+      ]
+    },
+    {
+      "id": 19,
+      "name": "Periodic Action",
+      "description": "Replace continuous operation with pulsed or batched cycles to save resources, synchronize participants, or match natural rhythms. Periodicity simplifies control when steady-state flow is unnecessary.",
+      "sub_actions": [
+        "Replace continuous actions with periodic or pulsed actions",
+        "If an action is already periodic, change its period or pulse shape",
+        "Use intervals to batch work and amortize overhead"
+      ],
+      "categories": ["temporal", "behavioral"],
+      "contradiction_types": ["technical", "physical"],
+      "domains": ["software", "process", "hardware"],
+      "software_patterns": [
+        "Batch processing vs streaming"
+      ],
+      "examples": [
+        {
+          "domain": "software",
+          "example": "Run nightly ETL batches instead of continuous transformation when freshness requirements allow."
+        }
+      ]
+    },
+    {
+      "id": 20,
+      "name": "Continuity of Useful Action",
+      "description": "Carry on all parts of useful work continuously and eliminate idle time so capacity stays productive. Continuous flow reduces context switching cost and maximizes utilization of expensive resources.",
+      "sub_actions": [
+        "Carry on work continuously; make all parts of an object work at full load",
+        "Eliminate idle and intermittent operation in the useful path",
+        "Remove dead time between sequential operations"
+      ],
+      "categories": ["temporal", "energetic", "behavioral"],
+      "contradiction_types": ["technical", "physical"],
+      "domains": ["software", "process", "hardware"],
+      "software_patterns": [
+        "Always-on systems",
+        "event-driven architecture"
+      ],
+      "examples": [
+        {
+          "domain": "software",
+          "example": "Process events from a stream as they arrive so workers stay busy instead of waiting on batch boundaries."
+        }
+      ]
+    },
+    {
+      "id": 21,
+      "name": "Skipping",
+      "description": "Conduct harmful, dangerous, or costly stages at high speed—or bypass them entirely when safe—so exposure time shrinks. In software, acceleration targets bottlenecks on critical paths.",
+      "sub_actions": [
+        "Conduct harmful or dangerous operations at very high speed to limit exposure",
+        "Skip nonessential steps when correctness allows a fast path",
+        "Accelerate through transient risky states under controlled conditions"
+      ],
+      "categories": ["temporal", "behavioral"],
+      "contradiction_types": ["technical", "physical"],
+      "domains": ["software", "hardware", "process"],
+      "software_patterns": [
+        "Fast-path optimization",
+        "SIMD",
+        "GPU acceleration"
+      ],
+      "examples": [
+        {
+          "domain": "software",
+          "example": "Vectorize numerical kernels with SIMD so large arrays finish before timeouts or thermal limits bite."
+        }
+      ]
+    },
+    {
+      "id": 22,
+      "name": "Blessing in Disguise",
+      "description": "Turn harmful factors into useful ones by harnessing side effects, noise, or failures as signals and drivers of improvement. What looked purely negative becomes a controlled source of learning or resilience.",
+      "sub_actions": [
+        "Use harmful factors to achieve a positive effect",
+        "Remove a harmful factor by combining it with another harmful factor",
+        "Amplify a harmful factor until it is no longer harmful in context"
+      ],
+      "categories": ["behavioral", "functional"],
+      "contradiction_types": ["technical", "physical"],
+      "domains": ["software", "process", "business"],
+      "software_patterns": [
+        "Chaos engineering",
+        "fault injection testing"
+      ],
+      "examples": [
+        {
+          "domain": "software",
+          "example": "Inject controlled faults in staging to validate autoscaling and failover before production incidents."
+        }
+      ]
+    },
+    {
+      "id": 23,
+      "name": "Feedback",
+      "description": "Introduce or strengthen feedback loops so outputs steer inputs and the system self-corrects toward targets. Feedback closes the gap between intent and observed behavior through measurement and adjustment.",
+      "sub_actions": [
+        "Introduce feedback into a process or system",
+        "If feedback already exists, reverse it or change its parameters",
+        "Use measured outputs to modulate inputs continuously or periodically"
+      ],
+      "categories": ["behavioral", "informational"],
+      "contradiction_types": ["technical", "physical"],
+      "domains": ["software", "hardware", "process"],
+      "software_patterns": [
+        "Closed-loop control",
+        "PID",
+        "observability loops"
+      ],
+      "examples": [
+        {
+          "domain": "software",
+          "example": "Drive autoscaling from queue depth metrics so capacity tracks demand in a closed loop."
+        }
+      ]
+    },
+    {
+      "id": 24,
+      "name": "Intermediary",
+      "description": "Use an intermediate carrier to transmit action, translate protocols, or buffer mismatched speeds. Intermediaries decouple endpoints and centralize cross-cutting policies.",
+      "sub_actions": [
+        "Use an intermediary object that carries or transmits an action",
+        "Temporarily attach another object to transfer influence or material",
+        "Place a buffer or adapter between incompatible subsystems"
+      ],
+      "categories": ["informational", "functional", "structural"],
+      "contradiction_types": ["technical", "physical"],
+      "domains": ["software", "hardware", "process"],
+      "software_patterns": [
+        "API gateway",
+        "message broker",
+        "proxy pattern"
+      ],
+      "examples": [
+        {
+          "domain": "software",
+          "example": "Place a message broker between microservices so producers and consumers evolve schemas independently."
+        }
+      ]
+    },
+    {
+      "id": 25,
+      "name": "Self-service",
+      "description": "Make the object or system serve itself by performing auxiliary operations with its own resources or waste products. Self-service reduces external dependencies and operational toil.",
+      "sub_actions": [
+        "Make an object serve itself by performing auxiliary functions automatically",
+        "Use waste material or energy of the object to perform useful work",
+        "Enable self-repair or self-configuration using internal mechanisms"
+      ],
+      "categories": ["functional", "behavioral"],
+      "contradiction_types": ["technical", "physical"],
+      "domains": ["software", "hardware", "process"],
+      "software_patterns": [
+        "Self-healing systems",
+        "auto-remediation"
+      ],
+      "examples": [
+        {
+          "domain": "software",
+          "example": "Restart unhealthy containers automatically and drain bad nodes without manual operator steps."
+        }
+      ]
+    },
+    {
+      "id": 26,
+      "name": "Copying",
+      "description": "Use inexpensive or simplified copies when originals are inaccessible, risky, or costly to move. Copies trade fidelity for availability and proximity to consumers.",
+      "sub_actions": [
+        "Use a simplified and inexpensive copy instead of an inaccessible, fragile, or complex object",
+        "Replace an object or process with an optical image or telemetry replica",
+        "Illuminate with infrared or ultraviolet copies when visible originals are inadequate"
+      ],
+      "categories": ["informational", "functional"],
+      "contradiction_types": ["technical", "physical"],
+      "domains": ["software", "hardware", "process"],
+      "software_patterns": [
+        "Caching",
+        "CDN",
+        "read replicas"
+      ],
+      "examples": [
+        {
+          "domain": "software",
+          "example": "Serve static assets from a CDN edge copy so users avoid round trips to the origin datacenter."
+        }
+      ]
+    },
+    {
+      "id": 27,
+      "name": "Cheap Short-living",
+      "description": "Replace expensive durable objects with multiple inexpensive short-lived ones when lifetime requirements allow. Ephemerality lowers capital cost and simplifies replacement at scale.",
+      "sub_actions": [
+        "Replace an expensive object with multiple inexpensive objects, sacrificing durability",
+        "Use disposable components when longevity is not required",
+        "Trade lifetime for unit cost to meet economic or scaling constraints"
+      ],
+      "categories": ["functional", "material"],
+      "contradiction_types": ["technical", "physical"],
+      "domains": ["software", "hardware", "business"],
+      "software_patterns": [
+        "Serverless/ephemeral compute vs dedicated servers"
+      ],
+      "examples": [
+        {
+          "domain": "software",
+          "example": "Run bursty jobs on short-lived serverless instances instead of maintaining always-on VMs."
+        }
+      ]
+    },
+    {
+      "id": 28,
+      "name": "Mechanics Substitution",
+      "description": "Replace mechanical interaction with fields—acoustic, thermal, magnetic, electric, or electromagnetic—so contact and moving parts give way to remote influence. In software this maps to wireless and over-the-air patterns.",
+      "sub_actions": [
+        "Replace mechanical means with fields or field interactions",
+        "Use acoustic, thermal, magnetic, or electromagnetic effects instead of mechanical contact",
+        "Substitute direct mechanical coupling with mediated field coupling"
+      ],
+      "categories": ["informational", "energetic"],
+      "contradiction_types": ["technical", "physical"],
+      "domains": ["software", "hardware", "process"],
+      "software_patterns": [
+        "Wireless sensor networks",
+        "OTA updates"
+      ],
+      "examples": [
+        {
+          "domain": "software",
+          "example": "Ship firmware updates over the air to devices without physical USB or technician visits."
+        }
+      ]
+    },
+    {
+      "id": 29,
+      "name": "Pneumatics and Hydraulics",
+      "description": "Use gas or liquid behaviors instead of rigid solids to transmit force, absorb shocks, or flow around obstacles. The software analogy treats streams and fluid pipelines as continuous flowing media.",
+      "sub_actions": [
+        "Use gas or liquid parts instead of solid parts",
+        "Use inflatable or hydrostatic structures to adapt shape and pressure",
+        "Employ fluid flow to distribute effort evenly"
+      ],
+      "categories": ["material", "behavioral"],
+      "contradiction_types": ["technical", "physical"],
+      "domains": ["software", "hardware", "process"],
+      "software_patterns": [
+        "Fluid data pipelines",
+        "stream processing"
+      ],
+      "examples": [
+        {
+          "domain": "software",
+          "example": "Model data as continuous streams with backpressure instead of rigid batch file handoffs."
+        }
+      ]
+    },
+    {
+      "id": 30,
+      "name": "Flexible Shells and Thin Films",
+      "description": "Use flexible shells, membranes, or thin films instead of thick rigid structures to isolate while adapting to shape and movement. Flexibility reduces weight and allows conformance without fracture.",
+      "sub_actions": [
+        "Use flexible shells and thin films instead of three-dimensional structures",
+        "Isolate the object from the external environment with a thin flexible barrier",
+        "Use membranes that conform while protecting internal contents"
+      ],
+      "categories": ["structural", "material"],
+      "contradiction_types": ["technical", "physical"],
+      "domains": ["software", "hardware"],
+      "software_patterns": [
+        "Containerization",
+        "thin-client architectures"
+      ],
+      "examples": [
+        {
+          "domain": "software",
+          "example": "Package services in lightweight containers that share a kernel but isolate filesystems and processes."
+        }
+      ]
+    },
+    {
+      "id": 31,
+      "name": "Porous Materials",
+      "description": "Introduce porosity or use porous elements to reduce mass, filter flows, or allow selective passage. Sparse representations in software mirror porous structures that let some information through while compressing the rest.",
+      "sub_actions": [
+        "Make an object porous or add porous elements such as inserts or coatings",
+        "If an object is already porous, impregnate it with another material or change porosity",
+        "Use cavities and channels to control permeability and diffusion"
+      ],
+      "categories": ["structural", "material", "informational"],
+      "contradiction_types": ["technical", "physical"],
+      "domains": ["software", "hardware", "process"],
+      "software_patterns": [
+        "Sparse matrices",
+        "compressed sensing"
+      ],
+      "examples": [
+        {
+          "domain": "software",
+          "example": "Store large graphs with sparse adjacency structures so memory scales with edges, not squared nodes."
+        }
+      ]
+    },
+    {
+      "id": 32,
+      "name": "Color Changes",
+      "description": "Change color, transparency, or optical properties to signal state, reduce glare, or reveal hidden information. Visual encoding turns latent metrics into human-interpretable cues.",
+      "sub_actions": [
+        "Change the color of an object or its external transparent layer",
+        "Change the transparency of an object or its environment",
+        "Use color additives or indicators observable only under selected conditions"
+      ],
+      "categories": ["informational", "behavioral"],
+      "contradiction_types": ["technical", "physical"],
+      "domains": ["software", "hardware", "business"],
+      "software_patterns": [
+        "Dark mode UX",
+        "visual telemetry dashboards"
+      ],
+      "examples": [
+        {
+          "domain": "software",
+          "example": "Color service health tiles green, yellow, or red in a dashboard so operators spot regressions instantly."
+        }
+      ]
+    },
+    {
+      "id": 33,
+      "name": "Homogeneity",
+      "description": "Make interacting objects from the same material or uniform type to reduce chemical or logical incompatibility. Homogeneity simplifies interfaces and avoids exotic special cases at boundaries.",
+      "sub_actions": [
+        "Make objects that interact with each other from the same material or homogeneous composition",
+        "Match material properties at interfaces to reduce incompatibility",
+        "Standardize interacting components to a single class or substance"
+      ],
+      "categories": ["structural", "material"],
+      "contradiction_types": ["technical", "physical"],
+      "domains": ["software", "hardware", "process"],
+      "software_patterns": [
+        "Homogenous compute clusters",
+        "uniform data schemas"
+      ],
+      "examples": [
+        {
+          "domain": "software",
+          "example": "Standardize on one JSON schema version across services to avoid translation layers at every hop."
+        }
+      ]
+    },
+    {
+      "id": 34,
+      "name": "Discarding and Recovering",
+      "description": "Let parts that fulfilled their function disappear, dissolve, or be recovered so ongoing operation stays lean. Ephemeral resources reclaim cost automatically after use.",
+      "sub_actions": [
+        "Make parts that fulfilled their function disappear or become modified",
+        "Directly restore consumable parts of an object during operation",
+        "Discard temporary elements immediately after they complete their role"
+      ],
+      "categories": ["functional", "temporal"],
+      "contradiction_types": ["technical", "physical"],
+      "domains": ["software", "hardware", "process"],
+      "software_patterns": [
+        "Ephemeral environments",
+        "garbage collection"
+      ],
+      "examples": [
+        {
+          "domain": "software",
+          "example": "Spin up preview environments per pull request and tear them down after merge to reclaim cloud cost."
+        }
+      ]
+    },
+    {
+      "id": 35,
+      "name": "Parameter Changes",
+      "description": "Change physical or logical parameters—flexibility, concentration, temperature, frequency, or rate—to shift the system into a more favorable regime. Throttling and scaling are parameter changes for digital loads.",
+      "sub_actions": [
+        "Change an object's aggregate state, concentration, density, flexibility, or temperature",
+        "Change the degree of flexibility or stiffness",
+        "Change other parameters such as speed, pressure, or field strength"
+      ],
+      "categories": ["material", "behavioral"],
+      "contradiction_types": ["technical", "physical"],
+      "domains": ["software", "hardware", "process"],
+      "software_patterns": [
+        "Rate limiting",
+        "throttling",
+        "voltage/frequency scaling"
+      ],
+      "examples": [
+        {
+          "domain": "software",
+          "example": "Apply per-tenant rate limits so noisy neighbors cannot exhaust shared API capacity."
+        }
+      ]
+    },
+    {
+      "id": 36,
+      "name": "Phase Transitions",
+      "description": "Exploit phenomena that occur during phase transitions—sudden property changes at thresholds—to simplify control. Software state machines exhibit discrete jumps analogous to physical phases.",
+      "sub_actions": [
+        "Use phenomena occurring during phase transitions such as volume change or heat absorption",
+        "Exploit discontinuities in properties at critical points",
+        "Trigger abrupt changes of state to perform work or signaling"
+      ],
+      "categories": ["material", "behavioral"],
+      "contradiction_types": ["technical", "physical"],
+      "domains": ["software", "process", "hardware"],
+      "software_patterns": [
+        "State machine transitions in software systems"
+      ],
+      "examples": [
+        {
+          "domain": "software",
+          "example": "Move an order from pending to paid with a single atomic transition that unlocks fulfillment workflows."
+        }
+      ]
+    },
+    {
+      "id": 37,
+      "name": "Thermal Expansion",
+      "description": "Use thermal expansion or contraction to create motion, clearance, or stress relief—or map the idea to elastic scaling under heat-like load pressure. Expansion under stress absorbs spikes before failure.",
+      "sub_actions": [
+        "Use thermal expansion or contraction of materials",
+        "Combine materials with different coefficients of thermal expansion",
+        "Use expansion or contraction to achieve precise motion or fit"
+      ],
+      "categories": ["material", "energetic"],
+      "contradiction_types": ["technical", "physical"],
+      "domains": ["software", "hardware", "process"],
+      "software_patterns": [
+        "Adaptive resource expansion under load"
+      ],
+      "examples": [
+        {
+          "domain": "software",
+          "example": "Grow a Kubernetes node pool when CPU temperature metrics proxy rising load until capacity matches demand."
+        }
+      ]
+    },
+    {
+      "id": 38,
+      "name": "Strong Oxidants",
+      "description": "Replace ordinary air with oxygen-enriched media to intensify reactions; in computing this maps to runtimes and compilers that accelerate execution through stronger optimization environments.",
+      "sub_actions": [
+        "Replace ordinary air with oxygen-enriched air or ionized oxygen",
+        "Use ozonized oxygen or concentrated oxidants to intensify processes",
+        "Introduce chemically aggressive agents to speed desired transformations"
+      ],
+      "categories": ["material", "energetic"],
+      "contradiction_types": ["technical", "physical"],
+      "domains": ["software", "hardware", "process"],
+      "software_patterns": [
+        "Optimized runtime environments",
+        "JIT compilation"
+      ],
+      "examples": [
+        {
+          "domain": "software",
+          "example": "Run hot paths through a JIT that specializes bytecode into native code for higher throughput."
+        }
+      ]
+    },
+    {
+      "id": 39,
+      "name": "Inert Atmosphere",
+      "description": "Replace a normal reactive environment with an inert one to prevent unwanted side reactions. Sandboxes and air gaps are inert atmospheres for software execution.",
+      "sub_actions": [
+        "Replace a normal environment with an inert one",
+        "Add neutral elements or protective gas to suppress unwanted reactions",
+        "Isolate the process from contaminants or reactive agents"
+      ],
+      "categories": ["material", "informational"],
+      "contradiction_types": ["technical", "physical"],
+      "domains": ["software", "hardware", "business"],
+      "software_patterns": [
+        "Sandboxed execution environments",
+        "air-gapped systems"
+      ],
+      "examples": [
+        {
+          "domain": "software",
+          "example": "Execute untrusted plugins inside a WASM sandbox with no direct filesystem access."
+        }
+      ]
+    },
+    {
+      "id": 40,
+      "name": "Composite Materials",
+      "description": "Replace homogeneous material with a composite that combines strengths of multiple constituents. Hybrid architectures mix paradigms—cloud plus edge, SQL plus NoSQL—to match heterogeneous requirements.",
+      "sub_actions": [
+        "Replace homogeneous material with composite material",
+        "Combine multiple materials to tailor strength, weight, and cost",
+        "Use layered or fiber-reinforced structures for tailored properties"
+      ],
+      "categories": ["structural", "material"],
+      "contradiction_types": ["technical", "physical"],
+      "domains": ["software", "hardware", "business"],
+      "software_patterns": [
+        "Hybrid cloud",
+        "polyglot persistence patterns"
+      ],
+      "examples": [
+        {
+          "domain": "software",
+          "example": "Store transactional data in Postgres and search facets in Elasticsearch as a composite data platform."
+        }
+      ]
+    }
+  ]
+}
