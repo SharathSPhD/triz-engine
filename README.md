@@ -68,7 +68,7 @@ triz-engine/
 ├── agents/                         # 3-agent pipeline
 ├── skills/triz-core.md            # Auto-activation skill
 ├── hooks/                          # Pre/post tool-use hooks
-├── servers/triz_server.py          # FastMCP server (7 tools)
+├── servers/triz_server.py          # FastMCP server (8 tools)
 ├── data/                           # Knowledge base + matrix
 └── benchmark/                      # TRIZBENCH + Arena
 ```
@@ -82,7 +82,8 @@ triz-engine/
 | `lookup_matrix` | Matrix lookup for an improving/worsening parameter pair (1–39) |
 | `list_parameters` | List all 39 engineering parameters |
 | `get_separation_principles` | Separation hints (time, space, condition, system level) for physical contradictions |
-| `score_solution` | Heuristic IFR-oriented score (0–4) for a proposed solution |
+| `score_solution` | Semantic IFR-oriented score (0–4) for a proposed solution |
+| `suggest_parameters` | Map a natural-language description to candidate TRIZ parameters |
 | `log_session_entry` | Append a structured entry to the session innovation ledger (`.triz/session.jsonl`) |
 
 ### Agent pipeline
@@ -111,7 +112,7 @@ triz-engine/
 
 ## Development
 
-- **Tests:** `pytest` — **265** tests collected in `triz-engine/`.  
+- **Tests:** `pytest` — full test suite in `triz-engine/`.  
 - **Lint:** `ruff check .` (from `triz-engine/` with dev dependencies installed).
 
 ## Contributing

@@ -1,0 +1,19 @@
+{
+  "internal": {
+    "status": "success",
+    "score": 60.75
+  },
+  "ext_trizbench": {
+    "status": "success",
+    "params": "EXACT",
+    "f1": 1.0
+  },
+  "macgyver": {
+    "status": "success",
+    "level": "unscored"
+  },
+  "cresowlve": {
+    "status": "success",
+    "correct": true
+  }
+}

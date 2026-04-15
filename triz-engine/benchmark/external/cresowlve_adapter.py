@@ -42,7 +42,7 @@ def download_dataset() -> Path:
 
     try:
         from datasets import load_dataset
-        ds = load_dataset("mismayil/cresowlve", split="test")
+        ds = load_dataset("mismayil/cresowlve", "en", split="test")
         records = [dict(row) for row in ds]
         target.write_text(json.dumps(records, indent=2, ensure_ascii=False))
         print(f"Downloaded {len(records)} CresOWLve problems to {target}", file=sys.stderr)
@@ -168,15 +168,19 @@ def score_answer(
         except Exception:
             pass
 
-    candidate_lower = candidate.lower().strip()
-    answer_lower = correct_answer.lower().strip()
-    if answer_lower in candidate_lower or candidate_lower in answer_lower:
+    import re
+    def _normalize(s: str) -> str:
+        return re.sub(r"[^\w\s]", "", s.lower()).strip()
+
+    candidate_norm = _normalize(candidate)
+    answer_norm = _normalize(correct_answer)
+    if answer_norm and (answer_norm in candidate_norm or candidate_norm in answer_norm):
         return {"correct": True, "method": "substring_match"}
 
     if other_answers:
         for alt in other_answers:
-            alt_lower = str(alt).lower().strip()
-            if alt_lower and (alt_lower in candidate_lower or candidate_lower in alt_lower):
+            alt_norm = _normalize(str(alt))
+            if alt_norm and (alt_norm in candidate_norm or candidate_norm in alt_norm):
                 return {"correct": True, "method": "alternative_match"}
 
     return {"correct": False, "method": "no_match"}
@@ -206,6 +210,8 @@ def run_cresowlve_benchmark(
     by_domain = {}
     results = []
 
+    from benchmark.runner import QuotaExhaustedError
+
     for problem in problems:
         prompt = f"QUESTION: {problem['question']}\n\nGive your answer concisely."
         diff = problem["difficulty"]
@@ -218,6 +224,9 @@ def run_cresowlve_benchmark(
                 problem["question"], triz_raw, problem["answer"],
                 problem.get("other_answers"), judge_fn,
             )
+        except QuotaExhaustedError:
+            print(f"  QUOTA EXHAUSTED — stopping benchmark.", file=sys.stderr)
+            break
         except Exception:
             triz_raw = ""
             triz_score = {"correct": False, "method": "error"}
@@ -228,6 +237,9 @@ def run_cresowlve_benchmark(
                 problem["question"], vanilla_raw, problem["answer"],
                 problem.get("other_answers"), judge_fn,
             )
+        except QuotaExhaustedError:
+            print(f"  QUOTA EXHAUSTED — stopping benchmark.", file=sys.stderr)
+            break
         except Exception:
             vanilla_raw = ""
             vanilla_score = {"correct": False, "method": "error"}

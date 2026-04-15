@@ -46,7 +46,7 @@ def download_dataset() -> Path:
     if target.exists():
         return target
 
-    xlsx_url = "https://raw.githubusercontent.com/allenai/MacGyver/main/problem_solution_pair.xlsx"
+    xlsx_url = "https://raw.githubusercontent.com/allenai/MacGyver/main/data/MacGyver/problem_solution_pair.xlsx"
     xlsx_path = DATA_DIR / "problem_solution_pair.xlsx"
 
     if not xlsx_path.exists():
@@ -204,6 +204,8 @@ def run_macgyver_benchmark(
     ties = 0
     results = []
 
+    from benchmark.runner import QuotaExhaustedError
+
     for problem in problems:
         prompt = format_prompt(problem)
         print(f"  {problem['id']}: {problem['problem'][:60]}...", file=sys.stderr)
@@ -213,6 +215,9 @@ def run_macgyver_benchmark(
             triz_score = score_macgyver_solution(
                 problem["problem"], triz_raw, problem["reference_solution"], judge_fn,
             )
+        except QuotaExhaustedError:
+            print(f"  QUOTA EXHAUSTED — stopping benchmark.", file=sys.stderr)
+            break
         except Exception as e:
             triz_raw = ""
             triz_score = {"level": "error", "score": 0.0}
@@ -222,6 +227,9 @@ def run_macgyver_benchmark(
             vanilla_score = score_macgyver_solution(
                 problem["problem"], vanilla_raw, problem["reference_solution"], judge_fn,
             )
+        except QuotaExhaustedError:
+            print(f"  QUOTA EXHAUSTED — stopping benchmark.", file=sys.stderr)
+            break
         except Exception as e:
             vanilla_raw = ""
             vanilla_score = {"level": "error", "score": 0.0}

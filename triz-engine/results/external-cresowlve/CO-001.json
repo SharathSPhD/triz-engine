@@ -1,0 +1,14 @@
+{
+  "problem_id": "CO-001",
+  "difficulty": 4,
+  "creative_domains": [
+    "analogy",
+    "lateral thinking"
+  ],
+  "triz_correct": false,
+  "vanilla_correct": false,
+  "question": "In the novel \"Twenty Thousand Leagues Under the Sea,\" skeptics who did not believe in the existence of the mysterious sea monster were offered to perform a certain action regarding the ship. What was this action called in four words?",
+  "correct_answer": "Put finger in wounds.",
+  "triz_answer": "",
+  "vanilla_answer": ""
+}

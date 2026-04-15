@@ -1,0 +1,53 @@
+{
+  "problem_id": "EXT-TB-003",
+  "participant": "triz-engine",
+  "patent_id": "US6680961",
+  "submission": {
+    "contradiction_type": "technical",
+    "triz_param_a": 25,
+    "triz_param_b": 31,
+    "principles_applied": [
+      35,
+      39,
+      22
+    ],
+    "solution_summary": "Implement adaptive throttling via feedback control: operate at full speed only when harmful factor accumulation is low; automatically reduce speed when harmful factors exceed safe thresholds. The system self-regulates without intervention, making safety itself the speed governor.",
+    "ifr_score": 4,
+    "contradiction_resolution": "eliminates",
+    "solution_novelty": "novel_combination"
+  },
+  "contradiction_score": {
+    "type_correct": true,
+    "params_exact": true,
+    "params_partial": true,
+    "predicted_params": [
+      25,
+      31
+    ],
+    "ground_truth_params": [
+      25,
+      31
+    ]
+  },
+  "principle_score": {
+    "precision": 1.0,
+    "recall": 0.75,
+    "f1": 0.8571428571428571,
+    "overlap": [
+      22,
+      35,
+      39
+    ],
+    "predicted": [
+      22,
+      35,
+      39
+    ],
+    "ground_truth": [
+      18,
+      22,
+      35,
+      39
+    ]
+  }
+}

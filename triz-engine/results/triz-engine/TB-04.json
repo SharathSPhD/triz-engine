@@ -1,0 +1,46 @@
+{
+  "status": "success",
+  "participant": "triz-engine",
+  "problem_id": "TB-04",
+  "problem_title": "API Backward Compatibility with Continuous Evolution",
+  "domain": "API Design",
+  "submission": {
+    "contradiction_type": "technical",
+    "triz_param_a": 36,
+    "triz_param_b": 19,
+    "principles_applied": [
+      27,
+      2,
+      29,
+      28
+    ],
+    "solution_summary": "Consolidate to a single modern backend and wrap legacy API versions in thin, ephemeral adapter layers that transform old request shapes to the modern contract. This eliminates 340% codebase bloat and shifts developer effort from version maintenance to feature work. Legacy clients see no change; new clients adopt modern patterns directly.",
+    "ifr_score": 3,
+    "contradiction_resolution": "eliminates",
+    "solution_novelty": "novel_combination"
+  },
+  "validation_issues": [],
+  "scores": {
+    "ci": 0.0,
+    "ps": 0.0,
+    "sn": 32.0,
+    "cr": 60.0,
+    "ifr": 75.0,
+    "final_score": 28.9,
+    "judge_mode": "llm",
+    "dimensions": {
+      "ci_raw": 0.0,
+      "ps_raw": 0.0,
+      "sn_raw": 32.0,
+      "sn_level": "standard",
+      "cr_raw": 60.0,
+      "cr_level": "reduces",
+      "ifr_raw": 75.0,
+      "ifr_value": 3
+    }
+  },
+  "final_score": 28.9,
+  "raw_output": "---\n\n## \ud83c\udfaf TRIZ Analysis: API Backward Compatibility \u2194 Continuous Evolution\n\n### **Contradiction Card**\n\n| Dimension | Value |\n|-----------|-------|\n| **Type** | Technical Contradiction |\n| **Improving Parameter** | **36 \u2014 Device/Architectural Complexity**: API capability architecture must evolve to handle modern patterns (GraphQL, webhooks, streaming, nested hierarchies) |\n| **Worsening Parameter** | **19 \u2014 Use of Energy by Moving Object**: Developer effort and resource consumption explode (340% codebase bloat, 6 FTE dedicated to legacy maintenance) |\n| **Core Tension** | Richer API capabilities require more complex code; supporting legacy clients requires duplicating that complexity across versions, creating runaway maintenance cost |\n\n---\n\n### **Recommended Inventive Principles (Ranked)**\n\n#### **\ud83e\udd47 Principle 27: Cheap Short-Living Objects** \u2b50 **Primary**\n*Replace expensive durable objects with multiple inexpensive short-lived ones.*\n\n**Domain-Specific Solution Sketch:**\n- **Instead of**: Maintaining 6-7 full-featured, long-lived API version implementations in parallel (REST v1.0, v1.1, v2.0, etc.) as permanent architectural artifacts\n- **Do**: Treat each legacy API version as a **thin, ephemeral translation/adapter layer** that transforms old client requests into a single modern backend API contract\n- **Implementation**:\n  - Build ONE clean, modern backend implementing current best practices (GraphQL resolver, streaming subscriptions, real-time webhooks, proper nesting)\n  - Wrap legacy API versions in **feature-flagged, stateless adapter proxies** that:\n    - Accept old request shapes (pagination with `offset/limit`)\n    - Transform to modern backend queries (cursor-based pagination, sparse fieldsets)\n    - Map old response envelopes to legacy formats (flatten nested structures on-the-fly)\n    - Can be **replaced, rotated, or removed** without backend changes\n  - Example: REST v1 adapter is 200 lines of transformation logic; when REST v3 obsolescence arrives, delete the adapter and clients migrate (economics favor gradual adoption)\n\n**Why This Eliminates the Contradiction:**\n- \u2713 Modern features live in ONE place (the backend), not duplicated across versions\n- \u2713 Legacy compatibility is achieved through **cheap to operate and replace** translation layers\n- \u2713 Codebase shrinks from 340% bloat back toward baseline: 1 backend + N thin adapters (~20% overhead vs. current 340%)\n- \u2713 Developer effort shifts: instead of 6 FTE maintaining parallel versions, 2-3 maintain adapters while 4 work on features\n\n---\n\n#### **\ud83e\udd48 Principle 2: Taking Out** \u2b50 **Supporting**\n*Extract a disturbing element or isolate only what is necessary.*\n\n**Domain-Specific Solution Sketch:**\n- **Extract** legacy API logic from the core backend system into a separate, modular adapter layer\n  - The backend no longer carries `v1_compatibility_shims`, `legacy_format_helpers`, version detection logic\n  - Adapters are the *only* place where version-specific logic lives\n  - Core backend exposes ONE clean contract (modern REST shapes, GraphQL schema, streaming responses)\n- **Feature Flags** route requests: if client sends `Accept: application/vnd.api+json` (v1), route to v1 adapter; if modern client, route directly to backend\n- Result: The core system is **stable and focused**, not fragmented by legacy concerns\n\n**Example Implementation**:\n```\nClient Request \u2192 Router (feature flag: version detection) \n  \u2192 If REST v1: REST v1 Adapter \u2192 Modern Backend Contract\n  \u2192 If REST v3 / GraphQL: Direct to Modern Backend\n```\n\n---\n\n#### **Principle 29: Pneumatics & Hydraulics (Stream Processing)**\n*Use fluid flow (streaming) instead of rigid structures.*\n\n**Domain-Specific Application:**\n- For new clients, replace fixed response shapes with **streaming/chunked responses**\n  - Real-time webhooks instead of polling (eliminates need for `if-modified-since` caching logic in v1)\n  - Server-sent events or WebSocket subscriptions instead of fixed JSON blobs\n  - Streaming responses for large datasets instead of pagination\n- Legacy adapters can still buffer streams into paginated JSON for old clients\n- This decouples **response format** from **backend implementation**, making evolution frictionless\n\n---\n\n#### **Principle 28: Mechanics Substitution (Mediation)**\n*Replace direct mechanical coupling with mediated (field-like) interaction.*\n\n- Introduce an **API Gateway / Mediation Layer** that acts as the \"field\" between clients and backend\n  - Clients don't call backend directly; they call the gateway\n  - Gateway applies transformation rules (version detection, adapter routing, protocol translation)\n  - Backend changes don't ripple to clients; gateway absorbs the shock\n  - This is the \"wireless\" pattern applied to APIs: clients and backend are no longer tightly coupled\n\n---\n\n### **Top Recommendation: Unified Backend + Ephemeral Adapter Framework**\n\n**The Solution (Eliminates the Contradiction):**\n\n1. **Consolidate** to a single, modern backend implementing ALL capabilities:\n   - Real-time webhooks (one implementation, all versions use it)\n   - GraphQL schema (new clients; old clients see REST adapters that query it)\n   - Streaming responses for large datasets\n   - Proper nested resource hierarchies\n\n2. **Wrap legacy versions in thin adapters**:\n   - REST v1 Adapter (200-300 lines): Accepts old pagination, transforms to modern query language, flattens response nesting\n   - REST v2 Adapter (100-150 lines): Lighter transformation (closer to modern API)\n   - v3+: No adapter needed; clients use backend directly\n   - Each adapter is stateless, replaceable, feature-flagged\n\n3. **Decommissioning strategy**:\n   - Publish sunset notice: \"REST v1 adapters will be retired 2027-Q2\"\n   - Customers have 18 months to migrate at leisure (no forced cutover)\n   - Adapters are so cheap to run that you can afford to keep v1 alive for years if needed\n   - When v1 hits EOL, simply delete 300 lines of adapter code and 6 months of maintenance effort vanishes\n\n**Economics:**\n| Metric | Before | After |\n|--------|--------|-------|\n| Codebase size | +340% over baseline | +20% (1 backend + thin adapters) |\n| Maintenance FTE | 6 (version maintenance) | 2-3 (adapter framework + feature work) |\n| Feature velocity | Blocked by version alignment | 4 FTE working on modern features |\n| Client migration cost | $67K per upgrade | $0 (no forced migration) |\n| Time to market (new features) | 4-6 weeks (train-and-test across versions) | 1-2 weeks (one backend) |\n\n**IFR Score: 3/4 (Near-IFR)**\n- \u2713 Leverages existing systems (REST, GraphQL, backend infrastructure)\n- \u2713 Minimal cost (thin adapters, no new infrastructure)\n- \u2713 No new problems (backward-compatible, no client pain)\n- ~Partially self-resolving (adapters require active maintenance, but far less than parallel versions)\n\n---\n\n```json\n{\n  \"contradiction_type\": \"technical\",\n  \"triz_param_a\": 36,\n  \"triz_param_b\": 19,\n  \"principles_applied\": [27, 2, 29, 28],\n  \"solution_summary\": \"Consolidate to a single modern backend and wrap legacy API versions in thin, ephemeral adapter layers that transform old request shapes to the modern contract. This eliminates 340% codebase bloat and shifts developer effort from version maintenance to feature work. Legacy clients see no change; new clients adopt modern patterns directly.\",\n  \"ifr_score\": 3,\n  \"contradiction_resolution\": \"eliminates\",\n  \"solution_novelty\": \"novel_combination\"\n}\n```",
+  "elapsed_seconds": 77.2,
+  "timestamp": "2026-04-15T18:45:11Z"
+}

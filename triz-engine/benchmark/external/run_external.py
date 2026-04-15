@@ -110,10 +110,14 @@ def run_trizbench(limit: int = 20):
         )
 
     print("\n--- TRIZ-Engine ---")
-    triz_results = run_external_trizbench(triz_participant, limit=limit)
+    triz_results = run_external_trizbench(
+        triz_participant, limit=limit, participant_name="triz-engine",
+    )
 
     print("\n--- Vanilla Claude ---")
-    vanilla_results = run_external_trizbench(vanilla_participant, limit=limit)
+    vanilla_results = run_external_trizbench(
+        vanilla_participant, limit=limit, participant_name="vanilla-claude",
+    )
 
     print("\n--- Results ---")
     print(f"{'Metric':<35s} {'TRIZ':>10s} {'Vanilla':>10s}")

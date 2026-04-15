@@ -1,0 +1,52 @@
+{
+  "problem_id": "EXT-TB-001",
+  "patent_id": "US5717390",
+  "submission": {
+    "contradiction_type": "technical",
+    "triz_param_a": 35,
+    "triz_param_b": 34,
+    "principles_applied": [
+      1,
+      2,
+      6,
+      27
+    ],
+    "solution_summary": "Implement a modular plugin architecture where adaptability is relocated to standardized, hot-swappable functional modules that connect to a simple, stable core via diagnostic interfaces. Modules are cheap to replace rather than repair, allowing the core system to remain easily maintainable while the system as a whole remains highly versatile.",
+    "ifr_score": 3,
+    "contradiction_resolution": "eliminates",
+    "solution_novelty": "novel_combination"
+  },
+  "contradiction_score": {
+    "type_correct": true,
+    "params_exact": true,
+    "params_partial": true,
+    "predicted_params": [
+      34,
+      35
+    ],
+    "ground_truth_params": [
+      34,
+      35
+    ]
+  },
+  "principle_score": {
+    "precision": 0.25,
+    "recall": 0.25,
+    "f1": 0.25,
+    "overlap": [
+      1
+    ],
+    "predicted": [
+      1,
+      2,
+      6,
+      27
+    ],
+    "ground_truth": [
+      1,
+      4,
+      7,
+      16
+    ]
+  }
+}

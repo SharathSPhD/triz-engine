@@ -41,6 +41,12 @@ class RunStatus(str, Enum):
     INFRA_FAILURE = "infra_failure"
     PARSE_FAILURE = "parse_failure"
     TIMEOUT_FAILURE = "timeout_failure"
+    QUOTA_EXHAUSTED = "quota_exhausted"
+
+
+class QuotaExhaustedError(RuntimeError):
+    """Raised when Claude CLI reports usage quota is exhausted."""
+    pass
 
 
 def _generate_mcp_config() -> Path:
@@ -251,6 +257,14 @@ def invoke_claude(
         if result.returncode == 0 and stdout:
             try:
                 envelope = json.loads(stdout)
+
+                if envelope.get("is_error"):
+                    error_text = envelope.get("result", "")
+                    if "out of" in error_text.lower() and "usage" in error_text.lower():
+                        raise QuotaExhaustedError(
+                            f"Claude quota exhausted: {error_text}"
+                        )
+
                 text = envelope.get("result", "")
                 if text:
                     return text
@@ -259,6 +273,13 @@ def invoke_claude(
                     return stdout
 
         last_error = result.stderr.strip() or stdout[:500]
+
+        combined = (stdout + " " + result.stderr).lower()
+        if "out of" in combined and "usage" in combined:
+            raise QuotaExhaustedError(
+                f"Claude quota exhausted (exit {result.returncode}): {last_error[:200]}"
+            )
+
         if attempt < retries:
             wait = 3 * (2 ** attempt)
             print(
@@ -439,6 +460,9 @@ def run_problem(
             problem, participant, RunStatus.TIMEOUT_FAILURE,
             f"Timed out after {elapsed:.0f}s", elapsed,
         )
+    except QuotaExhaustedError:
+        elapsed = time.time() - t0
+        raise
     except RuntimeError as e:
         elapsed = time.time() - t0
         return _failure_result(
@@ -573,14 +597,24 @@ def run_benchmark(
             print(f"  Skipping {pname}: {reason}", file=sys.stderr)
             continue
 
+        quota_hit = False
         for pid in problem_ids:
+            if quota_hit:
+                break
             print(f"  Running {pname} on {pid}...", file=sys.stderr)
-            result = run_problem(
-                pid, pname, cfg,
-                mcp_config_path=mcp_config_path,
-                budget_usd=budget_usd,
-                use_llm_judge=use_llm_judge,
-            )
+            try:
+                result = run_problem(
+                    pid, pname, cfg,
+                    mcp_config_path=mcp_config_path,
+                    budget_usd=budget_usd,
+                    use_llm_judge=use_llm_judge,
+                )
+            except QuotaExhaustedError as e:
+                print(f"    QUOTA EXHAUSTED: {e}", file=sys.stderr)
+                print("    Stopping benchmark — quota needs to reset.", file=sys.stderr)
+                quota_hit = True
+                break
+
             all_results[(pname, pid)] = result
 
             status = result["status"]
@@ -602,6 +636,8 @@ def run_benchmark(
                     f"    {status}: {result.get('error', 'unknown')}",
                     file=sys.stderr,
                 )
+        if quota_hit:
+            break
 
     if skipped:
         print(f"\n  Skipped {len(skipped)} participant(s):", file=sys.stderr)

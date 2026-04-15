@@ -1,0 +1,15 @@
+{
+  "problem_id": "MG-003",
+  "category": "general",
+  "triz": {
+    "level": "error",
+    "score": 0.0
+  },
+  "vanilla": {
+    "level": "error",
+    "score": 0.0
+  },
+  "triz_output": "",
+  "vanilla_output": "",
+  "reference": "Step1: Hang the suit on the coat hanger on the shower rod. Step2: Fill the kettle and bring the water to boil. Step3: Carefully hold the kettle under the suit, allowing the steam to rise and penetrate the fabric, removing wrinkles. Step4: Use the hair dryer on a low, cool setting to eliminate any remaining dampness from the suit."
+}

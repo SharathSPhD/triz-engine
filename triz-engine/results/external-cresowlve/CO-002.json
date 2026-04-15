@@ -1,0 +1,14 @@
+{
+  "problem_id": "CO-002",
+  "difficulty": 3,
+  "creative_domains": [
+    "lateral thinking",
+    "pun"
+  ],
+  "triz_correct": false,
+  "vanilla_correct": false,
+  "question": "During the Siege of Leningrad, a large pit was dug in the garden of the Anichkov Palace, including for THIS. Colloquially, THIS is sometimes called one of the chess openings. Name THIS in three words.",
+  "correct_answer": "Four Knights Defense.",
+  "triz_answer": "",
+  "vanilla_answer": ""
+}

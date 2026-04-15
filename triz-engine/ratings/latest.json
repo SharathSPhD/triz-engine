@@ -1,30 +1,29 @@
 {
   "ratings": {
-    "triz-engine": 1016.0,
-    "vanilla-claude": 984.0
+    "triz-engine": 1022.24496338117,
+    "vanilla-claude": 977.75503661883
   },
+  "confidence_intervals": {
+    "triz-engine": {
+      "lower": 978.4522860768778,
+      "median": 1021.5477139231222,
+      "upper": 1036.8232775966724
+    },
+    "vanilla-claude": {
+      "lower": 963.1767224033276,
+      "median": 978.4522860768778,
+      "upper": 1021.5477139231222
+    }
+  },
+  "match_count": 4,
   "rankings": [
     [
       "triz-engine",
-      1016.0
+      1022.24496338117
     ],
     [
       "vanilla-claude",
-      984.0
+      977.75503661883
     ]
-  ],
-  "confidence_intervals": {
-    "triz-engine": {
-      "lower": 1016.0,
-      "median": 1016.0,
-      "upper": 1016.0
-    },
-    "vanilla-claude": {
-      "lower": 984.0,
-      "median": 984.0,
-      "upper": 984.0
-    }
-  },
-  "match_count": 1,
-  "skipped_pairs": 2
+  ]
 }

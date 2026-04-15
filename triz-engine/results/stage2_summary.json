@@ -1,0 +1,68 @@
+{
+  "internal": [
+    {
+      "problem": "TB-04",
+      "participant": "triz-engine",
+      "score": 50.33333333333333,
+      "status": "success"
+    },
+    {
+      "problem": "TB-04",
+      "participant": "vanilla-claude",
+      "score": 44.5,
+      "status": "success"
+    },
+    {
+      "problem": "TB-05",
+      "participant": "triz-engine",
+      "score": 76.0,
+      "status": "success"
+    },
+    {
+      "problem": "TB-05",
+      "participant": "vanilla-claude",
+      "score": 60.75,
+      "status": "success"
+    }
+  ],
+  "ext_trizbench": [
+    {
+      "patent": "US9239955",
+      "params": "EXACT",
+      "f1": 1.0
+    },
+    {
+      "patent": "US6680961",
+      "params": "EXACT",
+      "f1": 1.0
+    }
+  ],
+  "macgyver": [
+    {
+      "problem": "MG-002",
+      "triz": "correct",
+      "vanilla": "correct",
+      "winner": "TIE"
+    },
+    {
+      "problem": "MG-003",
+      "triz": "perfect",
+      "vanilla": "perfect",
+      "winner": "TIE"
+    }
+  ],
+  "cresowlve": [
+    {
+      "problem": "CO-002",
+      "triz_correct": false,
+      "vanilla_correct": false,
+      "difficulty": 3
+    },
+    {
+      "problem": "CO-003",
+      "triz_correct": false,
+      "vanilla_correct": false,
+      "difficulty": 4
+    }
+  ]
+}

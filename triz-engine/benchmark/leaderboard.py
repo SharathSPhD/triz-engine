@@ -69,19 +69,28 @@ def generate_leaderboard(
         "",
     ])
 
-    header = "| Participant |" + " | ".join(problem_ids) + " | Mean |"
-    separator = "|------------|" + " | ".join(["----"] * len(problem_ids)) + " | ---- |"
+    header = "| Participant |" + " | ".join(problem_ids) + " | Mean | Coverage |"
+    separator = "|------------|" + " | ".join(["----"] * len(problem_ids)) + " | ---- | ---- |"
     lines.append(header)
     lines.append(separator)
 
     for name in participants:
-        scores = []
+        scored_values = []
+        score_strs = []
         for pid in problem_ids:
-            s = problem_scores.get((name, pid), 0.0)
-            scores.append(s)
-        mean = sum(scores) / len(scores) if scores else 0.0
-        score_strs = [f"{s:.1f}" for s in scores]
-        lines.append(f"| {name} | " + " | ".join(score_strs) + f" | **{mean:.1f}** |")
+            key = (name, pid)
+            if key in problem_scores:
+                s = problem_scores[key]
+                scored_values.append(s)
+                score_strs.append(f"{s:.1f}")
+            else:
+                score_strs.append("—")
+        mean = sum(scored_values) / len(scored_values) if scored_values else 0.0
+        coverage = f"{len(scored_values)}/{len(problem_ids)}"
+        lines.append(
+            f"| {name} | " + " | ".join(score_strs)
+            + f" | **{mean:.1f}** | {coverage} |"
+        )
 
     if dimension_scores:
         lines.extend([
@@ -95,10 +104,14 @@ def generate_leaderboard(
         for name in participants:
             dims = {"ci": [], "ps": [], "sn": [], "cr": [], "ifr": []}
             for pid in problem_ids:
-                d = dimension_scores.get((name, pid), {})
+                key = (name, pid)
+                if key not in dimension_scores:
+                    continue
+                d = dimension_scores[key]
                 for dim_name in dims:
-                    val = d.get(f"{dim_name}_raw", d.get(dim_name, 0.0))
-                    dims[dim_name].append(val)
+                    val = d.get(f"{dim_name}_raw", d.get(dim_name))
+                    if val is not None:
+                        dims[dim_name].append(val)
             avgs = {
                 k: (sum(v) / len(v) if v else 0.0) for k, v in dims.items()
             }
@@ -126,6 +139,29 @@ def generate_leaderboard(
     return content
 
 
+def _derive_score(data: dict) -> float | None:
+    """Derive a 0-100 score from result data.
+
+    Internal TRIZBENCH results have final_score directly.
+    External TRIZBENCH results store contradiction_score + principle_score
+    and need a composite score derived from those fields.
+    """
+    if "final_score" in data:
+        return data["final_score"]
+
+    if "contradiction_score" in data and "principle_score" in data:
+        ct = data["contradiction_score"]
+        ps = data["principle_score"]
+        ct_score = (
+            (20 if ct.get("type_correct") else 0)
+            + (30 if ct.get("params_exact") else (15 if ct.get("params_partial") else 0))
+        )
+        f1 = ps.get("f1", 0.0) if isinstance(ps, dict) else 0.0
+        return ct_score + f1 * 50  # max 100
+
+    return None
+
+
 def load_results(results_dir: Path) -> dict:
     """Load tournament results from JSON files in results/{participant}/ layout."""
     results = {}
@@ -138,8 +174,13 @@ def load_results(results_dir: Path) -> dict:
             status = data.get("status", "success")
             if status != "success":
                 continue
+            if "participant" not in data:
+                continue
+            score = _derive_score(data)
+            if score is None:
+                continue
             key = (data["participant"], data["problem_id"])
-            results[key] = data.get("final_score", 0.0)
+            results[key] = score
         except (json.JSONDecodeError, KeyError):
             continue
     return results

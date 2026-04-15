@@ -32,7 +32,7 @@ For each selected problem:
 Score the submission against the ground truth for each problem:
 - **CI**: Compare identified contradiction type and TRIZ parameters against ground truth
 - **PS**: Compute Jaccard similarity between selected and target principles
-- **SN**: LLM-as-judge assessment of solution novelty (position-swapped for bias mitigation)
+- **SN**: LLM-as-judge assessment of solution novelty (single rubric prompt with calibration examples)
 - **CR**: LLM-as-judge assessment of contradiction resolution level
 - **IFR**: Use `score_solution` tool output (0-4 scale)
 

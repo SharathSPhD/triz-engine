@@ -105,6 +105,10 @@ def _call_claude_judge(prompt: str, budget: float = 0.20, retries: int = 2) -> s
         if result.returncode == 0 and stdout:
             try:
                 envelope = json.loads(stdout)
+                if envelope.get("is_error"):
+                    error_text = envelope.get("result", "")
+                    if "out of" in error_text.lower() and "usage" in error_text.lower():
+                        raise RuntimeError(f"Claude quota exhausted: {error_text}")
                 text = envelope.get("result", "")
                 if text:
                     return text

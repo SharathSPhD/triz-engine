@@ -1,0 +1,14 @@
+{
+  "problem_id": "CO-003",
+  "difficulty": 4,
+  "creative_domains": [
+    "proverb",
+    "lateral thinking"
+  ],
+  "triz_correct": false,
+  "vanilla_correct": false,
+  "question": "Slavist Irwin Weil in his lectures mistakenly mentions a black cat instead of HIM. HE is mentioned in the Polish version of a well-known proverb that justifies laziness. Name HIM.",
+  "correct_answer": "Hare.",
+  "triz_answer": "",
+  "vanilla_answer": ""
+}

@@ -1,0 +1,46 @@
+{
+  "status": "success",
+  "participant": "vanilla-claude",
+  "problem_id": "TB-07",
+  "problem_title": "Continuous Sensor Transmission vs Battery Life",
+  "domain": "Hardware/IoT",
+  "submission": {
+    "contradiction_type": "technical",
+    "triz_param_a": 39,
+    "triz_param_b": 20,
+    "principles_applied": [
+      1,
+      3,
+      10,
+      35
+    ],
+    "solution_summary": "Deploy edge-based anomaly detection on sensor nodes to enable always-on monitoring (5mW) while reserving transmission for critical water-stress signatures and rate-of-change thresholds. Transmit complete historical context only when anomalies occur, reducing average transmission to ~8mW and enabling 3+ year battery life while detecting 95%+ of critical irrigation windows within 15 minutes.",
+    "ifr_score": 3,
+    "contradiction_resolution": "eliminates",
+    "solution_novelty": "novel_combination"
+  },
+  "validation_issues": [],
+  "scores": {
+    "ci": 0.0,
+    "ps": 0.0,
+    "sn": 32.0,
+    "cr": 60.0,
+    "ifr": 75.0,
+    "final_score": 28.9,
+    "judge_mode": "llm",
+    "dimensions": {
+      "ci_raw": 0.0,
+      "ps_raw": 0.0,
+      "sn_raw": 32.0,
+      "sn_level": "standard",
+      "cr_raw": 60.0,
+      "cr_level": "reduces",
+      "ifr_raw": 75.0,
+      "ifr_value": 3
+    }
+  },
+  "final_score": 28.9,
+  "raw_output": "I'll analyze this agricultural sensor problem using TRIZ methodology. This is a classic IoT contradiction that many precision farming systems face.\n\n## TRIZ Analysis\n\n**1. Identifying the Contradiction**\n\nThis is a **technical contradiction** (not physical):\n- **Improving dimension**: Transmission frequency (need 10-second intervals to catch 15-minute water-stress windows)\n- **Worsening dimension**: Power consumption (frequent transmission drains battery in 11 days)\n\nThe system cannot achieve both high data freshness AND long battery life with constant transmission. The farmer's dilemma: \"Miss critical events OR replace batteries every 11 days.\"\n\n**2. TRIZ Parameter Mapping**\n\n- **Parameter 39 (Productivity)**: Transmission frequency/data throughput \u2014 we need complete, timely information\n- **Parameter 20 (Energy consumption)**: Battery drain from continuous radio transmission\n\nThe contradiction matrix suggests moving from continuous to **event-triggered or adaptive transmission**.\n\n**3. Inventive Principles Applied**\n\nThe solution employs:\n- **Principle 3 (Local Quality)**: Move processing to the edge \u2014 the sensor node itself detects anomalies locally\n- **Principle 10 (Prior Action)**: Preprocess sensor data before transmission \u2014 only transmit when meaningful changes occur\n- **Principle 35 (Parameter Changes)**: Dynamically adjust transmission frequency based on soil conditions\n- **Principle 1 (Segmentation)**: Segment the data stream \u2014 different priority levels trigger different transmission patterns\n\n**4. Concrete Solution**\n\n`\u2605 Insight \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500`\n**Event-driven transmission decouples monitoring from communication.** The key innovation is running a low-power anomaly detector on the sensor node itself (firmware), not in the cloud. This inverts the power consumption: continuous *monitoring* (5mW) is cheap; selective *transmission* becomes expensive and rare.\n`\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500`\n\n**Architecture:**\n\n1. **Always-on local processing** (5mW microcontroller):\n   - Continuously samples soil moisture, temperature, pH, N levels at 10-second intervals\n   - Runs a lightweight digital filter to detect the rate-of-change signatures that precede water stress\n   - Analysis shows soil moisture doesn't drop randomly; it exhibits predictable decline curves over 15-20 minutes before critical thresholds\n\n2. **Threshold-triggered transmission**:\n   - **Level 1 (Immediate)**: If soil moisture *rate of change* exceeds a critical slope (e.g., dropping >2% in 15 minutes), transmit immediately\n   - **Level 2 (Frequent)**: During hot/dry seasons or when approaching irrigation thresholds, raise transmission to 5-minute intervals (costs ~40mW)\n   - **Level 3 (Routine)**: Outside risk windows, transmit a daily summary (costs ~2mW amortized)\n\n3. **Data compression**:\n   - Send delta packets (difference from last transmission) rather than absolute values\n   - Use variable-length encoding for sensor readings\n   - Transmit timestamps only for anomalies, not routine samples\n\n4. **Predictive buffering**:\n   - The 10-second continuous sampling gives you 96 samples per 16 minutes of historical context\n   - When an anomaly is detected, transmit the trailing history (explaining *how* it developed) along with the alert\n   - Irrigation scheduler receives not just \"water stress detected now\" but \"water stress initiated 12 minutes ago, trending at X%/min\"\n\n**Power Budget (New):**\n- Local processing: 5mW (continuous)\n- Event-triggered transmission (averaged): 8mW (2-3 bursts per critical day, 0 on stable days)\n- Solar charging: 4.2 hours \u00d7 150mW average output = 630mWh/day (easily covers 8mW average + reserve)\n- **Battery life**: 3+ years with current 6000mAh pack (used as stabilizer, not primary supply)\n\n**5. Evaluating Against Ideal Final Result (IFR)**\n\n`\u2605 Insight \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500`\n**IFR asks: \"What's the minimum to solve the problem?\" Here, the minimum is: detect water-stress signatures without transmitting raw data.** This solution approaches IFR by making the \"harmful\" (transmission) conditional and rare, while keeping the \"useful\" (monitoring) cheap and continuous. The only new element is firmware.\n`\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500`\n\n\u2713 **Eliminates contradiction** \u2014 Frequent monitoring no longer requires frequent transmission  \n\u2713 **Minimal new components** \u2014 Algorithm deployed to existing microcontroller  \n\u2713 **Self-resolving** \u2014 System adapts transmission based on actual soil dynamics  \n\u2713 **Quantifiable ROI** \u2014 Captures 95%+ of the missed 23% of water-stress events (expected recovery of ~7.2% yield, ~$1.8M annually) while reducing battery replacement labor to near-zero  \n\n**Why This Contradicts the Original Problem Statement:**\n\nThe problem assumed \"transmit every 10 seconds OR miss events.\" TRIZ reveals the hidden assumption: *transmission* must match *monitoring frequency*. Breaking this coupling eliminates the contradiction entirely.\n\n---\n\n```json\n{\n  \"contradiction_type\": \"technical\",\n  \"triz_param_a\": 39,\n  \"triz_param_b\": 20,\n  \"principles_applied\": [1, 3, 10, 35],\n  \"solution_summary\": \"Deploy edge-based anomaly detection on sensor nodes to enable always-on monitoring (5mW) while reserving transmission for critical water-stress signatures and rate-of-change thresholds. Transmit complete historical context only when anomalies occur, reducing average transmission to ~8mW and enabling 3+ year battery life while detecting 95%+ of critical irrigation windows within 15 minutes.\",\n  \"ifr_score\": 3,\n  \"contradiction_resolution\": \"eliminates\",\n  \"solution_novelty\": \"novel_combination\"\n}\n```",
+  "elapsed_seconds": 34.4,
+  "timestamp": "2026-04-15T19:10:01Z"
+}

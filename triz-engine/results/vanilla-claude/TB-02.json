@@ -1,0 +1,46 @@
+{
+  "status": "success",
+  "participant": "vanilla-claude",
+  "problem_id": "TB-02",
+  "problem_title": "Multi-Factor Authentication Friction",
+  "domain": "Security/UX",
+  "submission": {
+    "contradiction_type": "technical",
+    "triz_param_a": 27,
+    "triz_param_b": 33,
+    "principles_applied": [
+      6,
+      13,
+      28,
+      35
+    ],
+    "solution_summary": "Implement adaptive risk-based authentication where security severity (1\u20133 authentication factors) dynamically adjusts to real-time transaction/device risk using implicit signals (device fingerprint, behavioral biometrics, geolocation, transaction amount). Low-risk transactions authenticate via biometric alone in <10 seconds; high-risk scenarios trigger full 3-factor flow. Regulatory compliance maintained for all high-risk paths while UX friction concentrates only where risk justifies it.",
+    "ifr_score": 3,
+    "contradiction_resolution": "eliminates",
+    "solution_novelty": "novel_combination"
+  },
+  "validation_issues": [],
+  "scores": {
+    "ci": 65.0,
+    "ps": 40.0,
+    "sn": 32.0,
+    "cr": 100.0,
+    "ifr": 75.0,
+    "final_score": 63.15,
+    "judge_mode": "llm",
+    "dimensions": {
+      "ci_raw": 65.0,
+      "ps_raw": 40.0,
+      "sn_raw": 32.0,
+      "sn_level": "standard",
+      "cr_raw": 100.0,
+      "cr_level": "eliminates",
+      "ifr_raw": 75.0,
+      "ifr_value": 3
+    }
+  },
+  "final_score": 63.15,
+  "raw_output": "I'll analyze this multi-factor authentication friction problem through the TRIZ lens systematically.\n\n## TRIZ Analysis\n\n### 1. **Identify the Contradiction**\n\nThis is a **technical contradiction**: the system has competing demands where improving one parameter directly worsens the other.\n\n- **What we want**: Stronger security (3+ authentication factors) to meet PCI-DSS/SOC 2\n- **What we lose**: User experience (47% completion rate, 23% drop-off per step)\n\nThe paradox: there's no way to \"compromise\"\u2014reducing factors weakens security below regulatory thresholds, and maintaining factors hemorrhages users.\n\n### 2. **Map to TRIZ Parameters**\n\n- **Parameter A (improving)**: **27 - Reliability/Dependability**  \n  Security strength, fraud prevention, regulatory compliance maintenance\n\n- **Parameter B (worsening)**: **33 - Convenience of Use**  \n  Login friction, completion rate, user friction per authentication step\n\nThis mapping is direct: we're improving one quality of the system while degrading another.\n\n---\n\n### 3. **Inventive Principles Applied**\n\nThe TRIZ contradiction matrix for (27\u219233) yields these principles:\n\n- **Principle 13 (The Other Way Around)**: Invert the problem framing. Instead of \"force users through 3 steps regardless of risk,\" ask \"what if we only demand 3 factors *when the risk justifies it*?\"\n\n- **Principle 28 (Mechanics Substitution)**: Replace sequential explicit authentication with **parallel implicit verification** that runs silently in the background, triggering explicit friction only when needed.\n\n- **Principle 6 (Universality)**: Build a universal risk-assessment engine that determines appropriate authentication severity per transaction.\n\n- **Principle 35 (Transformation of Properties)**: Transform authentication from a fixed property (always 3 steps) to a dynamic property (steps adapt to risk context).\n\n---\n\n### 4. **Concrete Solution: Adaptive Risk-Based Authentication**\n\n**Core Insight**: The contradiction dissolves when we decouple regulatory compliance (minimum factors required) from user experience (minimum friction applied).\n\n**Architecture**:\n\n**Layer 1 \u2013 Implicit Risk Profiling** (runs silently, no user interaction):\n- Device fingerprinting (hardware ID, OS, app version, trusted device history)\n- Behavioral biometrics (typing cadence, gesture patterns, swipe velocity)\n- Transaction risk scoring (amount, merchant category, geolocation anomaly detection)\n- Temporal patterns (authentication time-of-day alignment, day-of-week consistency)\n- Network signals (VPN, proxy, known vs. unknown network)\n\n**Layer 2 \u2013 Dynamic Authentication Demand**:\n\n| Risk Profile | Authentication Flow | Time | Coverage |\n|---|---|---|---|\n| **Low-risk** (typical user, home location, <$500, 8am-8pm, known device) | Biometric only | <10 sec | ~75% of daily transactions |\n| **Medium-risk** (slightly anomalous: unusual amount $500-$5k, off-hours, minor device change) | Password + Biometric | <90 sec | ~15% of transactions |\n| **High-risk** (new device, foreign location, $5k+, suspicious patterns) | Password + SMS OTP + Biometric | 3-5 min | ~10% of transactions |\n| **Fraud-suspected** (ML flagged high-confidence anomaly) | Explicit challenge + expert review | 5-10 min | <0.1% of transactions |\n\n**Layer 3 \u2013 Progressive Device Trust**:\n- First login on new device: full 3-factor\n- After 5 authenticated transactions on same device: drop to 2 factors for low-risk\n- After 30 authenticated transactions: 1 factor (biometric) sufficient for low-risk\n- Trust degradation: if 30+ days without use or location jump >500 miles, reset to full auth\n\n**Layer 4 \u2013 Regulatory Compliance Architecture** (meets PCI-DSS/SOC 2):\n- All high-risk transactions **always** get 3+ factors (documented, auditable decision logic)\n- Risk model is versioned and compliant with regulatory frameworks\n- System designed to tighten thresholds if compliance requirements change\n- Full audit trail: every transaction logged with risk score and auth decision\n\n---\n\n### 5. **Concrete Outcomes**\n\n| Metric | Current | Projected |\n|---|---|---|\n| **Login Completion Rate** | 47% | 88-92% |\n| **Fraud Rate** | 0.001% | 0.0008-0.001% |\n| **Avg Auth Time** | ~3 min (all users) | ~15 sec (75% of users), ~2 min (medium), ~4 min (high) |\n| **Support Cost (lockouts)** | $2.1M/year | $500K-$800K/year |\n| **Regulatory Compliance** | \u2713 (high friction) | \u2713 (maintained, risk-driven) |\n\n---\n\n### 6. **Ideal Final Result (IFR) Evaluation**\n\n\u2713 **Eliminates the contradiction**: Security and UX are no longer opposed; they're orthogonal to risk.  \n\u2713 **Self-resolving**: Implicit signals run automatically; explicit friction appears only when justified.  \n\u2713 **Minimal new components**: Leverages existing device capabilities (biometric, fingerprinting), adds ML risk model and device-trust database.  \n\u2713 **Cost-effective**: Reduces both fraud losses AND support costs simultaneously.  \n\u2717 **Implementation complexity**: Requires ML risk model training, implicit verification pipeline, real-time scoring (non-trivial but achievable).\n\n---\n\n### 7. **Why This is Non-Obvious**\n\n- **Inversion of approach**: Most teams try to make 3-step auth \"less annoying\" (better UX for fixed security). This reverses it: \"apply severe auth only when risk demands it.\"\n- **Implicit vs. explicit**: Uses device behavior and transaction context (implicit) to defer user-facing friction (explicit) until it's truly justified.\n- **Regulatory arbitrage**: Decouples compliance minima (3 factors for high-risk) from user experience (1 factor for low-risk)\u2014both requirements are met simultaneously.\n\n---\n\n```json\n{\n  \"contradiction_type\": \"technical\",\n  \"triz_param_a\": 27,\n  \"triz_param_b\": 33,\n  \"principles_applied\": [6, 13, 28, 35],\n  \"solution_summary\": \"Implement adaptive risk-based authentication where security severity (1\u20133 authentication factors) dynamically adjusts to real-time transaction/device risk using implicit signals (device fingerprint, behavioral biometrics, geolocation, transaction amount). Low-risk transactions authenticate via biometric alone in <10 seconds; high-risk scenarios trigger full 3-factor flow. Regulatory compliance maintained for all high-risk paths while UX friction concentrates only where risk justifies it.\",\n  \"ifr_score\": 3,\n  \"contradiction_resolution\": \"eliminates\",\n  \"solution_novelty\": \"novel_combination\"\n}\n```\n\n---\n\n`\u2605 Insight \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500`\n**The core TRIZ breakthrough**: By mapping the parameters to (27: Reliability, 33: Convenience), the problem reveals that sequential multi-factor auth conflates *regulatory minimum* (3 factors for ANY transaction) with *user friction* (3 factors for EVERY transaction). Decoupling these via risk-based selection eliminates the contradiction. This exemplifies Principle 13 (The Other Way Around): instead of making auth easier, make it *adaptive*\u2014easier where it's safe, stricter where it's necessary. The system self-resolves because implicit signals replace explicit user burden.\n`\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500`",
+  "elapsed_seconds": 45.5,
+  "timestamp": "2026-04-15T17:32:21Z"
+}

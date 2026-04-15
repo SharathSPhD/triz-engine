@@ -1,0 +1,56 @@
+{
+  "problem_id": "EXT-TB-002",
+  "participant": "triz-engine",
+  "patent_id": "US9239955",
+  "submission": {
+    "contradiction_type": "technical",
+    "triz_param_a": 28,
+    "triz_param_b": 5,
+    "principles_applied": [
+      3,
+      28,
+      26,
+      32
+    ],
+    "solution_summary": "Apply Local Quality (Principle 3) to measure only critical regions at high precision, and substitute mechanical sensors with remote field-based observation (Principle 28) for non-critical zones. This eliminates the trade-off: critical regions achieve high accuracy, while non-critical regions are inferred remotely without expanding the moving object's footprint.",
+    "ifr_score": 4,
+    "contradiction_resolution": "eliminates",
+    "solution_novelty": "novel_combination"
+  },
+  "contradiction_score": {
+    "type_correct": true,
+    "params_exact": true,
+    "params_partial": true,
+    "predicted_params": [
+      5,
+      28
+    ],
+    "ground_truth_params": [
+      5,
+      28
+    ]
+  },
+  "principle_score": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0,
+    "overlap": [
+      3,
+      26,
+      28,
+      32
+    ],
+    "predicted": [
+      3,
+      26,
+      28,
+      32
+    ],
+    "ground_truth": [
+      3,
+      26,
+      28,
+      32
+    ]
+  }
+}
