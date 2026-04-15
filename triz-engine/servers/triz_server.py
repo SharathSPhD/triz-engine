@@ -189,23 +189,42 @@ async def get_separation_principles(contradiction: str) -> str:
 async def score_solution(problem: str, solution: str) -> str:
     """Score a solution against the Ideal Final Result (IFR) on a 0-4 scale.
 
-    IFR criteria:
-    (i)   No additional components needed
-    (ii)  No additional cost
+    IFR criteria — evaluated relative to the stated problem:
+    (i)   No additional components needed beyond what the problem already describes
+    (ii)  No additional cost introduced
     (iii) No side-effects introduced
-    (iv)  System solves itself
+    (iv)  System solves itself (self-resolving)
     """
     sol_lower = solution.lower()
+    prob_lower = problem.lower()
+
+    prob_components = set()
+    component_markers = [
+        "service", "server", "node", "cache", "database", "queue",
+        "proxy", "load balancer", "api", "layer", "module",
+    ]
+    for marker in component_markers:
+        if marker in prob_lower:
+            prob_components.add(marker)
+
+    new_component_phrases = [
+        "add new", "additional component", "extra layer", "new service",
+        "introduce a", "deploy a new", "create a new",
+    ]
+    adds_components = any(w in sol_lower for w in new_component_phrases)
+    reuses_existing = any(
+        c in sol_lower for c in prob_components
+    ) if prob_components else False
+    criterion_components = not adds_components or reuses_existing
 
     criteria = {
-        "no_additional_components": not any(
-            w in sol_lower for w in ("add new", "additional component", "extra layer", "new service")
-        ),
+        "no_additional_components": criterion_components,
         "no_additional_cost": not any(
             w in sol_lower for w in ("expensive", "costly", "budget", "purchase", "buy")
         ),
         "no_side_effects": not any(
-            w in sol_lower for w in ("trade-off", "tradeoff", "downside", "drawback", "side effect")
+            w in sol_lower
+            for w in ("trade-off", "tradeoff", "downside", "drawback", "side effect")
         ),
         "self_solving": any(
             w in sol_lower
@@ -220,6 +239,7 @@ async def score_solution(problem: str, solution: str) -> str:
     labels = {0: "No IFR progress", 1: "Minimal IFR", 2: "Partial IFR", 3: "Near-IFR", 4: "Full IFR"}
 
     return json.dumps({
+        "problem_context": problem[:200],
         "ifr_score": score,
         "ifr_label": labels[score],
         "criteria_met": met,

@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "triz-knowledge": {
+      "command": "/Users/sharath/Library/CloudStorage/OneDrive-Personal/wsl_projects/triz/TRIZ-plugin/triz-engine/.venv/bin/python3.11",
+      "args": ["/Users/sharath/Library/CloudStorage/OneDrive-Personal/wsl_projects/triz/TRIZ-plugin/triz-engine/servers/triz_server.py"],
+      "env": {
+        "TRIZ_MODE": "full",
+        "TRIZ_SESSION_DIR": "/Users/sharath/Library/CloudStorage/OneDrive-Personal/wsl_projects/triz/TRIZ-plugin/triz-engine"
+      }
+    }
+  }
+}

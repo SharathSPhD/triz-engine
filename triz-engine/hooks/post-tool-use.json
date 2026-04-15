@@ -2,11 +2,13 @@
   "hooks": [
     {
       "type": "postToolUse",
-      "event": "triz",
+      "matcher": {
+        "toolName": "score_solution"
+      },
       "action": {
         "type": "tool",
         "toolName": "log_session_entry",
-        "description": "Log TRIZ analysis to session innovation ledger"
+        "description": "Log TRIZ scoring result to session innovation ledger"
       }
     }
   ]

@@ -17,6 +17,7 @@ def generate_leaderboard(
     problem_scores: dict[tuple[str, str], float],
     problem_ids: list[str],
     output_path: Path | str,
+    match_count: int | None = None,
 ) -> str:
     """Generate LEADERBOARD.md from tournament results.
 
@@ -25,6 +26,10 @@ def generate_leaderboard(
     output_path = Path(output_path)
     rankings = sorted(ratings.items(), key=lambda x: x[1], reverse=True)
     participants = [name for name, _ in rankings]
+
+    n_participants = len(participants)
+    if match_count is None:
+        match_count = len(problem_ids) * (n_participants - 1) if n_participants > 1 else 0
 
     lines = [
         "# TRIZ Arena Leaderboard",
@@ -40,7 +45,6 @@ def generate_leaderboard(
     for rank, (name, rating) in enumerate(rankings, 1):
         ci = confidence_intervals.get(name, {})
         ci_str = f"{ci.get('lower', 0):.0f}–{ci.get('upper', 0):.0f}"
-        match_count = len(problem_ids)
         lines.append(f"| {rank} | {name} | {rating:.0f} | {ci_str} | {match_count} |")
 
     lines.extend([

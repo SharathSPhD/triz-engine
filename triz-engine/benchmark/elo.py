@@ -150,7 +150,7 @@ def run_tournament(
                     "problem": pid, "scores": {"a": s_a, "b": s_b},
                 })
 
-    ci = bootstrap_confidence_intervals(participants, match_results, n_bootstrap=200)
+    ci = bootstrap_confidence_intervals(participants, match_results, n_bootstrap=1000)
 
     return {
         "ratings": dict(calc.ratings),
