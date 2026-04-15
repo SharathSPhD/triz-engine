@@ -1,0 +1,15 @@
+{
+  "id": "TB-11",
+  "domain": "Network Protocol",
+  "title": "Sub-second Latency AND 4K Video Quality",
+  "problem_statement": "A cloud gaming platform streams real-time game video to players over the internet. Competitive gaming requires controller-to-photon latency below 50ms to maintain playability, while the visual quality must meet 4K HDR standards (3840x2160, 10-bit color depth, 60fps minimum) to justify the premium subscription price.\n\nUncompressed 4K HDR at 60fps requires 12 Gbps bandwidth. Even with H.265/HEVC encoding, maintaining visual quality above 95 VMAF requires a minimum 35 Mbps bitrate, but 38% of target subscribers have connections below 25 Mbps. Aggressive compression to 15 Mbps (reachable by 89% of users) drops VMAF to 78, producing visible artifacts in fast-motion scenes.\n\nAdditionally, the encode-transmit-decode pipeline adds 42ms of latency at the 35 Mbps quality level, consuming 84% of the total latency budget before accounting for network transit (8-35ms) and display pipeline (8ms).\n\nThe system must deliver both pristine visual quality and imperceptible latency over typical consumer internet connections.",
+  "ground_truth": {
+    "contradiction_type": "physical",
+    "parameter_a": "video quality",
+    "parameter_b": "transmission latency",
+    "triz_param_a": 28,
+    "triz_param_b": 25,
+    "target_principles": [16, 26, 35],
+    "ifr_baseline": "Players see perfect 4K quality with zero perceivable latency over any internet connection"
+  }
+}

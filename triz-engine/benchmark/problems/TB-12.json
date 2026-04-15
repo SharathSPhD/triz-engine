@@ -1,0 +1,15 @@
+{
+  "id": "TB-12",
+  "domain": "AI Safety",
+  "title": "Maximally Helpful AND Maximally Safe AI",
+  "problem_statement": "A general-purpose AI assistant deployed to 180 million users must be maximally helpful — answering complex questions, generating creative content, assisting with code, and providing advice across all domains. Simultaneously, it must be maximally safe — never producing harmful content, never assisting with dangerous activities, never generating misinformation, and never violating user privacy.\n\nThese goals conflict fundamentally: over-filtering for safety causes the system to refuse legitimate requests (current false refusal rate: 4.7%, affecting 8.5 million user interactions daily), while relaxing safety constraints to improve helpfulness increases harmful output (estimated 0.03% of unfiltered responses contain actionable harmful content, affecting 54,000 responses daily at scale).\n\nEach percentage point reduction in false refusals increases harmful content by approximately 0.008%.\n\nThe system must simultaneously achieve near-zero harmful outputs AND near-zero false refusals — a challenge complicated by the context-dependent nature of harm (medical information that saves lives in one context enables self-harm in another).",
+  "ground_truth": {
+    "contradiction_type": "physical",
+    "parameter_a": "helpfulness/capability",
+    "parameter_b": "safety constraints",
+    "triz_param_a": 35,
+    "triz_param_b": 30,
+    "target_principles": [3, 15, 23],
+    "ifr_baseline": "The system provides perfect assistance for every legitimate request while producing zero harmful outputs"
+  }
+}

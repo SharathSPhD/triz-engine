@@ -1,0 +1,15 @@
+{
+  "id": "TB-05",
+  "domain": "DevOps",
+  "title": "Rapid Deployment vs Zero-Risk Releases",
+  "problem_statement": "A ride-sharing platform processes 14 million rides daily. The engineering organization (420 developers across 68 teams) needs to deploy changes rapidly to respond to competitive pressure and user feedback.\n\nCurrently, the deployment pipeline takes 4.5 hours from merge to production, including comprehensive integration tests, load tests, and staged rollouts. Reducing this to under 30 minutes (the business target) requires cutting test coverage from 94% to approximately 60% and eliminating the staged rollout.\n\nHowever, production incidents caused by under-tested deployments average $890K per incident (computed from rider/driver compensation, refunds, and reputation damage), with 2.1 incidents per month at the current coverage level.\n\nThe system needs both the fastest possible deployment velocity and zero production incidents from deployment-related bugs.",
+  "ground_truth": {
+    "contradiction_type": "technical",
+    "parameter_a": "deployment speed",
+    "parameter_b": "deployment safety",
+    "triz_param_a": 9,
+    "triz_param_b": 27,
+    "target_principles": [10, 11, 16],
+    "ifr_baseline": "Every change deploys instantly to production with zero risk of user-facing incidents"
+  }
+}

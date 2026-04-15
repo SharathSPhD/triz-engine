@@ -1,0 +1,15 @@
+{
+  "id": "TB-10",
+  "domain": "Organisational",
+  "title": "Documentation Completeness vs Development Speed",
+  "problem_statement": "A 200-developer organization building a healthcare platform (subject to FDA 21 CFR Part 11 and HIPAA) requires comprehensive documentation for every architectural decision, API change, and data flow modification. Regulatory audits demand full traceability from requirements to implementation to test results.\n\nCurrently, developers spend 31% of their time writing and maintaining documentation. When documentation is thorough, regulatory audits pass smoothly (100% pass rate in last 8 audits), but feature delivery velocity is 40% below industry benchmarks.\n\nAttempts to reduce documentation time through templates and abbreviation resulted in 2 failed audits ($1.2M in penalties, 6-month remediation) and 3 security incidents traceable to undocumented data flow changes.\n\nThe organization must maintain comprehensive, audit-ready documentation while achieving competitive development velocity.",
+  "ground_truth": {
+    "contradiction_type": "technical",
+    "parameter_a": "documentation quality",
+    "parameter_b": "development speed",
+    "triz_param_a": 28,
+    "triz_param_b": 39,
+    "target_principles": [22, 25, 10],
+    "ifr_baseline": "Complete audit-ready documentation exists without any developer time spent writing or maintaining it"
+  }
+}

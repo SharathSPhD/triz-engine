@@ -1,0 +1,15 @@
+{
+  "id": "TB-08",
+  "domain": "Search/Relevance",
+  "title": "High Recall AND High Precision in Search",
+  "problem_statement": "A legal research platform indexes 340 million court documents, statutes, regulations, and legal analyses. Attorneys use the platform for case research where missing a relevant precedent (false negative) can lead to malpractice liability, while surfacing irrelevant results (false positives) wastes billable time at $400-800/hour.\n\nThe current BM25 + semantic re-ranking pipeline achieves 91% recall at 34% precision (returning ~180 results per query, of which ~60 are relevant). Tightening ranking thresholds to achieve 85% precision drops recall to 67%, potentially missing critical precedents.\n\nThe system must return every relevant document (100% recall target) while presenting only relevant documents (>90% precision target) — requirements that are mathematically opposed in information retrieval theory for any single ranking function over a heterogeneous corpus.",
+  "ground_truth": {
+    "contradiction_type": "physical",
+    "parameter_a": "search completeness",
+    "parameter_b": "result relevance",
+    "triz_param_a": 28,
+    "triz_param_b": 24,
+    "target_principles": [1, 3, 17],
+    "ifr_baseline": "Every relevant document is found and presented while zero irrelevant results appear"
+  }
+}

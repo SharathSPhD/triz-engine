@@ -1,0 +1,15 @@
+{
+  "id": "TB-06",
+  "domain": "Data Privacy",
+  "title": "Personalization vs Privacy Compliance",
+  "problem_statement": "A European streaming platform with 23 million subscribers uses collaborative filtering and deep learning models trained on viewing history, search patterns, and engagement signals (pause, rewind, skip) to generate recommendations. These recommendations drive 73% of content engagement.\n\nGDPR Article 17 (right to erasure) requires complete deletion of user data upon request. When a user's data is deleted from training sets, recommendation quality for similar users degrades by an average of 8.3% (measured by NDCG@10). With 4,200 deletion requests per month growing 15% quarterly, cumulative model degradation is projected to reach 31% within 18 months.\n\nAdditionally, GDPR Article 22 restricts automated profiling, requiring the ability to explain why specific content was recommended. The current deep learning model is a black box with no interpretable output.\n\nThe system must provide maximally personalized recommendations using behavioral data while being fully GDPR-compliant with complete data erasure, minimal retention, and full explainability.",
+  "ground_truth": {
+    "contradiction_type": "technical",
+    "parameter_a": "recommendation accuracy",
+    "parameter_b": "regulatory compliance",
+    "triz_param_a": 28,
+    "triz_param_b": 30,
+    "target_principles": [2, 24, 27],
+    "ifr_baseline": "Recommendations are perfectly personalized without storing or depending on any personal data"
+  }
+}

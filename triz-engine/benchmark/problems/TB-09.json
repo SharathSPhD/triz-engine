@@ -1,0 +1,15 @@
+{
+  "id": "TB-09",
+  "domain": "Compiler Engineering",
+  "title": "Optimized Code Output vs Fast Compilation",
+  "problem_statement": "A game engine's custom shader compiler must produce highly optimized GPU code (within 5% of hand-tuned assembly performance) while supporting the rapid iteration cycles that game developers demand.\n\nThe current -O3 optimization pipeline applies 14 optimization passes including loop unrolling, instruction scheduling, register allocation with graph coloring, dead code elimination, and cross-function inlining. This produces code that runs within 2% of hand-tuned performance but takes 47 seconds per shader compilation. A full scene rebuild (2,400 shaders) takes 31 hours.\n\nReducing to -O1 (4 passes) compiles each shader in 0.8 seconds (full rebuild in 32 minutes) but produces code 34% slower at runtime, causing frame rate drops below the 60fps minimum for VR content.\n\nThe compiler must produce maximally optimized code while completing compilation fast enough for interactive iteration.",
+  "ground_truth": {
+    "contradiction_type": "technical",
+    "parameter_a": "code quality",
+    "parameter_b": "compilation speed",
+    "triz_param_a": 29,
+    "triz_param_b": 25,
+    "target_principles": [5, 21, 35],
+    "ifr_baseline": "The compiler produces perfectly optimized code with zero additional compilation time"
+  }
+}

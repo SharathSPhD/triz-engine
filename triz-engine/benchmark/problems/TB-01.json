@@ -1,0 +1,15 @@
+{
+  "id": "TB-01",
+  "domain": "Distributed Systems",
+  "title": "CAP Theorem Trade-off",
+  "problem_statement": "A distributed cache serving a financial trading platform must provide real-time price data to 50,000 concurrent users. The system uses 12 cache nodes across 3 availability zones.\n\nDuring a network partition event (which occurs on average 2.3 times per month), the cache must choose between serving potentially stale prices (risking regulatory violations for showing outdated data) or rejecting requests entirely (causing a cascade of order failures costing approximately $340K per minute of downtime).\n\nThe current architecture uses a simple leader-follower replication with synchronous writes, resulting in p99 latency of 45ms during normal operation but complete unavailability during partitions.\n\nThe system needs to simultaneously guarantee that no user ever sees a price more than 100ms stale AND that the system maintains 99.99% availability, including during network partitions.",
+  "ground_truth": {
+    "contradiction_type": "physical",
+    "parameter_a": "data consistency",
+    "parameter_b": "system availability",
+    "triz_param_a": 27,
+    "triz_param_b": 35,
+    "target_principles": [1, 15, 35],
+    "ifr_baseline": "The cache resolves consistency and availability without additional components or latency"
+  }
+}

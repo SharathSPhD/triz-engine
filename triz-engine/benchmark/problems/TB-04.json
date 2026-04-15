@@ -1,0 +1,15 @@
+{
+  "id": "TB-04",
+  "domain": "API Design",
+  "title": "API Backward Compatibility with Continuous Evolution",
+  "problem_statement": "A B2B SaaS platform provides a REST API consumed by 3,400 enterprise clients, many running mission-critical integrations written years ago with no active maintenance. The API must evolve to support new features (real-time webhooks, GraphQL, streaming responses, nested resource hierarchies) that require fundamentally different request/response shapes.\n\nAny breaking change triggers costly client migrations: analysis shows the average enterprise client spends $67K and 3.2 developer-months to migrate between major API versions.\n\nMaintaining multiple API versions in parallel has grown the codebase by 340% over 4 years, with 6 developers now dedicated full-time to legacy API maintenance.\n\nThe API must be backward-compatible with all existing clients while simultaneously adopting modern patterns that are structurally incompatible with the original design.",
+  "ground_truth": {
+    "contradiction_type": "physical",
+    "parameter_a": "API stability",
+    "parameter_b": "API capability",
+    "triz_param_a": 13,
+    "triz_param_b": 35,
+    "target_principles": [1, 7, 15],
+    "ifr_baseline": "The API evolves without breaking any client or requiring version maintenance"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "id": "TB-07",
+  "domain": "Hardware/IoT",
+  "title": "Continuous Sensor Transmission vs Battery Life",
+  "problem_statement": "An agricultural IoT network deploys 15,000 soil moisture sensors across 2,400 hectares of precision farmland. Each sensor monitors moisture, temperature, pH, and nitrogen levels at 10-second intervals for optimal irrigation scheduling.\n\nContinuous transmission of all readings consumes 340mW, depleting the 3.7V 6000mAh LiPo battery within 11 days. Solar panels supplement power but provide only 4.2 hours of effective charging per day (average across seasons).\n\nReducing transmission frequency to hourly extends battery life to 2.1 years but misses critical irrigation windows — analysis shows that 23% of water-stress events develop within 15-minute windows. Missing these windows reduces crop yield by an average 8.4% ($2.3M annually across the deployment).\n\nThe sensors must transmit every relevant change in real-time while consuming near-zero power for multi-year operation without battery replacement.",
+  "ground_truth": {
+    "contradiction_type": "physical",
+    "parameter_a": "data freshness",
+    "parameter_b": "energy conservation",
+    "triz_param_a": 9,
+    "triz_param_b": 22,
+    "target_principles": [19, 20, 26],
+    "ifr_baseline": "Sensors report all critical events instantly while consuming no additional energy beyond minimum idle"
+  }
+}

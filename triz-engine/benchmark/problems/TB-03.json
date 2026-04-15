@@ -1,0 +1,15 @@
+{
+  "id": "TB-03",
+  "domain": "ML Engineering",
+  "title": "Continuous Model Retraining vs Regression Risk",
+  "problem_statement": "An e-commerce recommendation engine generates $45M annually in attributed revenue. The model must retrain on fresh behavioral data (clicks, purchases, cart additions) to capture evolving user preferences and seasonal trends.\n\nHowever, each retraining cycle introduces a 12-18% probability of regression on key segments — for example, a retrained model might improve overall click-through rate by 3% while catastrophically degrading recommendations for the highest-spending 5% of users by 40%.\n\nThe current approach retrains weekly with a 2-day canary period, but this creates a 9-day lag in capturing trend shifts (e.g., viral products, breaking news effects). Daily retraining would capture trends within 3 days but increases regression incidents from 2/month to 8/month, each costing an average $180K in lost revenue during the detection-and-rollback window.\n\nThe model needs to continuously learn from fresh data without ever regressing on critical user segments.",
+  "ground_truth": {
+    "contradiction_type": "technical",
+    "parameter_a": "model freshness",
+    "parameter_b": "model stability",
+    "triz_param_a": 9,
+    "triz_param_b": 13,
+    "target_principles": [9, 22, 23],
+    "ifr_baseline": "The model continuously improves from new data without any regression risk or monitoring overhead"
+  }
+}

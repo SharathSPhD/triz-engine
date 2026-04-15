@@ -1,0 +1,15 @@
+{
+  "id": "TB-02",
+  "domain": "Security/UX",
+  "title": "Multi-Factor Authentication Friction",
+  "problem_statement": "A mobile banking application serving 8 million users requires strong authentication to meet PCI-DSS and SOC 2 compliance. Each additional authentication step (password, SMS OTP, biometric, device attestation) reduces unauthorized access attempts by approximately 35%, but also causes a 23% user drop-off per step.\n\nThe current 3-step flow (password → SMS OTP → biometric) achieves a 0.001% fraud rate but has a 47% login completion rate, with customer support costs for locked-out users reaching $2.1M annually.\n\nThe security team mandates at minimum 3 authentication factors, while the product team demands above 90% login completion rate.\n\nSimply reducing steps weakens security below regulatory thresholds, while maintaining steps continues hemorrhaging users.",
+  "ground_truth": {
+    "contradiction_type": "technical",
+    "parameter_a": "security strength",
+    "parameter_b": "user experience",
+    "triz_param_a": 14,
+    "triz_param_b": 33,
+    "target_principles": [6, 10, 13],
+    "ifr_baseline": "Authentication verifies identity without any user friction or vulnerability"
+  }
+}
