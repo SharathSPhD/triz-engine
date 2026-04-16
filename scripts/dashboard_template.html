@@ -1,0 +1,1067 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TRIZ Arena — Benchmark Dashboard</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0d1117;--bg2:#161b22;--bg3:#21262d;--border:#30363d;
+  --text:#e6edf3;--text2:#8b949e;--text3:#6e7681;
+  --triz:#f0b429;--triz-glow:#f0b42944;--triz-bg:#f0b42918;
+  --van:#58a6ff;--van-glow:#58a6ff44;--van-bg:#58a6ff18;
+  --green:#3fb950;--red:#f85149;--orange:#d29922;--purple:#bc8cff;
+  --radius:12px;--radius-sm:8px;
+}
+html{scroll-behavior:smooth}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  background:var(--bg);color:var(--text);line-height:1.6;
+  overflow-x:hidden;
+}
+a{color:var(--triz);text-decoration:none}
+a:hover{text-decoration:underline}
+
+/* NAV */
+.nav{
+  position:sticky;top:0;z-index:100;background:var(--bg2);
+  border-bottom:1px solid var(--border);padding:0 24px;
+  display:flex;align-items:center;gap:24px;height:56px;
+  backdrop-filter:blur(12px);
+}
+.nav-logo{font-size:18px;font-weight:700;color:var(--triz);letter-spacing:1px;white-space:nowrap}
+.nav-links{display:flex;gap:4px;flex-wrap:wrap}
+.nav-links a{
+  color:var(--text2);font-size:13px;padding:6px 12px;border-radius:6px;
+  transition:all .2s;white-space:nowrap;
+}
+.nav-links a:hover,.nav-links a.active{color:var(--text);background:var(--bg3);text-decoration:none}
+.nav-badge{
+  margin-left:auto;font-size:12px;padding:4px 10px;border-radius:20px;
+  background:var(--triz-bg);color:var(--triz);border:1px solid var(--triz);
+  white-space:nowrap;
+}
+
+/* LAYOUT */
+.container{max-width:1200px;margin:0 auto;padding:0 20px}
+section{padding:60px 0}
+.section-title{
+  font-size:28px;font-weight:700;margin-bottom:8px;
+  display:flex;align-items:center;gap:12px;
+}
+.section-sub{color:var(--text2);margin-bottom:32px;font-size:15px}
+
+/* HERO */
+.hero{
+  min-height:calc(100vh - 56px);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;padding:40px 20px;
+  background:radial-gradient(ellipse at 50% 0%,#1a1f2e 0%,var(--bg) 70%);
+  position:relative;overflow:hidden;
+}
+.hero::before{
+  content:'';position:absolute;inset:0;
+  background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.02'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+.hero-title{
+  font-size:clamp(32px,6vw,56px);font-weight:800;text-align:center;
+  margin-bottom:8px;position:relative;
+}
+.hero-title .triz-text{color:var(--triz)}
+.hero-tagline{color:var(--text2);font-size:clamp(14px,2vw,18px);text-align:center;margin-bottom:40px;position:relative}
+
+/* ARENA */
+.arena{
+  display:flex;align-items:center;gap:40px;margin-bottom:40px;
+  position:relative;width:100%;max-width:700px;justify-content:center;
+}
+.player{
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+  position:relative;transition:transform .3s;
+}
+.player.winner{transform:scale(1.08)}
+.player-svg{width:120px;height:160px;filter:drop-shadow(0 4px 20px rgba(0,0,0,.5))}
+.player-name{font-weight:700;font-size:15px}
+.player-elo{font-size:28px;font-weight:800;transition:all .5s}
+.player-elo.triz-c{color:var(--triz)}
+.player-elo.van-c{color:var(--van)}
+.player-record{font-size:12px;color:var(--text2)}
+.vs-badge{
+  font-size:20px;font-weight:800;color:var(--text3);
+  background:var(--bg3);border-radius:50%;width:48px;height:48px;
+  display:flex;align-items:center;justify-content:center;
+  border:2px solid var(--border);flex-shrink:0;
+}
+
+/* MATCH DISPLAY */
+.match-display{
+  background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);
+  padding:20px 28px;max-width:700px;width:100%;text-align:center;
+  min-height:120px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  position:relative;
+}
+.match-problem{font-size:13px;color:var(--text2);margin-bottom:4px}
+.match-title{font-size:18px;font-weight:700;margin-bottom:12px}
+.match-scores{display:flex;gap:40px;justify-content:center;align-items:center}
+.match-score{
+  font-size:36px;font-weight:800;transition:all .4s;opacity:0;
+  transform:translateY(20px);
+}
+.match-score.show{opacity:1;transform:translateY(0)}
+.match-score.win{text-shadow:0 0 20px currentColor}
+.match-label{font-size:12px;color:var(--text2);margin-top:4px}
+.match-vs{font-size:16px;color:var(--text3);font-weight:600}
+
+/* ARENA ZONES */
+.arena-zones{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:12px;
+  max-width:700px;width:100%;position:relative;
+}
+.arena-zone{
+  background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);
+  padding:16px 12px;text-align:center;cursor:pointer;transition:all .3s;
+}
+.arena-zone:hover{border-color:var(--triz);transform:translateY(-2px)}
+.arena-zone.active{border-color:var(--triz);background:var(--triz-bg)}
+.arena-zone-icon{font-size:24px;margin-bottom:6px}
+.arena-zone-name{font-size:12px;font-weight:600;margin-bottom:4px}
+.arena-zone-count{font-size:11px;color:var(--text2)}
+
+/* STATS ROW */
+.stats-row{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+  gap:12px;margin-bottom:32px;
+}
+.stat-card{
+  background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);
+  padding:16px;text-align:center;
+}
+.stat-value{font-size:28px;font-weight:800}
+.stat-label{font-size:12px;color:var(--text2);margin-top:4px}
+
+/* HEATMAP */
+.heatmap-wrap{overflow-x:auto;margin-bottom:32px}
+.heatmap{border-collapse:collapse;width:100%;font-size:12px}
+.heatmap th{
+  background:var(--bg3);padding:8px 6px;text-align:left;
+  position:sticky;top:0;font-weight:600;white-space:nowrap;
+}
+.heatmap td{padding:6px;text-align:center;border:1px solid var(--border)}
+.heatmap td.pid{text-align:left;font-weight:600;white-space:nowrap;background:var(--bg2)}
+.heatmap .cell{
+  display:inline-block;width:100%;padding:4px 0;border-radius:4px;
+  font-weight:600;font-size:11px;
+}
+
+/* TABS */
+.tabs{display:flex;gap:4px;margin-bottom:24px;flex-wrap:wrap}
+.tab{
+  padding:8px 18px;border-radius:8px 8px 0 0;cursor:pointer;
+  font-size:13px;font-weight:600;color:var(--text2);
+  background:var(--bg3);border:1px solid var(--border);
+  border-bottom:none;transition:all .2s;
+}
+.tab:hover{color:var(--text)}
+.tab.active{color:var(--triz);background:var(--bg2);border-color:var(--triz) var(--triz) transparent}
+.tab-content{
+  background:var(--bg2);border:1px solid var(--border);border-radius:0 var(--radius-sm) var(--radius-sm) var(--radius-sm);
+  padding:24px;display:none;
+}
+.tab-content.active{display:block}
+
+/* PROBLEM CARDS */
+.problem-card{
+  background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);
+  padding:20px;margin-bottom:16px;
+}
+.problem-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px}
+.problem-id{
+  font-size:12px;font-weight:700;padding:3px 8px;border-radius:4px;
+  background:var(--triz-bg);color:var(--triz);
+}
+.problem-domain{font-size:12px;color:var(--text2)}
+.problem-title{font-size:16px;font-weight:700;margin-bottom:8px}
+.problem-stmt{font-size:13px;color:var(--text2);margin-bottom:16px;line-height:1.6}
+.comparison{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.comp-side{background:var(--bg);border-radius:var(--radius-sm);padding:16px}
+.comp-side-header{
+  display:flex;justify-content:space-between;align-items:center;
+  margin-bottom:8px;
+}
+.comp-side-name{font-size:13px;font-weight:700}
+.comp-side-score{font-size:20px;font-weight:800}
+.comp-output{
+  font-size:12px;color:var(--text2);white-space:pre-wrap;
+  max-height:200px;overflow-y:auto;padding:8px;
+  background:var(--bg2);border-radius:6px;margin-top:8px;
+  font-family:'SF Mono',Monaco,Consolas,monospace;
+}
+.comp-output::-webkit-scrollbar{width:6px}
+.comp-output::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+
+/* BAR CHART */
+.bar-chart{display:flex;flex-direction:column;gap:8px;margin-bottom:24px}
+.bar-row{display:flex;align-items:center;gap:8px}
+.bar-label{width:80px;text-align:right;font-size:12px;font-weight:600;flex-shrink:0}
+.bar-track{flex:1;height:24px;background:var(--bg3);border-radius:4px;overflow:hidden;position:relative}
+.bar-fill{
+  height:100%;border-radius:4px;transition:width .8s ease;
+  display:flex;align-items:center;padding:0 8px;
+  font-size:11px;font-weight:700;color:#000;min-width:fit-content;
+}
+.bar-fill.triz-bar{background:var(--triz)}
+.bar-fill.van-bar{background:var(--van)}
+.bar-pair{display:flex;gap:4px;flex:1}
+.bar-pair .bar-track{flex:1}
+
+/* ACCORDION */
+.accordion-item{
+  border:1px solid var(--border);border-radius:var(--radius-sm);
+  margin-bottom:8px;overflow:hidden;
+}
+.accordion-header{
+  padding:14px 16px;cursor:pointer;display:flex;
+  justify-content:space-between;align-items:center;
+  background:var(--bg3);transition:background .2s;font-size:14px;
+}
+.accordion-header:hover{background:var(--bg2)}
+.accordion-body{padding:16px;display:none;background:var(--bg2)}
+.accordion-item.open .accordion-body{display:block}
+.accordion-arrow{transition:transform .3s;font-size:12px}
+.accordion-item.open .accordion-arrow{transform:rotate(90deg)}
+
+/* RESULT BADGE */
+.badge{
+  display:inline-block;padding:2px 8px;border-radius:4px;
+  font-size:11px;font-weight:700;
+}
+.badge-win{background:var(--green);color:#000}
+.badge-loss{background:var(--red);color:#fff}
+.badge-tie{background:var(--orange);color:#000}
+.badge-correct{background:var(--green);color:#000}
+.badge-wrong{background:var(--red);color:#fff}
+.badge-na{background:var(--bg3);color:var(--text3)}
+
+/* ABOUT */
+.feature-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-bottom:32px}
+.feature-card{
+  background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);
+  padding:20px;
+}
+.feature-icon{font-size:28px;margin-bottom:10px}
+.feature-title{font-size:16px;font-weight:700;margin-bottom:6px}
+.feature-desc{font-size:13px;color:var(--text2);line-height:1.6}
+.install-block{
+  background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);
+  padding:16px;font-family:'SF Mono',Monaco,Consolas,monospace;
+  font-size:13px;color:var(--green);margin-bottom:16px;overflow-x:auto;
+}
+
+/* FOOTER */
+.footer{
+  text-align:center;padding:40px 20px;color:var(--text3);font-size:13px;
+  border-top:1px solid var(--border);
+}
+
+/* GLOW ANIMATIONS */
+@keyframes glow-triz{0%,100%{box-shadow:0 0 20px var(--triz-glow)}50%{box-shadow:0 0 40px var(--triz-glow),0 0 80px var(--triz-glow)}}
+@keyframes glow-van{0%,100%{box-shadow:0 0 20px var(--van-glow)}50%{box-shadow:0 0 40px var(--van-glow),0 0 80px var(--van-glow)}}
+@keyframes fly-in{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+@keyframes elo-tick{from{opacity:.5}to{opacity:1}}
+.glow-triz{animation:glow-triz 2s ease infinite}
+.glow-van{animation:glow-van 2s ease infinite}
+.fly-in{animation:fly-in .5s ease forwards}
+.pulse{animation:pulse .6s ease}
+
+/* RESPONSIVE */
+@media(max-width:768px){
+  .arena{flex-direction:column;gap:20px}
+  .arena-zones{grid-template-columns:repeat(2,1fr)}
+  .comparison{grid-template-columns:1fr}
+  .nav{padding:0 12px;gap:12px}
+  .nav-links a{padding:4px 8px;font-size:12px}
+  .stats-row{grid-template-columns:repeat(2,1fr)}
+  .player-svg{width:80px;height:106px}
+  .player-elo{font-size:22px}
+  .match-scores{gap:20px}
+  .match-score{font-size:28px}
+}
+@media(max-width:480px){
+  .arena-zones{grid-template-columns:1fr 1fr}
+  .stats-row{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<script>const ARENA_DATA = __DASHBOARD_DATA__;</script>
+
+<nav class="nav">
+  <div class="nav-logo">&#9881; TRIZ ARENA</div>
+  <div class="nav-links">
+    <a href="#hero" class="active">Arena</a>
+    <a href="#leaderboard">Leaderboard</a>
+    <a href="#benchmarks">Benchmarks</a>
+    <a href="#about">About</a>
+    <a href="#methodology">Methodology</a>
+  </div>
+  <div class="nav-badge" id="nav-elo-badge"></div>
+</nav>
+
+<!-- ========== HERO ========== -->
+<section class="hero" id="hero">
+  <h1 class="hero-title"><span class="triz-text">TRIZ</span> Arena</h1>
+  <p class="hero-tagline">Inventive Problem Solving vs Vanilla LLM &mdash; Head-to-Head Benchmark Battle</p>
+
+  <div class="arena" id="arena-stage">
+    <!-- EINSTEIN (TRIZ) -->
+    <div class="player" id="player-triz">
+      <svg class="player-svg" viewBox="0 0 120 160" xmlns="http://www.w3.org/2000/svg">
+        <!-- Hair -->
+        <ellipse cx="60" cy="42" rx="42" ry="30" fill="#d4d4d4" opacity=".9"/>
+        <ellipse cx="30" cy="30" rx="16" ry="14" fill="#e0e0e0"/>
+        <ellipse cx="90" cy="30" rx="16" ry="14" fill="#e0e0e0"/>
+        <ellipse cx="44" cy="18" rx="12" ry="10" fill="#ccc"/>
+        <ellipse cx="76" cy="18" rx="12" ry="10" fill="#ccc"/>
+        <ellipse cx="60" cy="14" rx="14" ry="8" fill="#d8d8d8"/>
+        <!-- Face -->
+        <ellipse cx="60" cy="55" rx="28" ry="26" fill="#f5d0a9"/>
+        <!-- Eyes -->
+        <circle cx="50" cy="50" r="5" fill="#fff"/>
+        <circle cx="70" cy="50" r="5" fill="#fff"/>
+        <circle cx="51" cy="50" r="2.5" fill="#2c1810"/>
+        <circle cx="71" cy="50" r="2.5" fill="#2c1810"/>
+        <!-- Glasses -->
+        <circle cx="50" cy="50" r="8" fill="none" stroke="#555" stroke-width="1.5"/>
+        <circle cx="70" cy="50" r="8" fill="none" stroke="#555" stroke-width="1.5"/>
+        <line x1="58" y1="50" x2="62" y2="50" stroke="#555" stroke-width="1.5"/>
+        <!-- Nose -->
+        <ellipse cx="60" cy="58" rx="3" ry="4" fill="#e8b888"/>
+        <!-- Mustache -->
+        <path d="M48 66 Q54 62 60 66 Q66 62 72 66" fill="none" stroke="#888" stroke-width="2.5" stroke-linecap="round"/>
+        <!-- Smile -->
+        <path d="M50 70 Q60 76 70 70" fill="none" stroke="#c4956a" stroke-width="1.5" stroke-linecap="round"/>
+        <!-- Body / Lab coat -->
+        <path d="M32 82 Q32 78 42 82 L60 86 L78 82 Q88 78 88 82 L92 130 Q92 140 60 140 Q28 140 28 130 Z" fill="#f0f0f0" stroke="#ddd" stroke-width="1"/>
+        <!-- Coat lapels -->
+        <path d="M48 82 L56 100 L60 86" fill="#e0e0e0"/>
+        <path d="M72 82 L64 100 L60 86" fill="#e0e0e0"/>
+        <!-- TRIZ label -->
+        <text x="60" y="118" text-anchor="middle" font-size="11" font-weight="800" fill="#f0b429">TRIZ</text>
+        <!-- Lightbulb -->
+        <circle cx="96" cy="24" r="8" fill="#f0b429" opacity=".8"/>
+        <line x1="96" y1="16" x2="96" y2="10" stroke="#f0b429" stroke-width="1.5" opacity=".6"/>
+        <line x1="102" y1="18" x2="106" y2="14" stroke="#f0b429" stroke-width="1.5" opacity=".6"/>
+        <line x1="104" y1="24" x2="110" y2="24" stroke="#f0b429" stroke-width="1.5" opacity=".6"/>
+      </svg>
+      <div class="player-name" style="color:var(--triz)">TRIZ Engine</div>
+      <div class="player-elo triz-c" id="elo-triz">—</div>
+      <div class="player-record" id="record-triz"></div>
+    </div>
+
+    <div class="vs-badge">VS</div>
+
+    <!-- ROBOT (Vanilla) -->
+    <div class="player" id="player-vanilla">
+      <svg class="player-svg" viewBox="0 0 120 160" xmlns="http://www.w3.org/2000/svg">
+        <!-- Antenna -->
+        <line x1="60" y1="8" x2="60" y2="24" stroke="#58a6ff" stroke-width="2"/>
+        <circle cx="60" cy="6" r="4" fill="#58a6ff" opacity=".8"/>
+        <!-- Head -->
+        <rect x="30" y="24" width="60" height="44" rx="8" fill="#2d333b" stroke="#58a6ff" stroke-width="1.5"/>
+        <!-- Eyes (LED) -->
+        <rect x="40" y="36" width="12" height="8" rx="2" fill="#58a6ff" opacity=".9"/>
+        <rect x="68" y="36" width="12" height="8" rx="2" fill="#58a6ff" opacity=".9"/>
+        <!-- Mouth grid -->
+        <rect x="42" y="54" width="36" height="6" rx="2" fill="#1a1f28"/>
+        <line x1="51" y1="54" x2="51" y2="60" stroke="#2d333b" stroke-width="1"/>
+        <line x1="60" y1="54" x2="60" y2="60" stroke="#2d333b" stroke-width="1"/>
+        <line x1="69" y1="54" x2="69" y2="60" stroke="#2d333b" stroke-width="1"/>
+        <!-- Neck -->
+        <rect x="52" y="68" width="16" height="8" rx="2" fill="#3d444d"/>
+        <!-- Body -->
+        <rect x="24" y="76" width="72" height="54" rx="8" fill="#2d333b" stroke="#58a6ff" stroke-width="1.5"/>
+        <!-- Chest display -->
+        <rect x="38" y="84" width="44" height="20" rx="4" fill="#1a1f28"/>
+        <text x="60" y="98" text-anchor="middle" font-size="9" font-weight="700" fill="#58a6ff">CLAUDE</text>
+        <!-- Body details -->
+        <circle cx="44" cy="116" r="4" fill="#3d444d" stroke="#58a6ff" stroke-width="1"/>
+        <circle cx="60" cy="116" r="4" fill="#3d444d" stroke="#58a6ff" stroke-width="1"/>
+        <circle cx="76" cy="116" r="4" fill="#3d444d" stroke="#58a6ff" stroke-width="1"/>
+        <!-- Arms -->
+        <rect x="10" y="80" width="12" height="36" rx="6" fill="#2d333b" stroke="#58a6ff" stroke-width="1"/>
+        <rect x="98" y="80" width="12" height="36" rx="6" fill="#2d333b" stroke="#58a6ff" stroke-width="1"/>
+      </svg>
+      <div class="player-name" style="color:var(--van)">Vanilla Claude</div>
+      <div class="player-elo van-c" id="elo-vanilla">—</div>
+      <div class="player-record" id="record-vanilla"></div>
+    </div>
+  </div>
+
+  <div class="match-display" id="match-display">
+    <div class="match-problem" id="match-problem"></div>
+    <div class="match-title" id="match-title">Click an arena to begin...</div>
+    <div class="match-scores" id="match-scores" style="display:none">
+      <div>
+        <div class="match-score triz-c" id="match-score-triz">0</div>
+        <div class="match-label">TRIZ Engine</div>
+      </div>
+      <div class="match-vs">vs</div>
+      <div>
+        <div class="match-score van-c" id="match-score-van">0</div>
+        <div class="match-label">Vanilla Claude</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="arena-zones" id="arena-zones">
+    <div class="arena-zone" data-zone="internal">
+      <div class="arena-zone-icon">&#128218;</div>
+      <div class="arena-zone-name">Internal TRIZBENCH</div>
+      <div class="arena-zone-count" id="zone-count-internal"></div>
+    </div>
+    <div class="arena-zone" data-zone="external">
+      <div class="arena-zone-icon">&#128196;</div>
+      <div class="arena-zone-name">Patent Analysis</div>
+      <div class="arena-zone-count" id="zone-count-external"></div>
+    </div>
+    <div class="arena-zone" data-zone="macgyver">
+      <div class="arena-zone-icon">&#128295;</div>
+      <div class="arena-zone-name">MacGyver</div>
+      <div class="arena-zone-count" id="zone-count-macgyver"></div>
+    </div>
+    <div class="arena-zone" data-zone="cresowlve">
+      <div class="arena-zone-icon">&#129412;</div>
+      <div class="arena-zone-name">CresOWLve</div>
+      <div class="arena-zone-count" id="zone-count-cresowlve"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== LEADERBOARD ========== -->
+<section id="leaderboard">
+  <div class="container">
+    <h2 class="section-title">&#127942; Leaderboard</h2>
+    <p class="section-sub">ELO ratings computed via Bradley-Terry model across all benchmarks</p>
+
+    <div class="stats-row" id="stats-row"></div>
+
+    <h3 style="margin-bottom:16px;font-size:18px">Per-Problem Score Heatmap</h3>
+    <div class="heatmap-wrap">
+      <table class="heatmap" id="heatmap-table">
+        <thead><tr><th>Problem</th><th>Type</th><th style="color:var(--triz)">TRIZ Engine</th><th style="color:var(--van)">Vanilla Claude</th><th>Winner</th></tr></thead>
+        <tbody id="heatmap-body"></tbody>
+      </table>
+    </div>
+
+    <h3 style="margin:32px 0 16px;font-size:18px">Score Distribution by Benchmark</h3>
+    <div id="dimension-chart"></div>
+  </div>
+</section>
+
+<!-- ========== BENCHMARKS ========== -->
+<section id="benchmarks">
+  <div class="container">
+    <h2 class="section-title">&#128269; Benchmark Deep-Dives</h2>
+    <p class="section-sub">Actual problems, solutions, and scoring from every benchmark run</p>
+
+    <div class="tabs" id="benchmark-tabs">
+      <div class="tab active" data-tab="tab-internal">Internal TRIZBENCH</div>
+      <div class="tab" data-tab="tab-external">External Patents</div>
+      <div class="tab" data-tab="tab-macgyver">MacGyver</div>
+      <div class="tab" data-tab="tab-cresowlve">CresOWLve</div>
+    </div>
+
+    <div class="tab-content active" id="tab-internal"></div>
+    <div class="tab-content" id="tab-external"></div>
+    <div class="tab-content" id="tab-macgyver"></div>
+    <div class="tab-content" id="tab-cresowlve"></div>
+  </div>
+</section>
+
+<!-- ========== ABOUT ========== -->
+<section id="about">
+  <div class="container">
+    <h2 class="section-title">&#9881; About TRIZ Engine</h2>
+    <p class="section-sub">A Claude Code plugin that brings TRIZ methodology to AI-assisted problem solving</p>
+
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="feature-icon">&#128161;</div>
+        <div class="feature-title">40 Inventive Principles</div>
+        <div class="feature-desc">Complete TRIZ knowledge base with all 40 inventive principles, contradiction matrix, and parameter mappings from Altshuller's original work.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">&#9878;</div>
+        <div class="feature-title">Contradiction Analysis</div>
+        <div class="feature-desc">Automatically identifies technical and physical contradictions in engineering problems and maps them to the 39x39 contradiction matrix.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">&#129302;</div>
+        <div class="feature-title">3-Agent Pipeline</div>
+        <div class="feature-desc">Contradiction Agent &rarr; Solution Agent &rarr; Evaluator Agent. Each specialized for its role, with LLM-as-judge scoring.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">&#128202;</div>
+        <div class="feature-title">8 MCP Tools</div>
+        <div class="feature-desc">analyze_contradiction, suggest_principles, apply_principle, evaluate_solution, solve_with_triz, lookup_matrix, suggest_parameters, run_benchmark.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">&#127919;</div>
+        <div class="feature-title">ARIZ-85C Algorithm</div>
+        <div class="feature-desc">Full implementation of the Algorithm of Inventive Problem Solving, guiding users through structured contradiction resolution.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">&#127941;</div>
+        <div class="feature-title">ELO Arena</div>
+        <div class="feature-desc">Bradley-Terry ELO leaderboard comparing TRIZ-augmented solutions against vanilla LLM baselines across multiple benchmarks.</div>
+      </div>
+    </div>
+
+    <h3 style="margin-bottom:16px;font-size:18px">Quick Start</h3>
+    <div class="install-block">
+      <div>$ git clone https://github.com/sharathsphd/triz-engine.git</div>
+      <div>$ cd triz-engine</div>
+      <div>$ pip install -e ".[dev]"</div>
+      <div style="margin-top:8px;color:var(--text2)"># In Claude Code:</div>
+      <div>$ claude</div>
+      <div>> /triz:solve "How to increase battery capacity without increasing weight?"</div>
+    </div>
+
+    <h3 style="margin-bottom:16px;font-size:18px">Architecture</h3>
+    <div class="install-block" style="color:var(--text2)">
+      <pre style="margin:0;font-size:12px">triz-engine/
+├── commands/          # /triz:solve, /triz:benchmark, /triz:matrix
+├── agents/            # contradiction-agent, solution-agent, evaluator-agent
+├── skills/            # auto-triz activation skill
+├── hooks/             # pre-prompt TRIZ detection hook
+├── mcp/               # FastMCP server with 8 tools
+├── benchmark/         # TRIZBENCH runner, scorer, ELO system
+│   ├── problems/      # 12 canonical TB problems
+│   └── external/      # MacGyver, CresOWLve, Patent adapters
+├── knowledge/         # triz-knowledge-base.json, contradiction matrix
+└── results/           # All benchmark output JSONs</pre>
+    </div>
+  </div>
+</section>
+
+<!-- ========== METHODOLOGY ========== -->
+<section id="methodology">
+  <div class="container">
+    <h2 class="section-title">&#128200; Methodology</h2>
+    <p class="section-sub">How benchmarks are scored and ELO ratings computed</p>
+
+    <div class="feature-grid" style="grid-template-columns:repeat(auto-fit,minmax(340px,1fr))">
+      <div class="feature-card">
+        <div class="feature-title">Internal TRIZBENCH Scoring (5 dimensions)</div>
+        <div class="feature-desc" style="line-height:2">
+          <strong>Contradiction Identification (CI)</strong> — 25% weight<br>
+          <strong>Principle Selection (PS)</strong> — 20% weight<br>
+          <strong>Solution Novelty (SN)</strong> — 20% weight, LLM-as-judge<br>
+          <strong>Contradiction Resolution (CR)</strong> — 25% weight, LLM-as-judge<br>
+          <strong>Ideal Final Result (IFR)</strong> — 10% weight<br>
+          Final = weighted sum, max 100 points
+        </div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-title">External TRIZBENCH (Patent Analysis)</div>
+        <div class="feature-desc" style="line-height:2">
+          Evaluated against real patent contradiction data (236 patents):<br>
+          <strong>Contradiction Type</strong> — exact match (20 pts)<br>
+          <strong>Parameter Match</strong> — exact (30 pts) or partial (15 pts)<br>
+          <strong>Principle F1</strong> — precision/recall vs ground truth (50 pts)<br>
+          Derived score = type + params + F1*50, max 100
+        </div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-title">MacGyver Benchmark</div>
+        <div class="feature-desc" style="line-height:2">
+          Constrained creative problem solving with limited objects.<br>
+          Scored by LLM judge on a 4-level scale:<br>
+          <strong>Perfect (1.0)</strong> — fully correct, creative<br>
+          <strong>Good (0.75)</strong> — workable solution<br>
+          <strong>Partial (0.5)</strong> — partially addresses problem<br>
+          <strong>Fail (0.0)</strong> — doesn't solve the problem
+        </div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-title">CresOWLve Benchmark</div>
+        <div class="feature-desc" style="line-height:2">
+          Lateral/divergent creative reasoning riddles.<br>
+          Binary scoring: correct or incorrect.<br>
+          Answer matching uses normalized substring matching<br>
+          with punctuation stripping and case-insensitive comparison.
+        </div>
+      </div>
+    </div>
+
+    <div class="feature-card" style="margin-top:16px">
+      <div class="feature-title">ELO Rating System</div>
+      <div class="feature-desc" style="line-height:2">
+        Bradley-Terry model adapted for benchmark comparison:<br>
+        &bull; Initial rating: 1000 for each participant<br>
+        &bull; K-factor: 32 for first match, 16 thereafter (max of both players)<br>
+        &bull; Expected score: E = 1 / (1 + 10<sup>(R<sub>b</sub>-R<sub>a</sub>)/400</sup>)<br>
+        &bull; Win/Loss/Draw determined by comparing scores per problem<br>
+        &bull; 95% confidence intervals via 1000-iteration bootstrap<br>
+        &bull; Matches processed in order: Internal &rarr; External &rarr; MacGyver &rarr; CresOWLve
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <p>TRIZ Arena Dashboard &mdash; auto-generated from benchmark data on <span id="gen-date"></span></p>
+  <p style="margin-top:4px">
+    <a href="https://github.com/sharathsphd/triz-engine">GitHub</a> &middot;
+    Data is real, not synthetic. All scores from actual Claude CLI runs.
+  </p>
+</footer>
+
+<script>
+(function(){
+"use strict";
+const D = ARENA_DATA;
+
+/* ===== NAV ===== */
+document.getElementById('nav-elo-badge').textContent =
+  'ELO ' + Math.round(D.elo['triz-engine']) + ' vs ' + Math.round(D.elo['vanilla-claude']);
+document.getElementById('gen-date').textContent = D.generated_at.split('T')[0];
+
+document.querySelectorAll('.nav-links a').forEach(function(a){
+  a.addEventListener('click', function(){
+    document.querySelectorAll('.nav-links a').forEach(function(x){x.classList.remove('active')});
+    a.classList.add('active');
+  });
+});
+
+/* ===== HELPERS ===== */
+function fmt(v, decimals){
+  if(v == null) return '—';
+  return typeof v === 'number' ? v.toFixed(decimals||1) : String(v);
+}
+function pct(v){ return Math.round((v||0)*100)+'%'; }
+function scoreColor(s, max){
+  if(s == null) return 'var(--bg3)';
+  var ratio = Math.min(s / (max||100), 1);
+  if(ratio >= 0.7) return 'rgba(63,185,80,0.3)';
+  if(ratio >= 0.4) return 'rgba(210,153,34,0.3)';
+  return 'rgba(248,81,73,0.3)';
+}
+function winBadge(a, b){
+  if(a == null || b == null) return '<span class="badge badge-na">N/A</span>';
+  if(a > b) return '<span class="badge badge-win">TRIZ Wins</span>';
+  if(b > a) return '<span class="badge badge-loss">Vanilla Wins</span>';
+  return '<span class="badge badge-tie">Tie</span>';
+}
+function escHtml(s){
+  if(!s) return '';
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+/* ===== ZONE COUNTS ===== */
+document.getElementById('zone-count-internal').textContent = D.internal.length + ' problems';
+document.getElementById('zone-count-external').textContent = D.external_trizbench.length + ' patents';
+document.getElementById('zone-count-macgyver').textContent = D.macgyver.length + ' scenarios';
+document.getElementById('zone-count-cresowlve').textContent = D.cresowlve.length + ' riddles';
+
+/* ===== ELO DISPLAY ===== */
+var eloTriz = Math.round(D.elo['triz-engine']);
+var eloVan = Math.round(D.elo['vanilla-claude']);
+document.getElementById('elo-triz').textContent = eloTriz;
+document.getElementById('elo-vanilla').textContent = eloVan;
+document.getElementById('record-triz').textContent =
+  D.summary.triz_wins + 'W / ' + D.summary.vanilla_wins + 'L / ' + D.summary.ties + 'T';
+document.getElementById('record-vanilla').textContent =
+  D.summary.vanilla_wins + 'W / ' + D.summary.triz_wins + 'L / ' + D.summary.ties + 'T';
+
+/* ===== GAME BOARD ===== */
+var allMatchups = [];
+
+D.internal.forEach(function(p){
+  allMatchups.push({
+    zone:'internal', id:p.problem_id, title:p.title||p.problem_id,
+    triz: p.triz.final_score, vanilla: p.vanilla.final_score, type:'Internal TRIZBENCH'
+  });
+});
+D.external_trizbench.forEach(function(p){
+  var ts = 0, vs = 0;
+  ts = p.triz.f1 * 100;
+  vs = p.vanilla.f1 * 100;
+  allMatchups.push({
+    zone:'external', id:p.problem_id, title:'Patent ' + (p.patent_id||p.problem_id),
+    triz: ts, vanilla: vs, type:'External Patents'
+  });
+});
+D.macgyver.forEach(function(p){
+  allMatchups.push({
+    zone:'macgyver', id:p.problem_id, title:'MacGyver ' + p.problem_id,
+    triz: p.triz_score*100, vanilla: p.vanilla_score*100, type:'MacGyver'
+  });
+});
+D.cresowlve.forEach(function(p){
+  allMatchups.push({
+    zone:'cresowlve', id:p.problem_id, title:'CresOWLve ' + p.problem_id,
+    triz: p.triz_correct?100:0, vanilla: p.vanilla_correct?100:0, type:'CresOWLve'
+  });
+});
+
+var matchIdx = 0;
+var autoplayTimer = null;
+var currentZone = null;
+
+function showMatchup(m, animate){
+  var mProb = document.getElementById('match-problem');
+  var mTitle = document.getElementById('match-title');
+  var mScores = document.getElementById('match-scores');
+  var mst = document.getElementById('match-score-triz');
+  var msv = document.getElementById('match-score-van');
+
+  mProb.textContent = m.type + ' / ' + m.id;
+  mTitle.textContent = m.title;
+  mScores.style.display = 'flex';
+  mst.classList.remove('show','win');
+  msv.classList.remove('show','win');
+
+  if(animate){
+    mst.textContent = '...';
+    msv.textContent = '...';
+    setTimeout(function(){
+      mst.textContent = fmt(m.triz, 1);
+      mst.classList.add('show');
+      if(m.triz != null && m.vanilla != null && m.triz > m.vanilla) mst.classList.add('win');
+    }, 300);
+    setTimeout(function(){
+      msv.textContent = fmt(m.vanilla, 1);
+      msv.classList.add('show');
+      if(m.triz != null && m.vanilla != null && m.vanilla > m.triz) msv.classList.add('win');
+    }, 600);
+
+    var pt = document.getElementById('player-triz');
+    var pv = document.getElementById('player-vanilla');
+    pt.classList.remove('winner');
+    pv.classList.remove('winner');
+    setTimeout(function(){
+      if(m.triz != null && m.vanilla != null){
+        if(m.triz > m.vanilla){ pt.classList.add('winner'); pt.querySelector('.player-svg').classList.add('pulse'); }
+        else if(m.vanilla > m.triz){ pv.classList.add('winner'); pv.querySelector('.player-svg').classList.add('pulse'); }
+      }
+      setTimeout(function(){
+        pt.querySelector('.player-svg').classList.remove('pulse');
+        pv.querySelector('.player-svg').classList.remove('pulse');
+      }, 600);
+    }, 800);
+  } else {
+    mst.textContent = fmt(m.triz, 1);
+    msv.textContent = fmt(m.vanilla, 1);
+    mst.classList.add('show');
+    msv.classList.add('show');
+    if(m.triz != null && m.vanilla != null && m.triz > m.vanilla) mst.classList.add('win');
+    if(m.triz != null && m.vanilla != null && m.vanilla > m.triz) msv.classList.add('win');
+  }
+}
+
+function playZone(zone){
+  if(autoplayTimer) clearInterval(autoplayTimer);
+  currentZone = zone;
+  document.querySelectorAll('.arena-zone').forEach(function(z){
+    z.classList.toggle('active', z.dataset.zone === zone);
+  });
+  var zoneMatchups = allMatchups.filter(function(m){ return m.zone === zone; });
+  if(!zoneMatchups.length) return;
+  var zi = 0;
+  showMatchup(zoneMatchups[zi], true);
+  zi++;
+  autoplayTimer = setInterval(function(){
+    if(zi >= zoneMatchups.length) zi = 0;
+    showMatchup(zoneMatchups[zi], true);
+    zi++;
+  }, 3000);
+}
+
+document.querySelectorAll('.arena-zone').forEach(function(z){
+  z.addEventListener('click', function(){ playZone(z.dataset.zone); });
+});
+
+/* Auto-play on load: cycle through zones */
+var autoZones = ['internal','external','macgyver','cresowlve'];
+var azIdx = 0;
+function autoPlayCycle(){
+  playZone(autoZones[azIdx]);
+  azIdx++;
+  if(azIdx < autoZones.length){
+    setTimeout(autoPlayCycle, 4000);
+  }
+}
+setTimeout(autoPlayCycle, 800);
+
+/* ===== STATS ROW ===== */
+var statsHtml = '';
+var stats = [
+  {v: D.summary.total_problems, l: 'Total Problems'},
+  {v: eloTriz, l: 'TRIZ ELO', c: 'var(--triz)'},
+  {v: eloVan, l: 'Vanilla ELO', c: 'var(--van)'},
+  {v: D.match_count, l: 'ELO Matches'},
+  {v: D.summary.triz_wins, l: 'TRIZ Wins', c: 'var(--green)'},
+  {v: D.summary.vanilla_wins, l: 'Vanilla Wins', c: 'var(--van)'},
+  {v: D.summary.ties, l: 'Ties', c: 'var(--orange)'},
+  {v: fmt(D.summary.triz_mean,1), l: 'TRIZ Mean (Internal)'},
+];
+stats.forEach(function(s){
+  statsHtml += '<div class="stat-card"><div class="stat-value"'+(s.c?' style="color:'+s.c+'"':'')+'>'+ s.v +'</div><div class="stat-label">'+s.l+'</div></div>';
+});
+document.getElementById('stats-row').innerHTML = statsHtml;
+
+/* ===== HEATMAP ===== */
+var heatRows = [];
+D.internal.forEach(function(p){
+  heatRows.push({id:p.problem_id, type:'Internal', triz:p.triz.final_score, vanilla:p.vanilla.final_score});
+});
+D.external_trizbench.forEach(function(p){
+  heatRows.push({id:p.problem_id, type:'Patent', triz:p.triz.f1*100, vanilla:p.vanilla.f1*100});
+});
+D.macgyver.forEach(function(p){
+  heatRows.push({id:p.problem_id, type:'MacGyver', triz:p.triz_score*100, vanilla:p.vanilla_score*100});
+});
+D.cresowlve.forEach(function(p){
+  heatRows.push({id:p.problem_id, type:'CresOWLve', triz:p.triz_correct?100:0, vanilla:p.vanilla_correct?100:0});
+});
+
+var heatHtml = '';
+heatRows.forEach(function(r){
+  heatHtml += '<tr>';
+  heatHtml += '<td class="pid">'+r.id+'</td>';
+  heatHtml += '<td>'+r.type+'</td>';
+  heatHtml += '<td><span class="cell" style="background:'+scoreColor(r.triz,100)+'">'+fmt(r.triz,1)+'</span></td>';
+  heatHtml += '<td><span class="cell" style="background:'+scoreColor(r.vanilla,100)+'">'+fmt(r.vanilla,1)+'</span></td>';
+  heatHtml += '<td>'+winBadge(r.triz, r.vanilla)+'</td>';
+  heatHtml += '</tr>';
+});
+document.getElementById('heatmap-body').innerHTML = heatHtml;
+
+/* ===== DIMENSION CHART (bar chart) ===== */
+var dimChart = document.getElementById('dimension-chart');
+var barData = [
+  {label:'Internal Avg', triz:D.summary.triz_mean, van:D.summary.vanilla_mean, max:100},
+  {label:'Patent F1', triz:(D.summary.ext_triz_f1||0)*100, van:(D.summary.ext_vanilla_f1||0)*100, max:100},
+  {label:'MacGyver', triz:(D.summary.mg_triz_mean||0)*100, van:(D.summary.mg_vanilla_mean||0)*100, max:100},
+];
+var barHtml = '<div class="bar-chart">';
+barData.forEach(function(b){
+  var tw = Math.max(1, (b.triz||0) / b.max * 100);
+  var vw = Math.max(1, (b.van||0) / b.max * 100);
+  barHtml += '<div class="bar-row">';
+  barHtml += '<div class="bar-label">'+b.label+'</div>';
+  barHtml += '<div class="bar-pair">';
+  barHtml += '<div class="bar-track"><div class="bar-fill triz-bar" style="width:'+tw+'%">'+fmt(b.triz,1)+'</div></div>';
+  barHtml += '<div class="bar-track"><div class="bar-fill van-bar" style="width:'+vw+'%">'+fmt(b.van,1)+'</div></div>';
+  barHtml += '</div></div>';
+});
+barHtml += '</div>';
+barHtml += '<div style="display:flex;gap:16px;font-size:12px;color:var(--text2)">';
+barHtml += '<span style="display:flex;align-items:center;gap:4px"><span style="width:12px;height:12px;background:var(--triz);border-radius:2px;display:inline-block"></span> TRIZ Engine</span>';
+barHtml += '<span style="display:flex;align-items:center;gap:4px"><span style="width:12px;height:12px;background:var(--van);border-radius:2px;display:inline-block"></span> Vanilla Claude</span>';
+barHtml += '</div>';
+dimChart.innerHTML = barHtml;
+
+/* Animate bars on scroll */
+var barAnimated = false;
+function animateBars(){
+  if(barAnimated) return;
+  var rect = dimChart.getBoundingClientRect();
+  if(rect.top < window.innerHeight * 0.8){
+    barAnimated = true;
+    dimChart.querySelectorAll('.bar-fill').forEach(function(el){
+      var w = el.style.width;
+      el.style.width = '0%';
+      setTimeout(function(){ el.style.width = w; }, 100);
+    });
+  }
+}
+window.addEventListener('scroll', animateBars);
+
+/* ===== TABS ===== */
+document.querySelectorAll('.tab').forEach(function(tab){
+  tab.addEventListener('click', function(){
+    document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active')});
+    document.querySelectorAll('.tab-content').forEach(function(tc){tc.classList.remove('active')});
+    tab.classList.add('active');
+    document.getElementById(tab.dataset.tab).classList.add('active');
+  });
+});
+
+/* ===== INTERNAL TRIZBENCH TAB ===== */
+var intHtml = '';
+if(!D.internal.length){ intHtml = '<p style="color:var(--text2)">No internal TRIZBENCH results available.</p>'; }
+D.internal.forEach(function(p){
+  var ts = p.triz.final_score, vs = p.vanilla.final_score;
+  intHtml += '<div class="problem-card">';
+  intHtml += '<div class="problem-header">';
+  intHtml += '<div><span class="problem-id">'+p.problem_id+'</span> <span class="problem-domain">'+escHtml(p.domain)+'</span></div>';
+  intHtml += winBadge(ts, vs);
+  intHtml += '</div>';
+  intHtml += '<div class="problem-title">'+escHtml(p.title)+'</div>';
+  if(p.problem_statement) intHtml += '<div class="problem-stmt">'+escHtml(p.problem_statement).substring(0,500)+'</div>';
+
+  intHtml += '<div class="comparison">';
+
+  /* TRIZ side */
+  intHtml += '<div class="comp-side" style="border-left:3px solid var(--triz)">';
+  intHtml += '<div class="comp-side-header"><span class="comp-side-name" style="color:var(--triz)">TRIZ Engine</span>';
+  intHtml += '<span class="comp-side-score" style="color:var(--triz)">'+fmt(ts,1)+'</span></div>';
+  if(p.triz.submission && p.triz.submission.solution_summary){
+    intHtml += '<div style="font-size:13px;margin-bottom:8px">'+escHtml(p.triz.submission.solution_summary)+'</div>';
+  }
+  if(p.triz.submission && p.triz.submission.principles_applied){
+    intHtml += '<div style="font-size:12px;color:var(--text2)">Principles: '+escHtml(JSON.stringify(p.triz.submission.principles_applied))+'</div>';
+  }
+  if(p.triz.raw_output){
+    intHtml += '<details><summary style="font-size:12px;color:var(--text3);cursor:pointer;margin-top:8px">Raw output</summary>';
+    intHtml += '<div class="comp-output">'+escHtml(p.triz.raw_output)+'</div></details>';
+  }
+  intHtml += '</div>';
+
+  /* Vanilla side */
+  intHtml += '<div class="comp-side" style="border-left:3px solid var(--van)">';
+  intHtml += '<div class="comp-side-header"><span class="comp-side-name" style="color:var(--van)">Vanilla Claude</span>';
+  intHtml += '<span class="comp-side-score" style="color:var(--van)">'+fmt(vs,1)+'</span></div>';
+  if(p.vanilla.submission && p.vanilla.submission.solution_summary){
+    intHtml += '<div style="font-size:13px;margin-bottom:8px">'+escHtml(p.vanilla.submission.solution_summary)+'</div>';
+  }
+  if(p.vanilla.raw_output){
+    intHtml += '<details><summary style="font-size:12px;color:var(--text3);cursor:pointer;margin-top:8px">Raw output</summary>';
+    intHtml += '<div class="comp-output">'+escHtml(p.vanilla.raw_output)+'</div></details>';
+  }
+  intHtml += '</div>';
+
+  intHtml += '</div></div>';
+});
+document.getElementById('tab-internal').innerHTML = intHtml;
+
+/* ===== EXTERNAL PATENTS TAB ===== */
+var extHtml = '';
+if(!D.external_trizbench.length){ extHtml = '<p style="color:var(--text2)">No external patent results available.</p>'; }
+
+/* Summary bar */
+if(D.external_trizbench.length){
+  var avgTf1 = D.summary.ext_triz_f1 || 0;
+  var avgVf1 = D.summary.ext_vanilla_f1 || 0;
+  extHtml += '<div style="display:flex;gap:24px;margin-bottom:24px;flex-wrap:wrap">';
+  extHtml += '<div class="stat-card" style="flex:1;min-width:200px"><div class="stat-value" style="color:var(--triz)">'+pct(avgTf1)+'</div><div class="stat-label">TRIZ Avg Principle F1</div></div>';
+  extHtml += '<div class="stat-card" style="flex:1;min-width:200px"><div class="stat-value" style="color:var(--van)">'+pct(avgVf1)+'</div><div class="stat-label">Vanilla Avg Principle F1</div></div>';
+  extHtml += '</div>';
+
+  /* F1 bar chart per patent */
+  extHtml += '<div class="bar-chart">';
+  D.external_trizbench.forEach(function(p){
+    var tw = Math.max(1, p.triz.f1 * 100);
+    var vw = Math.max(1, p.vanilla.f1 * 100);
+    extHtml += '<div class="bar-row">';
+    extHtml += '<div class="bar-label" style="width:100px">'+p.problem_id+'</div>';
+    extHtml += '<div class="bar-pair">';
+    extHtml += '<div class="bar-track"><div class="bar-fill triz-bar" style="width:'+tw+'%">'+pct(p.triz.f1)+'</div></div>';
+    extHtml += '<div class="bar-track"><div class="bar-fill van-bar" style="width:'+vw+'%">'+pct(p.vanilla.f1)+'</div></div>';
+    extHtml += '</div></div>';
+  });
+  extHtml += '</div>';
+
+  /* Details accordion */
+  extHtml += '<h4 style="margin:24px 0 12px;font-size:15px">Patent Details</h4>';
+  D.external_trizbench.forEach(function(p){
+    extHtml += '<div class="accordion-item">';
+    extHtml += '<div class="accordion-header" onclick="this.parentElement.classList.toggle(\'open\')">';
+    extHtml += '<span>'+p.problem_id+' &mdash; '+escHtml(p.patent_id)+' (F1: '+pct(p.triz.f1)+' vs '+pct(p.vanilla.f1)+')</span>';
+    extHtml += '<span class="accordion-arrow">&#9654;</span></div>';
+    extHtml += '<div class="accordion-body">';
+    extHtml += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">';
+    extHtml += '<div><strong style="color:var(--triz)">TRIZ Engine</strong><br>';
+    extHtml += 'Params exact: '+(p.triz.params_exact?'Yes':'No')+'<br>';
+    extHtml += 'Predicted: '+escHtml(JSON.stringify(p.triz.principles_predicted))+'<br>';
+    extHtml += 'Ground truth: '+escHtml(JSON.stringify(p.triz.principles_gt))+'</div>';
+    extHtml += '<div><strong style="color:var(--van)">Vanilla Claude</strong><br>';
+    extHtml += 'Params exact: '+(p.vanilla.params_exact?'Yes':'No')+'<br>';
+    extHtml += 'Predicted: '+escHtml(JSON.stringify(p.vanilla.principles_predicted))+'<br>';
+    extHtml += 'Ground truth: '+escHtml(JSON.stringify(p.vanilla.principles_gt))+'</div>';
+    extHtml += '</div></div></div>';
+  });
+}
+document.getElementById('tab-external').innerHTML = extHtml;
+
+/* ===== MACGYVER TAB ===== */
+var mgHtml = '';
+if(!D.macgyver.length){ mgHtml = '<p style="color:var(--text2)">No MacGyver results available.</p>'; }
+D.macgyver.forEach(function(p){
+  var ts = p.triz_score*100, vs = p.vanilla_score*100;
+  mgHtml += '<div class="problem-card">';
+  mgHtml += '<div class="problem-header">';
+  mgHtml += '<div><span class="problem-id">'+p.problem_id+'</span></div>';
+  mgHtml += '<div>'+winBadge(ts, vs)+'</div>';
+  mgHtml += '</div>';
+  mgHtml += '<div style="display:flex;gap:16px;margin-bottom:12px;flex-wrap:wrap">';
+  mgHtml += '<div style="font-size:13px"><strong style="color:var(--triz)">TRIZ:</strong> '+escHtml(p.triz_level)+' ('+fmt(ts,0)+')</div>';
+  mgHtml += '<div style="font-size:13px"><strong style="color:var(--van)">Vanilla:</strong> '+escHtml(p.vanilla_level)+' ('+fmt(vs,0)+')</div>';
+  mgHtml += '</div>';
+
+  mgHtml += '<div class="comparison">';
+  mgHtml += '<div class="comp-side" style="border-left:3px solid var(--triz)">';
+  mgHtml += '<div class="comp-side-header"><span class="comp-side-name" style="color:var(--triz)">TRIZ Engine</span></div>';
+  if(p.triz_output) mgHtml += '<div class="comp-output">'+escHtml(p.triz_output)+'</div>';
+  mgHtml += '</div>';
+  mgHtml += '<div class="comp-side" style="border-left:3px solid var(--van)">';
+  mgHtml += '<div class="comp-side-header"><span class="comp-side-name" style="color:var(--van)">Vanilla Claude</span></div>';
+  if(p.vanilla_output) mgHtml += '<div class="comp-output">'+escHtml(p.vanilla_output)+'</div>';
+  mgHtml += '</div></div>';
+
+  if(p.reference){
+    mgHtml += '<details style="margin-top:12px"><summary style="font-size:12px;color:var(--text3);cursor:pointer">Reference solution</summary>';
+    mgHtml += '<div class="comp-output" style="margin-top:8px">'+escHtml(p.reference)+'</div></details>';
+  }
+  mgHtml += '</div>';
+});
+document.getElementById('tab-macgyver').innerHTML = mgHtml;
+
+/* ===== CRESOWLVE TAB ===== */
+var coHtml = '';
+if(!D.cresowlve.length){ coHtml = '<p style="color:var(--text2)">No CresOWLve results available.</p>'; }
+
+if(D.cresowlve.length){
+  var tCorrect = D.cresowlve.filter(function(c){return c.triz_correct}).length;
+  var vCorrect = D.cresowlve.filter(function(c){return c.vanilla_correct}).length;
+  coHtml += '<div style="display:flex;gap:24px;margin-bottom:24px;flex-wrap:wrap">';
+  coHtml += '<div class="stat-card" style="flex:1;min-width:200px"><div class="stat-value" style="color:var(--triz)">'+tCorrect+'/'+D.cresowlve.length+'</div><div class="stat-label">TRIZ Correct</div></div>';
+  coHtml += '<div class="stat-card" style="flex:1;min-width:200px"><div class="stat-value" style="color:var(--van)">'+vCorrect+'/'+D.cresowlve.length+'</div><div class="stat-label">Vanilla Correct</div></div>';
+  coHtml += '</div>';
+}
+
+D.cresowlve.forEach(function(p){
+  coHtml += '<div class="problem-card">';
+  coHtml += '<div class="problem-header">';
+  coHtml += '<div><span class="problem-id">'+p.problem_id+'</span> <span class="problem-domain">Difficulty: '+p.difficulty+'</span></div>';
+  coHtml += '<div>';
+  coHtml += '<span class="badge '+(p.triz_correct?'badge-correct':'badge-wrong')+'" style="margin-right:4px">TRIZ: '+(p.triz_correct?'Correct':'Wrong')+'</span>';
+  coHtml += '<span class="badge '+(p.vanilla_correct?'badge-correct':'badge-wrong')+'">Vanilla: '+(p.vanilla_correct?'Correct':'Wrong')+'</span>';
+  coHtml += '</div></div>';
+
+  coHtml += '<div class="problem-title" style="font-size:14px">'+escHtml(p.question)+'</div>';
+  coHtml += '<div style="font-size:13px;color:var(--green);margin:8px 0"><strong>Answer:</strong> '+escHtml(p.correct_answer)+'</div>';
+
+  coHtml += '<div class="comparison">';
+  coHtml += '<div class="comp-side" style="border-left:3px solid var(--triz)">';
+  coHtml += '<div class="comp-side-header"><span class="comp-side-name" style="color:var(--triz)">TRIZ</span>';
+  coHtml += '<span class="badge '+(p.triz_correct?'badge-correct':'badge-wrong')+'">'+(p.triz_correct?'Correct':'Wrong')+'</span></div>';
+  coHtml += '<div style="font-size:13px">'+escHtml(p.triz_answer)+'</div>';
+  coHtml += '</div>';
+  coHtml += '<div class="comp-side" style="border-left:3px solid var(--van)">';
+  coHtml += '<div class="comp-side-header"><span class="comp-side-name" style="color:var(--van)">Vanilla</span>';
+  coHtml += '<span class="badge '+(p.vanilla_correct?'badge-correct':'badge-wrong')+'">'+(p.vanilla_correct?'Correct':'Wrong')+'</span></div>';
+  coHtml += '<div style="font-size:13px">'+escHtml(p.vanilla_answer)+'</div>';
+  coHtml += '</div></div>';
+  coHtml += '</div>';
+});
+document.getElementById('tab-cresowlve').innerHTML = coHtml;
+
+})();
+</script>
+</body>
+</html>

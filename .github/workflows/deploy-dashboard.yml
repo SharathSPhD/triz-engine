@@ -1,0 +1,53 @@
+name: Deploy TRIZ Arena Dashboard
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'triz-engine/results/**'
+      - 'triz-engine/benchmark/problems/**'
+      - 'scripts/build_dashboard.py'
+      - 'scripts/dashboard_template.html'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Build dashboard
+        run: python scripts/build_dashboard.py
+
+      - name: Commit updated dashboard
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/index.html
+          git diff --cached --quiet || git commit -m "chore: auto-rebuild TRIZ Arena dashboard"
+          git push
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
