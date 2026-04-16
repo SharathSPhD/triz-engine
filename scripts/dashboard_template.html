@@ -255,6 +255,147 @@ section{padding:60px 0}
   background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);
   padding:16px;font-family:'SF Mono',Monaco,Consolas,monospace;
   font-size:13px;color:var(--green);margin-bottom:16px;overflow-x:auto;
+  position:relative;
+}
+.install-block .copy-btn{
+  position:absolute;top:8px;right:8px;background:var(--bg3);border:1px solid var(--border);
+  color:var(--text2);padding:4px 10px;border-radius:4px;cursor:pointer;
+  font-family:inherit;font-size:11px;transition:all .2s;
+}
+.install-block .copy-btn:hover{color:var(--triz);border-color:var(--triz)}
+.install-block .copy-btn.copied{color:var(--green);border-color:var(--green)}
+
+/* INSTALL TABS */
+.install-tabs{display:flex;gap:4px;margin-bottom:0}
+.install-tab{
+  padding:8px 16px;border-radius:6px 6px 0 0;cursor:pointer;
+  font-size:12px;font-weight:600;color:var(--text2);
+  background:var(--bg2);border:1px solid var(--border);border-bottom:none;
+}
+.install-tab.active{color:var(--triz);background:var(--bg2);border-color:var(--triz) var(--triz) transparent;border-bottom:none;position:relative;z-index:2}
+.install-panel{display:none}
+.install-panel.active{display:block}
+.install-block.install-panel-block{border-radius:0 var(--radius-sm) var(--radius-sm) var(--radius-sm);margin-top:-1px;border-top:1px solid var(--triz)}
+
+/* SVG HEATMAP */
+.svg-heatmap-wrap{overflow-x:auto;margin-bottom:16px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:16px}
+.svg-heatmap{font-size:10px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+.svg-heatmap .cell-group{cursor:pointer}
+.svg-heatmap .cell-group:hover rect.cell-bg{stroke:var(--triz);stroke-width:1.5}
+.svg-heatmap .row-label{fill:var(--text2);font-size:10px}
+.svg-heatmap .col-label{fill:var(--text2);font-size:10px}
+.svg-heatmap .score-text{fill:var(--text);font-size:9px;font-weight:700;pointer-events:none;text-anchor:middle}
+.heatmap-legend{display:flex;gap:8px;align-items:center;font-size:11px;color:var(--text2);margin-top:8px;flex-wrap:wrap}
+.heatmap-legend-box{width:14px;height:14px;border-radius:3px;border:1px solid var(--border)}
+
+/* DRAWER */
+.drawer-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:200;
+  display:none;align-items:center;justify-content:center;padding:20px;
+  backdrop-filter:blur(4px);
+}
+.drawer-overlay.open{display:flex}
+.drawer{
+  background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);
+  width:100%;max-width:900px;max-height:85vh;overflow-y:auto;
+  padding:28px;position:relative;
+}
+.drawer-close{
+  position:absolute;top:12px;right:16px;background:none;border:none;
+  color:var(--text2);font-size:28px;cursor:pointer;line-height:1;
+}
+.drawer-close:hover{color:var(--text)}
+.drawer h3{margin-bottom:8px;font-size:22px}
+.drawer-sub{color:var(--text2);font-size:13px;margin-bottom:20px}
+.drawer-section{margin-bottom:24px}
+.drawer-section h4{font-size:14px;margin-bottom:10px;color:var(--triz)}
+
+/* RUBRIC TABLE */
+.rubric-table{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:12px}
+.rubric-table th,.rubric-table td{
+  padding:8px 12px;text-align:left;border-bottom:1px solid var(--border);
+}
+.rubric-table th{background:var(--bg3);font-weight:600;font-size:12px;color:var(--text2)}
+.rubric-table .r-dim{font-weight:600}
+.rubric-table .r-val{font-variant-numeric:tabular-nums;font-weight:700;text-align:right}
+.rubric-table .r-weight{color:var(--text2);text-align:right}
+
+/* ARCHITECTURE DIAGRAM */
+.arch-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-bottom:24px;overflow-x:auto}
+.arch-svg{display:block;margin:0 auto;max-width:100%}
+.arch-label{font-size:11px;font-weight:600;fill:var(--text);text-anchor:middle}
+.arch-sub{font-size:9px;fill:var(--text2);text-anchor:middle}
+
+/* SCATTER */
+.scatter-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-bottom:24px}
+.scatter-svg{display:block;margin:0 auto;max-width:100%}
+.scatter-point{cursor:pointer;transition:r .15s}
+.scatter-point:hover{r:7}
+.scatter-axis{stroke:var(--border);stroke-width:1}
+.scatter-ref{stroke:var(--text3);stroke-width:1;stroke-dasharray:4,4}
+.scatter-grid{stroke:var(--bg3);stroke-width:1}
+.scatter-label{fill:var(--text2);font-size:10px}
+
+/* INSIGHTS */
+.insights{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:12px;margin-bottom:32px;
+}
+.insight-card{
+  background:linear-gradient(135deg,var(--triz-bg),transparent);
+  border:1px solid var(--triz);border-radius:var(--radius);padding:20px;
+}
+.insight-headline{font-size:22px;font-weight:800;color:var(--triz);margin-bottom:6px}
+.insight-body{font-size:13px;color:var(--text2);line-height:1.5}
+
+/* TRACE TIMELINE */
+.demo-tabs{display:flex;gap:4px;margin-bottom:0;flex-wrap:wrap}
+.demo-tab{
+  padding:8px 14px;border-radius:6px 6px 0 0;cursor:pointer;
+  font-size:12px;font-weight:600;color:var(--text2);
+  background:var(--bg2);border:1px solid var(--border);border-bottom:none;
+  white-space:nowrap;
+}
+.demo-tab.active{color:var(--triz);border-color:var(--triz) var(--triz) transparent;position:relative;z-index:2}
+.demo-panel{display:none;background:var(--bg2);border:1px solid var(--border);border-radius:0 var(--radius-sm) var(--radius-sm) var(--radius-sm);padding:20px;margin-top:-1px}
+.demo-panel.active{display:block}
+.demo-split{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:12px}
+.demo-col{background:var(--bg);border-radius:var(--radius-sm);padding:14px;min-height:300px}
+.demo-col-header{
+  display:flex;justify-content:space-between;align-items:center;
+  padding-bottom:8px;margin-bottom:10px;border-bottom:1px solid var(--border);
+}
+.demo-col-title{font-size:13px;font-weight:700}
+.demo-col-meta{font-size:11px;color:var(--text2)}
+.trace-timeline{max-height:440px;overflow-y:auto;font-family:'SF Mono',Monaco,Consolas,monospace;font-size:11px}
+.trace-event{
+  padding:8px 10px;margin-bottom:6px;border-radius:6px;
+  border-left:3px solid var(--border);background:var(--bg2);
+  word-break:break-word;
+}
+.trace-event-header{display:flex;gap:8px;align-items:center;margin-bottom:4px;font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:.4px}
+.trace-event.t-tool_use{border-left-color:var(--triz)}
+.trace-event.t-tool_use .trace-event-header{color:var(--triz)}
+.trace-event.t-tool_result{border-left-color:var(--van)}
+.trace-event.t-tool_result .trace-event-header{color:var(--van)}
+.trace-event.t-assistant_text{border-left-color:var(--purple)}
+.trace-event.t-assistant_text .trace-event-header{color:var(--purple)}
+.trace-event.t-system{border-left-color:var(--text3)}
+.trace-event.t-system .trace-event-header{color:var(--text3)}
+.trace-event-body{color:var(--text2);white-space:pre-wrap;line-height:1.5}
+.trace-empty{padding:40px 20px;text-align:center;color:var(--text3);font-size:13px}
+.demo-summary-banner{
+  background:var(--bg3);border-radius:var(--radius-sm);padding:12px 16px;
+  display:flex;justify-content:space-between;align-items:center;
+  margin-bottom:10px;gap:12px;flex-wrap:wrap;
+}
+.demo-summary-problem{font-size:13px;color:var(--text2);flex:1;min-width:200px}
+.demo-summary-verdict{font-size:14px;font-weight:800}
+
+@media(max-width:768px){
+  .demo-split{grid-template-columns:1fr}
+  .insights{grid-template-columns:1fr 1fr}
+  .drawer{padding:16px;max-height:92vh}
 }
 
 /* FOOTER */
@@ -301,9 +442,11 @@ section{padding:60px 0}
   <div class="nav-logo">&#9881; TRIZ ARENA</div>
   <div class="nav-links">
     <a href="#hero" class="active">Arena</a>
+    <a href="#install">Install</a>
     <a href="#leaderboard">Leaderboard</a>
+    <a href="#demos">Live Demos</a>
+    <a href="#architecture">Architecture</a>
     <a href="#benchmarks">Benchmarks</a>
-    <a href="#about">About</a>
     <a href="#methodology">Methodology</a>
   </div>
   <div class="nav-badge" id="nav-elo-badge"></div>
@@ -439,6 +582,81 @@ section{padding:60px 0}
   </div>
 </section>
 
+<!-- ========== INSIGHTS STRIP ========== -->
+<section id="insights" style="padding:40px 0 20px">
+  <div class="container">
+    <div class="insights" id="insights-row"></div>
+  </div>
+</section>
+
+<!-- ========== INSTALL ========== -->
+<section id="install" style="padding:40px 0">
+  <div class="container">
+    <h2 class="section-title">&#128230; Install the Plugin</h2>
+    <p class="section-sub">Three ways to get TRIZ Engine running. The plugin path (recommended) loads commands, agents, and the MCP server into a fresh Claude Code session.</p>
+
+    <div class="install-tabs" role="tablist">
+      <div class="install-tab active" data-panel="panel-plugin">Claude Code Plugin</div>
+      <div class="install-tab" data-panel="panel-local">Local Clone</div>
+      <div class="install-tab" data-panel="panel-dev">Dev Setup (benchmarks)</div>
+    </div>
+
+    <div class="install-panel active" id="panel-plugin">
+      <div class="install-block install-panel-block">
+        <button class="copy-btn" data-copy="install-plugin">copy</button>
+<pre id="install-plugin" style="margin:0;white-space:pre-wrap;color:var(--green)">$ git clone https://github.com/sharathsphd/triz-engine.git
+$ cd triz-engine
+
+# register the local marketplace
+$ claude plugin marketplace add ./
+
+# install the plugin
+$ claude plugin install triz-engine@triz-arena
+
+# verify in a fresh session
+$ claude
+> /plugin list                  # should show triz-engine
+> /triz-engine:analyze "How to reduce weight of aircraft wings while maintaining strength?"</pre>
+      </div>
+      <p style="color:var(--text2);font-size:13px">After install, a fresh Claude Code session auto-loads the 6 slash commands (<code>/triz-engine:analyze</code>, <code>:principles</code>, <code>:matrix</code>, <code>:ifr</code>, <code>:ariz</code>, <code>:benchmark</code>), the 3 specialized agents, and the <code>triz-knowledge</code> MCP server.</p>
+    </div>
+
+    <div class="install-panel" id="panel-local">
+      <div class="install-block install-panel-block">
+        <button class="copy-btn" data-copy="install-local">copy</button>
+<pre id="install-local" style="margin:0;white-space:pre-wrap;color:var(--green)">$ git clone https://github.com/sharathsphd/triz-engine.git
+$ cd triz-engine/triz-engine
+$ python3.11 -m venv .venv && source .venv/bin/activate
+$ pip install -e ".[dev]"
+
+# verify
+$ python -m pytest -q
+$ python -m mcp.triz_server      # starts the FastMCP server on stdio</pre>
+      </div>
+      <p style="color:var(--text2);font-size:13px">Use this path to explore the knowledge base, run unit tests, or embed <code>mcp/triz_server.py</code> in another MCP-compatible client.</p>
+    </div>
+
+    <div class="install-panel" id="panel-dev">
+      <div class="install-block install-panel-block">
+        <button class="copy-btn" data-copy="install-dev">copy</button>
+<pre id="install-dev" style="margin:0;white-space:pre-wrap;color:var(--green)"># run a single internal TRIZBENCH problem with trace capture
+$ python -m benchmark.runner \
+    --problems TB-01 \
+    --participants triz-engine vanilla-claude \
+    --capture-trace
+
+# run a slice of MacGyver problems
+$ python -m benchmark.external.run_external \
+    --benchmarks macgyver --limit 8 --capture-trace
+
+# rebuild the dashboard from results/*.json
+$ python scripts/build_dashboard.py</pre>
+      </div>
+      <p style="color:var(--text2);font-size:13px">Traces captured with <code>--capture-trace</code> include every MCP tool call, agent hand-off, and assistant turn — the same data you see in the Live Demos section below.</p>
+    </div>
+  </div>
+</section>
+
 <!-- ========== LEADERBOARD ========== -->
 <section id="leaderboard">
   <div class="container">
@@ -447,16 +665,133 @@ section{padding:60px 0}
 
     <div class="stats-row" id="stats-row"></div>
 
-    <h3 style="margin-bottom:16px;font-size:18px">Per-Problem Score Heatmap</h3>
-    <div class="heatmap-wrap">
-      <table class="heatmap" id="heatmap-table">
-        <thead><tr><th>Problem</th><th>Type</th><th style="color:var(--triz)">TRIZ Engine</th><th style="color:var(--van)">Vanilla Claude</th><th>Winner</th></tr></thead>
-        <tbody id="heatmap-body"></tbody>
-      </table>
+    <h3 style="margin-bottom:8px;font-size:18px">Per-Problem Score Heatmap</h3>
+    <p style="color:var(--text2);font-size:13px;margin-bottom:12px">Each cell shows TRIZ score (top) and Vanilla score (bottom). Color encodes the delta — gold favors TRIZ, blue favors Vanilla. Click any cell for the full scoring breakdown.</p>
+    <div class="svg-heatmap-wrap">
+      <div id="svg-heatmap"></div>
+      <div class="heatmap-legend">
+        <span style="font-weight:600">Δ (TRIZ − Vanilla):</span>
+        <span style="display:flex;align-items:center;gap:4px"><span class="heatmap-legend-box" style="background:rgba(88,166,255,0.55)"></span>−50</span>
+        <span style="display:flex;align-items:center;gap:4px"><span class="heatmap-legend-box" style="background:rgba(88,166,255,0.2)"></span>−10</span>
+        <span style="display:flex;align-items:center;gap:4px"><span class="heatmap-legend-box" style="background:var(--bg3)"></span>0</span>
+        <span style="display:flex;align-items:center;gap:4px"><span class="heatmap-legend-box" style="background:rgba(240,180,41,0.2)"></span>+10</span>
+        <span style="display:flex;align-items:center;gap:4px"><span class="heatmap-legend-box" style="background:rgba(240,180,41,0.55)"></span>+50</span>
+      </div>
+    </div>
+
+    <h3 style="margin:32px 0 8px;font-size:18px">TRIZ vs Vanilla per Problem (Scatter)</h3>
+    <p style="color:var(--text2);font-size:13px;margin-bottom:12px">Points above the dashed 45° line indicate TRIZ wins; below indicates Vanilla wins. Hover for details.</p>
+    <div class="scatter-wrap">
+      <div id="scatter-plot"></div>
     </div>
 
     <h3 style="margin:32px 0 16px;font-size:18px">Score Distribution by Benchmark</h3>
     <div id="dimension-chart"></div>
+  </div>
+</section>
+
+<!-- ========== DEMO VIEWER ========== -->
+<section id="demos">
+  <div class="container">
+    <h2 class="section-title">&#127916; Live Demos</h2>
+    <p class="section-sub">Representative problems with real side-by-side output and the complete plugin execution trace (MCP tool calls, agent hand-offs, assistant turns).</p>
+
+    <div class="demo-tabs" id="demo-tabs"></div>
+    <div id="demo-panels"></div>
+  </div>
+</section>
+
+<!-- ========== ARCHITECTURE ========== -->
+<section id="architecture">
+  <div class="container">
+    <h2 class="section-title">&#129521; Plugin Architecture</h2>
+    <p class="section-sub">Three specialized agents orchestrated through an MCP knowledge server.</p>
+
+    <div class="arch-wrap">
+      <svg class="arch-svg" viewBox="0 0 900 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="TRIZ Engine plugin architecture">
+        <defs>
+          <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+            <path d="M0,0 L10,5 L0,10 z" fill="#f0b429"/>
+          </marker>
+          <linearGradient id="agentGrad" x1="0" x2="0" y1="0" y2="1">
+            <stop offset="0%" stop-color="#21262d"/>
+            <stop offset="100%" stop-color="#161b22"/>
+          </linearGradient>
+          <linearGradient id="mcpGrad" x1="0" x2="1" y1="0" y2="0">
+            <stop offset="0%" stop-color="#f0b42922"/>
+            <stop offset="100%" stop-color="#f0b42944"/>
+          </linearGradient>
+        </defs>
+
+        <rect x="10" y="10" width="880" height="60" rx="8" fill="#161b22" stroke="#30363d"/>
+        <text x="450" y="35" text-anchor="middle" font-size="13" font-weight="700" fill="#e6edf3">User: /triz-engine:analyze "..."</text>
+        <text x="450" y="55" text-anchor="middle" font-size="11" fill="#8b949e">Slash command entry point — Claude Code routes to plugin-defined handler</text>
+
+        <line x1="450" y1="70" x2="450" y2="95" stroke="#f0b429" stroke-width="2" marker-end="url(#arr)"/>
+
+        <g>
+          <rect x="50" y="100" width="240" height="120" rx="10" fill="url(#agentGrad)" stroke="#f0b429" stroke-width="1.5"/>
+          <text x="170" y="126" class="arch-label" fill="#f0b429" font-size="13">① Contradiction Agent</text>
+          <text x="170" y="146" class="arch-sub" fill="#8b949e" font-size="10">Parses problem, extracts</text>
+          <text x="170" y="160" class="arch-sub" fill="#8b949e" font-size="10">improving vs worsening dim.</text>
+          <text x="170" y="185" class="arch-sub" fill="#8b949e" font-size="10">uses: suggest_parameters,</text>
+          <text x="170" y="200" class="arch-sub" fill="#8b949e" font-size="10">list_parameters</text>
+        </g>
+
+        <g>
+          <rect x="330" y="100" width="240" height="120" rx="10" fill="url(#agentGrad)" stroke="#f0b429" stroke-width="1.5"/>
+          <text x="450" y="126" class="arch-label" fill="#f0b429" font-size="13">② Solution Agent</text>
+          <text x="450" y="146" class="arch-sub" fill="#8b949e" font-size="10">Looks up matrix, applies</text>
+          <text x="450" y="160" class="arch-sub" fill="#8b949e" font-size="10">principles, generates sketches</text>
+          <text x="450" y="185" class="arch-sub" fill="#8b949e" font-size="10">uses: lookup_matrix,</text>
+          <text x="450" y="200" class="arch-sub" fill="#8b949e" font-size="10">get_principle, apply_principle</text>
+        </g>
+
+        <g>
+          <rect x="610" y="100" width="240" height="120" rx="10" fill="url(#agentGrad)" stroke="#f0b429" stroke-width="1.5"/>
+          <text x="730" y="126" class="arch-label" fill="#f0b429" font-size="13">③ Evaluator Agent</text>
+          <text x="730" y="146" class="arch-sub" fill="#8b949e" font-size="10">Scores vs IFR, ranks,</text>
+          <text x="730" y="160" class="arch-sub" fill="#8b949e" font-size="10">picks winner, logs session</text>
+          <text x="730" y="185" class="arch-sub" fill="#8b949e" font-size="10">uses: score_solution,</text>
+          <text x="730" y="200" class="arch-sub" fill="#8b949e" font-size="10">evaluate_solution, log_session</text>
+        </g>
+
+        <line x1="290" y1="160" x2="325" y2="160" stroke="#f0b429" stroke-width="2" marker-end="url(#arr)"/>
+        <line x1="570" y1="160" x2="605" y2="160" stroke="#f0b429" stroke-width="2" marker-end="url(#arr)"/>
+
+        <rect x="50" y="250" width="800" height="90" rx="10" fill="url(#mcpGrad)" stroke="#f0b429" stroke-width="1.5"/>
+        <text x="450" y="278" text-anchor="middle" font-size="13" font-weight="700" fill="#f0b429">MCP Server: triz-knowledge</text>
+        <text x="450" y="298" text-anchor="middle" font-size="10" fill="#e6edf3">8 tools grounded in the 40 Inventive Principles + 39×39 Contradiction Matrix</text>
+        <text x="450" y="316" text-anchor="middle" font-size="10" fill="#8b949e">list_parameters · suggest_parameters · lookup_matrix · get_principle · apply_principle · score_solution · get_separation_principles · log_session_entry</text>
+
+        <line x1="170" y1="220" x2="170" y2="248" stroke="#f0b429" stroke-width="1.5" stroke-dasharray="3,3"/>
+        <line x1="450" y1="220" x2="450" y2="248" stroke="#f0b429" stroke-width="1.5" stroke-dasharray="3,3"/>
+        <line x1="730" y1="220" x2="730" y2="248" stroke="#f0b429" stroke-width="1.5" stroke-dasharray="3,3"/>
+      </svg>
+    </div>
+
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="feature-icon">&#128230;</div>
+        <div class="feature-title">6 Slash Commands</div>
+        <div class="feature-desc"><code>/triz-engine:analyze</code>, <code>:principles</code>, <code>:matrix</code>, <code>:ifr</code>, <code>:ariz</code>, <code>:benchmark</code> — auto-discovered by Claude Code on plugin load.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">&#129302;</div>
+        <div class="feature-title">3 Specialized Agents</div>
+        <div class="feature-desc">Each agent has its own system prompt, tool allowlist, and hand-off contract. Defined as markdown files under <code>agents/</code>.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">&#128736;</div>
+        <div class="feature-title">8 MCP Tools</div>
+        <div class="feature-desc">FastMCP server exposes knowledge-base queries so the plugin cannot hallucinate principle numbers, parameter IDs, or matrix entries.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">&#128218;</div>
+        <div class="feature-title">Grounded Knowledge</div>
+        <div class="feature-desc">All 40 Inventive Principles, the 39-parameter × 39-parameter contradiction matrix, and separation principles, shipped as validated JSON.</div>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -477,72 +812,6 @@ section{padding:60px 0}
     <div class="tab-content" id="tab-external"></div>
     <div class="tab-content" id="tab-macgyver"></div>
     <div class="tab-content" id="tab-cresowlve"></div>
-  </div>
-</section>
-
-<!-- ========== ABOUT ========== -->
-<section id="about">
-  <div class="container">
-    <h2 class="section-title">&#9881; About TRIZ Engine</h2>
-    <p class="section-sub">A Claude Code plugin that brings TRIZ methodology to AI-assisted problem solving</p>
-
-    <div class="feature-grid">
-      <div class="feature-card">
-        <div class="feature-icon">&#128161;</div>
-        <div class="feature-title">40 Inventive Principles</div>
-        <div class="feature-desc">Complete TRIZ knowledge base with all 40 inventive principles, contradiction matrix, and parameter mappings from Altshuller's original work.</div>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon">&#9878;</div>
-        <div class="feature-title">Contradiction Analysis</div>
-        <div class="feature-desc">Automatically identifies technical and physical contradictions in engineering problems and maps them to the 39x39 contradiction matrix.</div>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon">&#129302;</div>
-        <div class="feature-title">3-Agent Pipeline</div>
-        <div class="feature-desc">Contradiction Agent &rarr; Solution Agent &rarr; Evaluator Agent. Each specialized for its role, with LLM-as-judge scoring.</div>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon">&#128202;</div>
-        <div class="feature-title">8 MCP Tools</div>
-        <div class="feature-desc">analyze_contradiction, suggest_principles, apply_principle, evaluate_solution, solve_with_triz, lookup_matrix, suggest_parameters, run_benchmark.</div>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon">&#127919;</div>
-        <div class="feature-title">ARIZ-85C Algorithm</div>
-        <div class="feature-desc">Full implementation of the Algorithm of Inventive Problem Solving, guiding users through structured contradiction resolution.</div>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon">&#127941;</div>
-        <div class="feature-title">ELO Arena</div>
-        <div class="feature-desc">Bradley-Terry ELO leaderboard comparing TRIZ-augmented solutions against vanilla LLM baselines across multiple benchmarks.</div>
-      </div>
-    </div>
-
-    <h3 style="margin-bottom:16px;font-size:18px">Quick Start</h3>
-    <div class="install-block">
-      <div>$ git clone https://github.com/sharathsphd/triz-engine.git</div>
-      <div>$ cd triz-engine</div>
-      <div>$ pip install -e ".[dev]"</div>
-      <div style="margin-top:8px;color:var(--text2)"># In Claude Code:</div>
-      <div>$ claude</div>
-      <div>> /triz:solve "How to increase battery capacity without increasing weight?"</div>
-    </div>
-
-    <h3 style="margin-bottom:16px;font-size:18px">Architecture</h3>
-    <div class="install-block" style="color:var(--text2)">
-      <pre style="margin:0;font-size:12px">triz-engine/
-├── commands/          # /triz:solve, /triz:benchmark, /triz:matrix
-├── agents/            # contradiction-agent, solution-agent, evaluator-agent
-├── skills/            # auto-triz activation skill
-├── hooks/             # pre-prompt TRIZ detection hook
-├── mcp/               # FastMCP server with 8 tools
-├── benchmark/         # TRIZBENCH runner, scorer, ELO system
-│   ├── problems/      # 12 canonical TB problems
-│   └── external/      # MacGyver, CresOWLve, Patent adapters
-├── knowledge/         # triz-knowledge-base.json, contradiction matrix
-└── results/           # All benchmark output JSONs</pre>
-    </div>
   </div>
 </section>
 
@@ -610,6 +879,14 @@ section{padding:60px 0}
     </div>
   </div>
 </section>
+
+<!-- ========== SCORE DRAWER ========== -->
+<div class="drawer-overlay" id="score-drawer">
+  <div class="drawer">
+    <button class="drawer-close" onclick="closeDrawer()">&times;</button>
+    <div id="drawer-content"></div>
+  </div>
+</div>
 
 <footer class="footer">
   <p>TRIZ Arena Dashboard &mdash; auto-generated from benchmark data on <span id="gen-date"></span></p>
@@ -813,32 +1090,189 @@ stats.forEach(function(s){
 });
 document.getElementById('stats-row').innerHTML = statsHtml;
 
-/* ===== HEATMAP ===== */
-var heatRows = [];
-D.internal.forEach(function(p){
-  heatRows.push({id:p.problem_id, type:'Internal', triz:p.triz.final_score, vanilla:p.vanilla.final_score});
+/* ===== INSIGHTS STRIP ===== */
+var insRow = document.getElementById('insights-row');
+if(D.insights && D.insights.length){
+  var insHtml = '';
+  D.insights.forEach(function(i){
+    insHtml += '<div class="insight-card">';
+    insHtml += '<div class="insight-headline">'+escHtml(i.headline)+'</div>';
+    insHtml += '<div class="insight-body">'+escHtml(i.body)+'</div>';
+    insHtml += '</div>';
+  });
+  insRow.innerHTML = insHtml;
+}
+
+/* ===== INSTALL TABS + COPY ===== */
+document.querySelectorAll('.install-tab').forEach(function(t){
+  t.addEventListener('click', function(){
+    document.querySelectorAll('.install-tab').forEach(function(x){x.classList.remove('active')});
+    document.querySelectorAll('.install-panel').forEach(function(p){p.classList.remove('active')});
+    t.classList.add('active');
+    var panel = document.getElementById(t.dataset.panel);
+    if(panel) panel.classList.add('active');
+  });
 });
-D.external_trizbench.forEach(function(p){
-  heatRows.push({id:p.problem_id, type:'Patent', triz:p.triz.f1*100, vanilla:p.vanilla.f1*100});
-});
-D.macgyver.forEach(function(p){
-  heatRows.push({id:p.problem_id, type:'MacGyver', triz:p.triz_score*100, vanilla:p.vanilla_score*100});
-});
-D.cresowlve.forEach(function(p){
-  heatRows.push({id:p.problem_id, type:'CresOWLve', triz:p.triz_correct?100:0, vanilla:p.vanilla_correct?100:0});
+document.querySelectorAll('.copy-btn').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    var target = document.getElementById(btn.dataset.copy);
+    if(!target) return;
+    var text = target.innerText;
+    var done = function(){
+      var orig = btn.textContent;
+      btn.textContent = 'copied!';
+      btn.classList.add('copied');
+      setTimeout(function(){ btn.textContent = orig; btn.classList.remove('copied'); }, 1400);
+    };
+    if(navigator.clipboard){
+      navigator.clipboard.writeText(text).then(done).catch(function(){
+        var ta = document.createElement('textarea');
+        ta.value = text; document.body.appendChild(ta); ta.select();
+        try{ document.execCommand('copy'); }catch(_){}
+        document.body.removeChild(ta); done();
+      });
+    } else {
+      var ta = document.createElement('textarea');
+      ta.value = text; document.body.appendChild(ta); ta.select();
+      try{ document.execCommand('copy'); }catch(_){}
+      document.body.removeChild(ta); done();
+    }
+  });
 });
 
-var heatHtml = '';
-heatRows.forEach(function(r){
-  heatHtml += '<tr>';
-  heatHtml += '<td class="pid">'+r.id+'</td>';
-  heatHtml += '<td>'+r.type+'</td>';
-  heatHtml += '<td><span class="cell" style="background:'+scoreColor(r.triz,100)+'">'+fmt(r.triz,1)+'</span></td>';
-  heatHtml += '<td><span class="cell" style="background:'+scoreColor(r.vanilla,100)+'">'+fmt(r.vanilla,1)+'</span></td>';
-  heatHtml += '<td>'+winBadge(r.triz, r.vanilla)+'</td>';
-  heatHtml += '</tr>';
+/* ===== SVG HEATMAP ===== */
+var heatRows = [];
+D.internal.forEach(function(p){
+  heatRows.push({
+    id:p.problem_id, type:'Internal', triz:p.triz.final_score, vanilla:p.vanilla.final_score,
+    ref:p, category:'internal'
+  });
 });
-document.getElementById('heatmap-body').innerHTML = heatHtml;
+D.external_trizbench.forEach(function(p){
+  heatRows.push({
+    id:p.problem_id, type:'Patent', triz:p.triz.f1*100, vanilla:p.vanilla.f1*100,
+    ref:p, category:'external'
+  });
+});
+D.macgyver.forEach(function(p){
+  heatRows.push({
+    id:p.problem_id, type:'MacGyver', triz:p.triz_score*100, vanilla:p.vanilla_score*100,
+    ref:p, category:'macgyver'
+  });
+});
+D.cresowlve.forEach(function(p){
+  heatRows.push({
+    id:p.problem_id, type:'CresOWLve', triz:p.triz_correct?100:0, vanilla:p.vanilla_correct?100:0,
+    ref:p, category:'cresowlve'
+  });
+});
+
+function deltaColor(delta){
+  var mag = Math.min(Math.abs(delta) / 50, 1);
+  var alpha = 0.1 + mag * 0.5;
+  if(delta > 0) return 'rgba(240,180,41,'+alpha+')';
+  if(delta < 0) return 'rgba(88,166,255,'+alpha+')';
+  return 'var(--bg3)';
+}
+
+(function renderHeatmap(){
+  var cols = 12;
+  var cellW = 72, cellH = 52, padX = 80, padY = 36;
+  var rows = Math.ceil(heatRows.length / cols);
+  var width = padX + cols * (cellW + 4);
+  var height = padY + rows * (cellH + 6) + 20;
+  var svg = '<svg class="svg-heatmap" viewBox="0 0 '+width+' '+height+'" width="100%" xmlns="http://www.w3.org/2000/svg">';
+
+  var types = {};
+  heatRows.forEach(function(r){ types[r.type] = (types[r.type]||0) + 1; });
+
+  heatRows.forEach(function(r, i){
+    var cx = i % cols, cy = Math.floor(i / cols);
+    var x = padX + cx * (cellW + 4);
+    var y = padY + cy * (cellH + 6);
+    var t = r.triz == null ? 0 : r.triz;
+    var v = r.vanilla == null ? 0 : r.vanilla;
+    var delta = t - v;
+    var idStr = r.id + '|' + r.category;
+    svg += '<g class="cell-group" data-rowid="'+idStr+'">';
+    svg += '<rect class="cell-bg" x="'+x+'" y="'+y+'" width="'+cellW+'" height="'+cellH+'" rx="5" fill="'+deltaColor(delta)+'" stroke="#30363d" stroke-width="1"/>';
+    svg += '<line x1="'+x+'" y1="'+(y+cellH/2)+'" x2="'+(x+cellW)+'" y2="'+(y+cellH/2)+'" stroke="#30363d" stroke-width="0.5"/>';
+    svg += '<text x="'+(x+cellW/2)+'" y="'+(y+cellH/2-4)+'" class="score-text" fill="#f0b429">'+fmt(t,0)+'</text>';
+    svg += '<text x="'+(x+cellW/2)+'" y="'+(y+cellH-8)+'" class="score-text" fill="#58a6ff">'+fmt(v,0)+'</text>';
+    svg += '<text x="'+(x+cellW/2)+'" y="'+(y-4)+'" class="score-text" fill="#8b949e" font-size="8">'+escHtml(r.id)+'</text>';
+    svg += '<title>'+escHtml(r.id)+' ('+r.type+')\nTRIZ: '+fmt(t,1)+'\nVanilla: '+fmt(v,1)+'\nΔ: '+(delta>0?'+':'')+fmt(delta,1)+'\nClick for scoring breakdown</title>';
+    svg += '</g>';
+  });
+  svg += '</svg>';
+  document.getElementById('svg-heatmap').innerHTML = svg;
+
+  document.querySelectorAll('.cell-group').forEach(function(g){
+    g.addEventListener('click', function(){
+      var rid = g.dataset.rowid;
+      var row = heatRows.find(function(r){ return (r.id+'|'+r.category) === rid; });
+      if(row) openScoreDrawer(row);
+    });
+  });
+})();
+
+/* ===== SCATTER PLOT ===== */
+(function renderScatter(){
+  var pts = [];
+  D.internal.forEach(function(p){
+    pts.push({id:p.problem_id, group:'Internal', triz:p.triz.final_score||0, vanilla:p.vanilla.final_score||0, color:'#f0b429'});
+  });
+  D.external_trizbench.forEach(function(p){
+    pts.push({id:p.problem_id, group:'Patent', triz:(p.triz.f1||0)*100, vanilla:(p.vanilla.f1||0)*100, color:'#bc8cff'});
+  });
+  D.macgyver.forEach(function(p){
+    pts.push({id:p.problem_id, group:'MacGyver', triz:(p.triz_score||0)*100, vanilla:(p.vanilla_score||0)*100, color:'#3fb950'});
+  });
+  D.cresowlve.forEach(function(p){
+    pts.push({id:p.problem_id, group:'CresOWLve', triz:p.triz_correct?100:0, vanilla:p.vanilla_correct?100:0, color:'#58a6ff'});
+  });
+
+  var W=720, H=420, pad=48;
+  var svg = '<svg class="scatter-svg" viewBox="0 0 '+W+' '+H+'" width="100%" xmlns="http://www.w3.org/2000/svg">';
+  for(var g=0; g<=5; g++){
+    var gx = pad + (W - pad*2) * g / 5;
+    var gy = H - pad - (H - pad*2) * g / 5;
+    svg += '<line class="scatter-grid" x1="'+gx+'" y1="'+pad+'" x2="'+gx+'" y2="'+(H-pad)+'"/>';
+    svg += '<line class="scatter-grid" x1="'+pad+'" y1="'+gy+'" x2="'+(W-pad)+'" y2="'+gy+'"/>';
+    svg += '<text class="scatter-label" x="'+gx+'" y="'+(H-pad+14)+'" text-anchor="middle">'+(g*20)+'</text>';
+    svg += '<text class="scatter-label" x="'+(pad-6)+'" y="'+(gy+3)+'" text-anchor="end">'+(g*20)+'</text>';
+  }
+  svg += '<line class="scatter-axis" x1="'+pad+'" y1="'+pad+'" x2="'+pad+'" y2="'+(H-pad)+'"/>';
+  svg += '<line class="scatter-axis" x1="'+pad+'" y1="'+(H-pad)+'" x2="'+(W-pad)+'" y2="'+(H-pad)+'"/>';
+  svg += '<line class="scatter-ref" x1="'+pad+'" y1="'+(H-pad)+'" x2="'+(W-pad)+'" y2="'+pad+'"/>';
+  svg += '<text class="scatter-label" x="'+(W/2)+'" y="'+(H-10)+'" text-anchor="middle" font-size="12" fill="#58a6ff">Vanilla Claude score →</text>';
+  svg += '<text class="scatter-label" x="14" y="'+(H/2)+'" text-anchor="middle" font-size="12" fill="#f0b429" transform="rotate(-90,14,'+(H/2)+')">↑ TRIZ Engine score</text>';
+  svg += '<text x="'+(W-pad-6)+'" y="'+(pad-8)+'" class="scatter-label" text-anchor="end" font-style="italic">above line = TRIZ wins</text>';
+
+  pts.forEach(function(p){
+    var x = pad + (p.vanilla/100) * (W - pad*2);
+    var y = H - pad - (p.triz/100) * (H - pad*2);
+    svg += '<circle class="scatter-point" cx="'+x+'" cy="'+y+'" r="5" fill="'+p.color+'" fill-opacity="0.75" stroke="'+p.color+'" stroke-width="1.2">';
+    svg += '<title>'+escHtml(p.id)+' ('+p.group+')\nTRIZ: '+fmt(p.triz,1)+'\nVanilla: '+fmt(p.vanilla,1)+'</title>';
+    svg += '</circle>';
+  });
+
+  svg += '<g transform="translate('+(W-180)+',60)">';
+  var legend = [
+    {c:'#f0b429', l:'Internal'},
+    {c:'#bc8cff', l:'Patent F1'},
+    {c:'#3fb950', l:'MacGyver'},
+    {c:'#58a6ff', l:'CresOWLve'},
+  ];
+  legend.forEach(function(li, idx){
+    var y = idx*18;
+    svg += '<circle cx="6" cy="'+(y+6)+'" r="5" fill="'+li.c+'"/>';
+    svg += '<text class="scatter-label" x="18" y="'+(y+9)+'">'+li.l+'</text>';
+  });
+  svg += '</g>';
+
+  svg += '</svg>';
+  document.getElementById('scatter-plot').innerHTML = svg;
+})();
 
 /* ===== DIMENSION CHART (bar chart) ===== */
 var dimChart = document.getElementById('dimension-chart');
@@ -1060,6 +1494,228 @@ D.cresowlve.forEach(function(p){
   coHtml += '</div>';
 });
 document.getElementById('tab-cresowlve').innerHTML = coHtml;
+
+/* ===== SCORE DRAWER ===== */
+function openScoreDrawer(row){
+  var content = document.getElementById('drawer-content');
+  var html = '<h3>'+escHtml(row.id)+' <span style="color:var(--text2);font-weight:400;font-size:14px">('+row.type+')</span></h3>';
+  var delta = (row.triz||0) - (row.vanilla||0);
+  var verdictColor = delta > 0 ? 'var(--triz)' : (delta < 0 ? 'var(--van)' : 'var(--text2)');
+  var verdict = delta > 0 ? 'TRIZ advantage' : (delta < 0 ? 'Vanilla advantage' : 'Tied');
+  html += '<div class="drawer-sub"><span style="color:'+verdictColor+';font-weight:700">'+verdict+'</span> · Δ '+(delta>0?'+':'')+fmt(delta,1)+' pts</div>';
+
+  if(row.category === 'internal'){
+    var p = row.ref;
+    html += '<div class="drawer-section">';
+    html += '<h4>Problem</h4>';
+    html += '<div style="font-size:13px;color:var(--text2);line-height:1.6"><strong>'+escHtml(p.title)+'</strong><br>'+escHtml(p.problem_statement).substring(0,600)+'</div>';
+    html += '</div>';
+
+    html += '<div class="drawer-section"><h4>Scoring Rubric (weighted sum, max 100)</h4>';
+    html += '<table class="rubric-table"><thead><tr><th>Dimension</th><th style="text-align:right">Weight</th><th style="text-align:right;color:var(--triz)">TRIZ</th><th style="text-align:right;color:var(--van)">Vanilla</th></tr></thead><tbody>';
+    var dims = [
+      {k:'contradiction_identification', l:'Contradiction Identification (CI)', w:0.25},
+      {k:'principle_selection',          l:'Principle Selection (PS)',          w:0.20},
+      {k:'solution_novelty',             l:'Solution Novelty (SN) — LLM judge',  w:0.20},
+      {k:'contradiction_resolution',     l:'Contradiction Resolution (CR) — LLM judge', w:0.25},
+      {k:'ifr_score',                    l:'Ideal Final Result (IFR)',          w:0.10},
+    ];
+    dims.forEach(function(d){
+      var tv = (p.triz.scores && p.triz.scores[d.k] != null) ? p.triz.scores[d.k] : null;
+      var vv = (p.vanilla.scores && p.vanilla.scores[d.k] != null) ? p.vanilla.scores[d.k] : null;
+      html += '<tr><td class="r-dim">'+escHtml(d.l)+'</td>';
+      html += '<td class="r-weight">'+(d.w*100).toFixed(0)+'%</td>';
+      html += '<td class="r-val" style="color:var(--triz)">'+(tv==null?'—':fmt(tv,1))+'</td>';
+      html += '<td class="r-val" style="color:var(--van)">'+(vv==null?'—':fmt(vv,1))+'</td></tr>';
+    });
+    html += '<tr style="background:var(--bg3)"><td class="r-dim">Final (weighted)</td><td></td><td class="r-val" style="color:var(--triz);font-size:15px">'+fmt(p.triz.final_score,1)+'</td><td class="r-val" style="color:var(--van);font-size:15px">'+fmt(p.vanilla.final_score,1)+'</td></tr>';
+    html += '</tbody></table>';
+    html += '<p style="color:var(--text3);font-size:12px">CI/PS/IFR are deterministic against the problem\'s expected TRIZ parameters and principles. SN/CR are scored by <code>claude -p --model sonnet</code> using a structured rubric. See the Methodology section for exact formulas.</p>';
+    html += '</div>';
+
+    if(p.triz.submission){
+      html += '<div class="drawer-section"><h4>TRIZ Plugin Submission</h4>';
+      html += '<div style="font-size:12px;color:var(--text2);line-height:1.6">';
+      html += 'Principles applied: <code>'+escHtml(JSON.stringify(p.triz.submission.principles_applied||[]))+'</code><br>';
+      if(p.triz.submission.solution_summary) html += '<br><em>'+escHtml(p.triz.submission.solution_summary)+'</em>';
+      html += '</div></div>';
+    }
+  } else if(row.category === 'external'){
+    var p = row.ref;
+    html += '<div class="drawer-section"><h4>Patent Scoring Rubric (max 100)</h4>';
+    html += '<table class="rubric-table"><thead><tr><th>Component</th><th style="text-align:right">Points</th><th style="text-align:right;color:var(--triz)">TRIZ</th><th style="text-align:right;color:var(--van)">Vanilla</th></tr></thead><tbody>';
+    html += '<tr><td class="r-dim">Contradiction Type exact match</td><td class="r-weight">20</td>';
+    html += '<td class="r-val" style="color:var(--triz)">'+(p.triz.type_correct?'20':'0')+'</td>';
+    html += '<td class="r-val" style="color:var(--van)">'+(p.vanilla.type_correct?'20':'0')+'</td></tr>';
+    html += '<tr><td class="r-dim">Parameter match (exact=30, partial=15)</td><td class="r-weight">30</td>';
+    html += '<td class="r-val" style="color:var(--triz)">'+(p.triz.params_exact?30:(p.triz.params_partial?15:0))+'</td>';
+    html += '<td class="r-val" style="color:var(--van)">'+(p.vanilla.params_exact?30:(p.vanilla.params_partial?15:0))+'</td></tr>';
+    html += '<tr><td class="r-dim">Principle F1 × 50</td><td class="r-weight">50</td>';
+    html += '<td class="r-val" style="color:var(--triz)">'+fmt((p.triz.f1||0)*50,1)+'</td>';
+    html += '<td class="r-val" style="color:var(--van)">'+fmt((p.vanilla.f1||0)*50,1)+'</td></tr>';
+    html += '<tr style="background:var(--bg3)"><td class="r-dim">Total (× F1 on 0-100)</td><td></td><td class="r-val" style="color:var(--triz);font-size:15px">'+fmt((p.triz.f1||0)*100,1)+'</td><td class="r-val" style="color:var(--van);font-size:15px">'+fmt((p.vanilla.f1||0)*100,1)+'</td></tr>';
+    html += '</tbody></table>';
+    html += '<p style="color:var(--text3);font-size:12px">Heatmap uses the F1-normalized score (principle F1 × 100) for direct comparability across problem types.</p>';
+    html += '</div>';
+
+    html += '<div class="drawer-section"><h4>Predicted vs Ground-Truth Principles</h4>';
+    html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;font-size:12px">';
+    html += '<div><strong style="color:var(--triz)">TRIZ</strong><br>predicted: <code>'+escHtml(JSON.stringify(p.triz.principles_predicted))+'</code><br>ground truth: <code>'+escHtml(JSON.stringify(p.triz.principles_gt))+'</code></div>';
+    html += '<div><strong style="color:var(--van)">Vanilla</strong><br>predicted: <code>'+escHtml(JSON.stringify(p.vanilla.principles_predicted))+'</code><br>ground truth: <code>'+escHtml(JSON.stringify(p.vanilla.principles_gt))+'</code></div>';
+    html += '</div></div>';
+  } else if(row.category === 'macgyver'){
+    var p = row.ref;
+    html += '<div class="drawer-section"><h4>Problem</h4>';
+    html += '<div style="font-size:13px;color:var(--text2);line-height:1.6">'+escHtml((p.problem||'').substring(0,600))+'</div></div>';
+    html += '<div class="drawer-section"><h4>Scoring (LLM judge, 4-level)</h4>';
+    html += '<table class="rubric-table"><thead><tr><th>Level</th><th style="text-align:right">Points</th><th style="text-align:right;color:var(--triz)">TRIZ</th><th style="text-align:right;color:var(--van)">Vanilla</th></tr></thead><tbody>';
+    html += '<tr><td>Perfect</td><td class="r-weight">1.00</td><td class="r-val" style="color:var(--triz)">'+(p.triz_level==='perfect'?'✓':'')+'</td><td class="r-val" style="color:var(--van)">'+(p.vanilla_level==='perfect'?'✓':'')+'</td></tr>';
+    html += '<tr><td>Good</td><td class="r-weight">0.75</td><td class="r-val" style="color:var(--triz)">'+(p.triz_level==='good'?'✓':'')+'</td><td class="r-val" style="color:var(--van)">'+(p.vanilla_level==='good'?'✓':'')+'</td></tr>';
+    html += '<tr><td>Partial</td><td class="r-weight">0.50</td><td class="r-val" style="color:var(--triz)">'+(p.triz_level==='partial'?'✓':'')+'</td><td class="r-val" style="color:var(--van)">'+(p.vanilla_level==='partial'?'✓':'')+'</td></tr>';
+    html += '<tr><td>Fail</td><td class="r-weight">0.00</td><td class="r-val" style="color:var(--triz)">'+(p.triz_level==='fail'?'✓':'')+'</td><td class="r-val" style="color:var(--van)">'+(p.vanilla_level==='fail'?'✓':'')+'</td></tr>';
+    html += '<tr style="background:var(--bg3)"><td class="r-dim">Final (×100 shown in heatmap)</td><td></td><td class="r-val" style="color:var(--triz);font-size:15px">'+fmt(p.triz_score*100,0)+'</td><td class="r-val" style="color:var(--van);font-size:15px">'+fmt(p.vanilla_score*100,0)+'</td></tr>';
+    html += '</tbody></table></div>';
+  } else if(row.category === 'cresowlve'){
+    var p = row.ref;
+    html += '<div class="drawer-section"><h4>Riddle</h4>';
+    html += '<div style="font-size:13px;color:var(--text2);line-height:1.6">'+escHtml(p.question)+'</div>';
+    html += '<div style="font-size:13px;color:var(--green);margin-top:8px">Answer: '+escHtml(p.correct_answer)+'</div></div>';
+    html += '<div class="drawer-section"><h4>Binary Scoring</h4>';
+    html += '<p style="color:var(--text2);font-size:12px">Answer matches the ground truth after normalization (punctuation stripped, case-insensitive substring match).</p>';
+    html += '<table class="rubric-table"><tbody>';
+    html += '<tr><td class="r-dim">TRIZ answer</td><td>'+escHtml(p.triz_answer)+'</td><td class="r-val">'+(p.triz_correct?'<span class="badge badge-correct">Correct</span>':'<span class="badge badge-wrong">Wrong</span>')+'</td></tr>';
+    html += '<tr><td class="r-dim">Vanilla answer</td><td>'+escHtml(p.vanilla_answer)+'</td><td class="r-val">'+(p.vanilla_correct?'<span class="badge badge-correct">Correct</span>':'<span class="badge badge-wrong">Wrong</span>')+'</td></tr>';
+    html += '</tbody></table></div>';
+  }
+
+  content.innerHTML = html;
+  document.getElementById('score-drawer').classList.add('open');
+}
+function closeDrawer(){ document.getElementById('score-drawer').classList.remove('open'); }
+window.closeDrawer = closeDrawer;
+document.getElementById('score-drawer').addEventListener('click', function(e){
+  if(e.target === this) closeDrawer();
+});
+document.addEventListener('keydown', function(e){
+  if(e.key === 'Escape') closeDrawer();
+});
+
+/* ===== DEMO VIEWER ===== */
+(function renderDemos(){
+  var demos = D.demos || [];
+  var tabsEl = document.getElementById('demo-tabs');
+  var panelsEl = document.getElementById('demo-panels');
+  if(!demos.length){
+    panelsEl.innerHTML = '<p style="color:var(--text2)">No traced demos yet. Re-run benchmarks with <code>--capture-trace</code> to populate this section.</p>';
+    return;
+  }
+
+  var tabsHtml = '';
+  var panelsHtml = '';
+  demos.forEach(function(d, idx){
+    var tabLabel = d.problem_id + ' · ' + (d.title || d.domain || '');
+    tabsHtml += '<div class="demo-tab'+(idx===0?' active':'')+'" data-demo="demo-panel-'+idx+'">'+escHtml(tabLabel.substring(0,38))+'</div>';
+
+    var tScore = (d.triz && d.triz.final_score != null) ? d.triz.final_score : 0;
+    var vScore = (d.vanilla && d.vanilla.final_score != null) ? d.vanilla.final_score : 0;
+    var isMg = d.source === 'macgyver';
+    var tDisp = isMg ? fmt(tScore*100,0) : fmt(tScore,1);
+    var vDisp = isMg ? fmt(vScore*100,0) : fmt(vScore,1);
+    var verdict = '';
+    if(tScore > vScore) verdict = '<span style="color:var(--triz)">TRIZ +'+fmt((tScore-vScore)*(isMg?100:1),1)+'</span>';
+    else if(vScore > tScore) verdict = '<span style="color:var(--van)">Vanilla +'+fmt((vScore-tScore)*(isMg?100:1),1)+'</span>';
+    else verdict = '<span style="color:var(--text2)">Tied</span>';
+
+    panelsHtml += '<div class="demo-panel'+(idx===0?' active':'')+'" id="demo-panel-'+idx+'">';
+    panelsHtml += '<div class="demo-summary-banner">';
+    panelsHtml += '<div class="demo-summary-problem"><strong>'+escHtml(d.problem_id)+'</strong> — '+escHtml((d.problem_statement||'').substring(0,320))+(d.problem_statement&&d.problem_statement.length>320?'…':'')+'</div>';
+    panelsHtml += '<div class="demo-summary-verdict">'+verdict+'</div>';
+    panelsHtml += '</div>';
+
+    panelsHtml += '<div class="demo-split">';
+
+    panelsHtml += '<div class="demo-col" style="border-left:3px solid var(--van)">';
+    panelsHtml += '<div class="demo-col-header"><span class="demo-col-title" style="color:var(--van)">Vanilla Claude</span><span class="demo-col-meta">score '+vDisp+'</span></div>';
+    var vTrace = (d.vanilla && d.vanilla.trace) || [];
+    panelsHtml += renderTrace(vTrace, d.vanilla && d.vanilla.raw_output, 'vanilla');
+    panelsHtml += '</div>';
+
+    panelsHtml += '<div class="demo-col" style="border-left:3px solid var(--triz)">';
+    panelsHtml += '<div class="demo-col-header"><span class="demo-col-title" style="color:var(--triz)">TRIZ Plugin Trace</span><span class="demo-col-meta">score '+tDisp+'</span></div>';
+    var tTrace = (d.triz && d.triz.trace) || [];
+    panelsHtml += renderTrace(tTrace, d.triz && d.triz.raw_output, 'triz');
+    panelsHtml += '</div>';
+
+    panelsHtml += '</div></div>';
+  });
+
+  tabsEl.innerHTML = tabsHtml;
+  panelsEl.innerHTML = panelsHtml;
+
+  document.querySelectorAll('.demo-tab').forEach(function(t){
+    t.addEventListener('click', function(){
+      document.querySelectorAll('.demo-tab').forEach(function(x){x.classList.remove('active')});
+      document.querySelectorAll('.demo-panel').forEach(function(p){p.classList.remove('active')});
+      t.classList.add('active');
+      var p = document.getElementById(t.dataset.demo);
+      if(p) p.classList.add('active');
+    });
+  });
+})();
+
+function renderTrace(trace, rawOutput, side){
+  var html = '<div class="trace-timeline">';
+  if(!trace || !trace.length){
+    if(rawOutput){
+      html += '<div class="trace-event t-assistant_text"><div class="trace-event-header">Final output</div>';
+      html += '<div class="trace-event-body">'+escHtml(rawOutput.substring(0,3000))+(rawOutput.length>3000?'…':'')+'</div></div>';
+    } else {
+      html += '<div class="trace-empty">No trace captured for this run. Vanilla runs without <code>--capture-trace</code> store only the final answer.</div>';
+    }
+    html += '</div>';
+    return html;
+  }
+
+  trace.forEach(function(ev){
+    var type = ev.type || 'system';
+    var cls = 't-' + type;
+    html += '<div class="trace-event '+cls+'">';
+    var header = '';
+    if(type === 'tool_use'){
+      header = '🛠  tool_use · ' + escHtml(ev.name || 'unknown');
+    } else if(type === 'tool_result'){
+      header = '↩  tool_result' + (ev.tool_use_id ? (' · ' + escHtml(String(ev.tool_use_id).substring(0,12))) : '');
+    } else if(type === 'assistant_text'){
+      header = '💬  assistant';
+    } else if(type === 'system'){
+      header = '⚙  ' + escHtml(ev.subtype || 'system');
+    } else {
+      header = escHtml(type);
+    }
+    html += '<div class="trace-event-header">'+header+'</div>';
+    var body = '';
+    if(type === 'tool_use' && ev.input){
+      try { body = JSON.stringify(ev.input, null, 2); }
+      catch(_){ body = String(ev.input); }
+    } else if(type === 'tool_result'){
+      body = ev.content || ev.text || '';
+      if(typeof body !== 'string') body = JSON.stringify(body);
+    } else if(type === 'assistant_text'){
+      body = ev.text || '';
+    } else {
+      body = ev.text || ev.content || ev.message || '';
+      if(typeof body !== 'string') body = JSON.stringify(body);
+    }
+    if(body){
+      var truncated = body.substring(0, 800);
+      if(body.length > 800) truncated += '\n… (' + (body.length - 800) + ' more chars)';
+      html += '<div class="trace-event-body">'+escHtml(truncated)+'</div>';
+    }
+    html += '</div>';
+  });
+  html += '</div>';
+  return html;
+}
 
 })();
 </script>

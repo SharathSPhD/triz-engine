@@ -1,0 +1,24 @@
+{
+  "problem_id": "MG-010",
+  "category": "general",
+  "triz": {
+    "level": "error",
+    "score": 0.0
+  },
+  "vanilla": {
+    "level": "correct",
+    "score": 0.75
+  },
+  "problem": " Your garden shed door is jammed shut, and your garden tools are locked inside. Tools available to you include a frying pan, a pair of high heels, a skateboard, an old lasso, a roll of wrapping paper, a wooden table leg, a basketball, and a plastic bucket. The shed door, however, is reinforced and the lock is jammed internally. How can you open the shed door with these items?",
+  "triz_output": "",
+  "vanilla_output": "# Opening the Jammed Shed Door\n\nHere's a practical, multi-step solution using creative problem-solving:\n\n## Primary Strategy: Leverage & Prying\n\n**Step 1: Create a pry bar system**\n- Use the **wooden table leg** as your main pry bar\n- Find the point where the door frame meets the door (typically the side with the lock is weakest)\n- Position the table leg into any gap, perpendicular to the door\n\n**Step 2: Apply graduated pressure**\n- Use the **frying pan as a hammer** to tap the table leg gently, working it deeper into the gap\n- The weight of the frying pan and leveraging action gradually separates the door from the jamming mechanism inside\n- Progress slowly\u2014the goal is to move the door frame slightly, not break it\n\n**Step 3: Increase leverage**\n- Place the **skateboard** under the table leg as a fulcrum point\n- This creates a longer lever arm and multiplies your mechanical advantage\n- Use the **basketball** as a support wedge to maintain the table leg's position between taps\n\n## Secondary Strategy: Internal Lock Access\n\nIf the above doesn't work or gains insufficient clearance:\n\n**Use the lasso to reach the jam:**\n- If the door has gaps at the hinge side or top, thread the **old lasso** through to catch or manipulate whatever is blocking the internal mechanism\n- The lasso can potentially hook and pull a jam object sideways enough to free the lock\n\n## Backup Approach: Lubrication\n\n**Prepare water lubrication:**\n- Fill the **plastic bucket** with water\n- Pour water directly into the lock mechanism to potentially dissolve rust or corrosion causing the jam\n- Use the **high heels' thin heels** to gently tap the lock or work it after lubrication\n\n**Wrapping paper role:** Bundle and secure the wooden table leg to the skateboard or extend tools together for more controlled application.\n\n---\n\n**The key insight:** You're not forcing the door open directly\u2014you're gradually working the internal jam by leveraging the frame and accessing the mechanism. Graduated pressure succeeds",
+  "reference": "Step1: Use the wooden table leg as a battering ram to hit the door near the lock. The strength of the table leg could generate enough force to knock the jammed lock loose.<br>\nStep2: Once you've loosened the lock, use the old lasso to pull the handle or latch, opening the door. <br>\nNB. Skateboards, basketballs, high heels, frying pans, wrapping paper, and plastic buckets would not be helpful in this scenario.",
+  "vanilla_trace": [
+    {
+      "seq": 0,
+      "kind": "assistant_text",
+      "text": "# Opening the Jammed Shed Door\n\nHere's a practical, multi-step solution using creative problem-solving:\n\n## Primary Strategy: Leverage & Prying\n\n**Step 1: Create a pry bar system**\n- Use the **wooden table leg** as your main pry bar\n- Find the point where the door frame meets the door (typically the side with the lock is weakest)\n- Position the table leg into any gap, perpendicular to the door\n\n**Step 2: Apply graduated pressure**\n- Use the **frying pan as a hammer** to tap the table leg gently, working it deeper into the gap\n- The weight of the frying pan and leveraging action gradually separ\u2026 [truncated]"
+    }
+  ],
+  "vanilla_trace_status": "ok"
+}

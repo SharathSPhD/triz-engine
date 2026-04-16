@@ -1,0 +1,32 @@
+{
+  "problem_id": "MG-012",
+  "category": "general",
+  "triz": {
+    "level": "correct",
+    "score": 0.75
+  },
+  "vanilla": {
+    "level": "perfect",
+    "score": 1.0
+  },
+  "problem": " Your garden hose has sprung a leak, and you don't have a hose repair kit. Items available include an old tire tube, a plastic bag, a rubber band, duct tape, an inflatable pool ring, a beach ball, a pair of scissors and a spoon. The constraint here is that the hole in the hose is too large to be covered by just a rubber band and plastic bag. How can you temporarily fix the leak in the garden hose with these items?",
+  "triz_output": "I'll analyze this using TRIZ methodology. This is a **resource constraint problem** rather than a classical contradiction, but TRIZ principles guide creative solutions when working with limited, heterogeneous materials.\n\n## Problem Frame\n\n**Core Tension**: The hole is \"too large for simple sealing\" but must be sealed with only available resources.\n\nThis isn't a traditional technical contradiction (X improves, Y worsens), but a **creative resource utilization challenge**. TRIZ can help by suggesting principles for combining disparate resources.\n\n---\n\n## TRIZ Principles Applied\n\n**Principle 1 (Segmentation)**: Break the repair into functional layers\n**Principle 5 (Merging)**: Combine weak individual solutions into one strong system\n**Principle 6 (Universality)**: Make each resource serve multiple functions\n**Principle 35 (Parameter Changes)**: Transform material properties through cutting/layering\n\n---\n\n## Practical Solution\n\n### Step 1: Create a Structural Patch\n- **Use scissors** to cut a rectangular patch from the **tire tube** (or beach ball as backup)\n- Size: 3-4 inches longer than the hole in all directions\n- The tire tube provides elasticity and structural reinforcement\n\n### Step 2: Seal with Multi-Layer Barrier\n- Place the **plastic bag** over the hole as the primary waterproof layer\n- Layer the **tire tube patch** over it\n- This combination creates redundancy: if one fails, the other seals\n\n### Step 3: Secure with Primary Fastening\n- Wrap **duct tape** around the hose, covering the entire patched area (at least 2-3 wraps)\n- Duct tape provides both adhesion and mechanical compression\n\n### Step 4: Add Tensioning (Optional)\n- Use the **rubber band** wrapped perpendicular to the hose axis for additional compression if the patch edges are lifting\n- The **pool ring** can be cut to create reinforcement bands\n\n### Step 5: Pressure Test\n- Turn on the water and observe the repair\n- The spoon can be used to pry/adjust the patch edges if needed\n\n---\n\n## Why This Works (T",
+  "vanilla_output": "# Temporary Garden Hose Leak Repair\n\nHere's a practical multi-layer patching solution:\n\n## The Approach\n\n**Layer 1 \u2013 Waterproof Base (Plastic Bag)**\nCut open the plastic bag and wrap it tightly around the damaged hose section with the hole in the center. Secure the bag's edges with rubber bands on both sides of the leak to prevent water from seeping under the edges.\n\n**Layer 2 \u2013 Structural Patch (Tire Tube)**\nUse scissors to cut a rectangular patch from the old tire tube, roughly 4-6 inches larger than the hole. Wrap this rubber patch tightly around the hose, compressing it over the plastic bag layer. The tire tube's elasticity creates a snug, pressure-fit seal.\n\n**Layer 3 \u2013 Compression Rings (Pool Ring + Rubber Band)**\nCut the inflatable pool ring into sections and use these strips, plus your rubber band, to create 2-3 tight rings spaced evenly over the repair area. These act as compression clamps, pressing all layers together.\n\n**Layer 4 \u2013 Final Waterproof Seal (Duct Tape)**\nWrap duct tape around the entire repair assembly multiple times, overlapping each wrap by at least 50%. This creates the final watertight seal and holds everything in place.\n\n## Key Principles\n\n- **Compression is key**: Multiple tight rings prevent water pressure from forcing the layers apart\n- **Redundancy**: Each layer backs up the others (bag fails \u2192 tire tube still seals; tire tube shifts \u2192 duct tape holds)\n- **The spoon**: Use as a lever to help tighten and smooth layers as you work\n\nThis repair should handle moderate water pressure temporarily. Turn water on at low pressure first to test.",
+  "reference": "Step1: Cut a small piece from the tire tube using the scissors. Step2: Wrap it around the hole in the hose securely. Step3: After the tube piece is placed, wrap layers of duct tape around it and the hose to secure the tire tube piece in place and stop the leak.",
+  "triz_trace": [
+    {
+      "seq": 0,
+      "kind": "assistant_text",
+      "text": "I'll analyze this using TRIZ methodology. This is a **resource constraint problem** rather than a classical contradiction, but TRIZ principles guide creative solutions when working with limited, heterogeneous materials.\n\n## Problem Frame\n\n**Core Tension**: The hole is \"too large for simple sealing\" but must be sealed with only available resources.\n\nThis isn't a traditional technical contradiction (X improves, Y worsens), but a **creative resource utilization challenge**. TRIZ can help by suggesting principles for combining disparate resources.\n\n---\n\n## TRIZ Principles Applied\n\n**Principle 1 (S\u2026 [truncated]"
+    }
+  ],
+  "triz_trace_status": "ok",
+  "vanilla_trace": [
+    {
+      "seq": 0,
+      "kind": "assistant_text",
+      "text": "# Temporary Garden Hose Leak Repair\n\nHere's a practical multi-layer patching solution:\n\n## The Approach\n\n**Layer 1 \u2013 Waterproof Base (Plastic Bag)**\nCut open the plastic bag and wrap it tightly around the damaged hose section with the hole in the center. Secure the bag's edges with rubber bands on both sides of the leak to prevent water from seeping under the edges.\n\n**Layer 2 \u2013 Structural Patch (Tire Tube)**\nUse scissors to cut a rectangular patch from the old tire tube, roughly 4-6 inches larger than the hole. Wrap this rubber patch tightly around the hose, compressing it over the plastic ba\u2026 [truncated]"
+    }
+  ],
+  "vanilla_trace_status": "ok"
+}

@@ -1,0 +1,32 @@
+{
+  "problem_id": "MG-011",
+  "category": "general",
+  "triz": {
+    "level": "correct",
+    "score": 0.75
+  },
+  "vanilla": {
+    "level": "partial",
+    "score": 0.4
+  },
+  "problem": " Your container plants need to be fertilized, but you have run out of store-bought plant food. Items available include a box of baking soda, a can of soda, some Epsom salt, leftover coffee grounds, a bottle of vinegar, a tub of yogurt, a packet of yeast, and a bottle of olive oil. Your plant is, however, sensitive to Epsom salt and soda. How can you create a nutritious feeding solution using these items?",
+  "triz_output": "I'll analyze this creative resource-constraint problem using TRIZ. This is a **physical contradiction**: you need nutrients from the available resources while avoiding the ones your plant can't tolerate.\n\nLet me work through the structured TRIZ framework to identify the core contradiction and apply inventive principles.\n\n## PROBLEM INTAKE & CONTRADICTION CLASSIFICATION\n\n**Core Contradiction**: \n- **Improving**: Nutrient completeness (what the plant needs)\n- **Worsening**: Safety (some nutrient sources are toxic to this plant)\n- **Type**: Physical Contradiction \u2014 available resources create a conflict\n\n**Safe Resources**: Coffee grounds, yogurt, yeast, vinegar, baking soda (in moderation), olive oil\n**Forbidden Resources**: Epsom salt (Mg), soda (high sodium/pH)\n\n---\n\n## TRIZ PRINCIPLE APPLICATION\n\nI'll apply three key principles for creative resource synthesis:\n\n### **Principle 2: Taking Out** \nExtract only the beneficial properties, discard the harmful. This means:\n- From soda: Skip it entirely (sodium toxin)\n- From Epsom salt: Skip it (plant sensitivity)\n- **Use instead**: What's left are micronutrient-rich, non-toxic items\n\n### **Principle 5: Merging** \nCombine safe resources to create synergistic nutrient profiles:\n\n### **Principle 35: Parameter Changes** \nModify concentration, pH, or timing to optimize nutrient availability\n\n---\n\n## CONCRETE SOLUTION: **The Composite Tea Method**\n\n**Mix and apply in stages to avoid overload:**\n\n1. **Nitrogen source** (coffee grounds, yogurt, yeast):\n   - Brew leftover coffee grounds in water (24 hrs) \u2192 liquid nitrogen\n   - Add small handful of grounds directly to soil surface (slow release)\n   - Mix 2 tbsp yogurt + 1 packet yeast in warm water, let ferment 48 hrs (N + microbes + B vitamins)\n\n2. **pH buffer & micronutrients** (vinegar):\n   - Dilute vinegar 1:10 with water (acidifies soil safely, provides trace minerals)\n   - Neutralizes any residual pH stress\n\n3. **Application sequence** (temporal separation):\n   - **Week 1**: Ap",
+  "vanilla_output": "# Practical Plant Feeding Solution\n\nHere's a creative, effective approach using your safe resources:\n\n## The Multi-Component Fertilizer\n\n**1. Nitrogen-Rich Coffee Base**\n- Brew strong \"coffee tea\": steep 2 cups of used coffee grounds in 1 gallon of water for 24-48 hours\n- Strain and use this liquid directly\u2014provides nitrogen and beneficial microorganisms\n- Apply 1 cup diluted with 1 cup water per week\n\n**2. Probiotic Boost (Yogurt Culture)**\n- Mix 1 cup plain yogurt with 1 gallon of water\n- The live bacteria improve soil health and nutrient cycling\n- Drench soil surface once every 2 weeks\n\n**3. Microbial Activator (Yeast Tea)**\n- Dissolve 1 packet of yeast in 1 liter of warm water with 1 tablespoon sugar (if available; otherwise use the yogurt's lactose)\n- Let bubble for 30 minutes, then use within 24 hours\n- Apply 1 cup per plant\u2014the yeast provides B vitamins and promotes root development\n\n**4. pH Adjuster (Minimal Vinegar)**\n- Add just 1 teaspoon of vinegar per gallon of your coffee tea mixture\n- This acidifies slightly and improves nutrient availability\n\n## Application Schedule\n- **Week 1**: Coffee tea + vinegar\n- **Week 2**: Yogurt culture\n- **Week 3**: Yeast tea + coffee tea\n- **Week 4**: Repeat cycle\n\n## Why It Works\nThis creates a complete biological fertilizer with:\n- **Nitrogen** (coffee) for leaf growth\n- **Beneficial bacteria** (yogurt) for soil ecosystem\n- **B vitamins & growth hormones** (yeast) for root development\n- **pH optimization** (vinegar) for nutrient absorption\n\nSkip the baking soda and olive oil (oil clogs soil), and you have a safe, nutrient-complete feeding system.",
+  "reference": "It is possible. Step1: Use leftover coffee grounds as a fertilizer because they are rich in nitrogen which is beneficial to plants. Step2: Mix some yeast into the soil, it will break down plant material and release nutrients into the soil. Step3: Mix a small amount of vinegar into the water for acidity if the plants require it. Lastly, avoid using baking soda, soda, Epsom salt, olive oil, and yogurt as they can harm the plant or alter the pH of the soil, making it unsuitable for the plant. Tools needed are a water can and your hands.",
+  "triz_trace": [
+    {
+      "seq": 0,
+      "kind": "assistant_text",
+      "text": "I'll analyze this creative resource-constraint problem using TRIZ. This is a **physical contradiction**: you need nutrients from the available resources while avoiding the ones your plant can't tolerate.\n\nLet me work through the structured TRIZ framework to identify the core contradiction and apply inventive principles.\n\n## PROBLEM INTAKE & CONTRADICTION CLASSIFICATION\n\n**Core Contradiction**: \n- **Improving**: Nutrient completeness (what the plant needs)\n- **Worsening**: Safety (some nutrient sources are toxic to this plant)\n- **Type**: Physical Contradiction \u2014 available resources create a co\u2026 [truncated]"
+    }
+  ],
+  "triz_trace_status": "ok",
+  "vanilla_trace": [
+    {
+      "seq": 0,
+      "kind": "assistant_text",
+      "text": "# Practical Plant Feeding Solution\n\nHere's a creative, effective approach using your safe resources:\n\n## The Multi-Component Fertilizer\n\n**1. Nitrogen-Rich Coffee Base**\n- Brew strong \"coffee tea\": steep 2 cups of used coffee grounds in 1 gallon of water for 24-48 hours\n- Strain and use this liquid directly\u2014provides nitrogen and beneficial microorganisms\n- Apply 1 cup diluted with 1 cup water per week\n\n**2. Probiotic Boost (Yogurt Culture)**\n- Mix 1 cup plain yogurt with 1 gallon of water\n- The live bacteria improve soil health and nutrient cycling\n- Drench soil surface once every 2 weeks\n\n**3\u2026 [truncated]"
+    }
+  ],
+  "vanilla_trace_status": "ok"
+}

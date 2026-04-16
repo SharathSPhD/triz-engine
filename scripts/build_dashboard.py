@@ -201,17 +201,29 @@ def build_internal_side(data: dict[str, Any]) -> dict[str, Any]:
         "scores": scores,
         "submission": data.get("submission") or {},
         "raw_output": truncate_str(data.get("raw_output")),
+        "trace": data.get("trace") or [],
+        "trace_status": data.get("trace_status") or "disabled",
+        "elapsed_seconds": data.get("elapsed_seconds"),
     }
 
 
 def build_external_side(data: dict[str, Any]) -> dict[str, Any]:
     cs = data.get("contradiction_score") or {}
     ps = data.get("principle_score") or {}
+    type_correct = bool(cs.get("type_correct"))
+    params_exact = bool(cs.get("params_exact"))
+    params_partial = bool(cs.get("params_partial"))
+    f1 = float(ps.get("f1") or 0.0)
     return {
-        "f1": float(ps.get("f1") or 0.0),
-        "params_exact": bool(cs.get("params_exact")),
+        "f1": f1,
+        "type_correct": type_correct,
+        "params_exact": params_exact,
+        "params_partial": params_partial,
         "principles_predicted": list(ps.get("predicted") or []),
         "principles_gt": list(ps.get("ground_truth") or []),
+        "derived_score": (20 if type_correct else 0)
+        + (30 if params_exact else (15 if params_partial else 0))
+        + f1 * 50.0,
     }
 
 
@@ -335,6 +347,8 @@ def build_dashboard_data() -> dict[str, Any]:
         macgyver.append(
             {
                 "problem_id": pid,
+                "category": str(data.get("category") or ""),
+                "problem": truncate_str(data.get("problem"), 1200),
                 "triz_score": float(triz_block.get("score") or 0.0),
                 "vanilla_score": float(van_block.get("score") or 0.0),
                 "triz_level": str(triz_block.get("level") or ""),
@@ -342,6 +356,10 @@ def build_dashboard_data() -> dict[str, Any]:
                 "triz_output": truncate_str(data.get("triz_output")),
                 "vanilla_output": truncate_str(data.get("vanilla_output")),
                 "reference": truncate_str(data.get("reference")),
+                "triz_trace": data.get("triz_trace") or [],
+                "vanilla_trace": data.get("vanilla_trace") or [],
+                "triz_trace_status": data.get("triz_trace_status") or "disabled",
+                "vanilla_trace_status": data.get("vanilla_trace_status") or "disabled",
             }
         )
     macgyver.sort(key=lambda r: sort_problem_id(r["problem_id"]))
@@ -432,7 +450,14 @@ def build_dashboard_data() -> dict[str, Any]:
         "triz_wins": triz_wins,
         "vanilla_wins": vanilla_wins,
         "ties": ties,
+        "internal_count": len(internal),
+        "external_trizbench_count": len(external_trizbench),
+        "macgyver_count": len(macgyver),
+        "cresowlve_count": len(cresowlve),
     }
+
+    demos = build_demos(internal, macgyver)
+    insights = build_insights(summary, ratings, demos)
 
     generated_at = datetime.now(timezone.utc).isoformat()
 
@@ -446,7 +471,164 @@ def build_dashboard_data() -> dict[str, Any]:
         "macgyver": macgyver,
         "cresowlve": cresowlve,
         "summary": summary,
+        "demos": demos,
+        "insights": insights,
     }
+
+
+def build_demos(
+    internal: list[dict[str, Any]],
+    macgyver: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    """Select up to 5 demo problems with the largest TRIZ-vs-vanilla deltas and traces."""
+
+    def score_delta_internal(row: dict[str, Any]) -> float:
+        t = row["triz"]["final_score"] or 0.0
+        v = row["vanilla"]["final_score"] or 0.0
+        return t - v
+
+    def score_delta_mg(row: dict[str, Any]) -> float:
+        return row["triz_score"] - row["vanilla_score"]
+
+    candidates: list[tuple[float, dict[str, Any]]] = []
+
+    for row in internal:
+        if row["triz"]["trace"] or row["vanilla"]["trace"]:
+            delta = abs(score_delta_internal(row))
+            candidates.append((delta, {
+                "source": "internal",
+                "problem_id": row["problem_id"],
+                "title": row["title"],
+                "domain": row["domain"],
+                "problem_statement": row["problem_statement"],
+                "delta": round(score_delta_internal(row), 2),
+                "triz": {
+                    "final_score": row["triz"]["final_score"],
+                    "scores": row["triz"]["scores"],
+                    "submission": row["triz"]["submission"],
+                    "raw_output": row["triz"]["raw_output"],
+                    "trace": row["triz"]["trace"],
+                    "trace_status": row["triz"]["trace_status"],
+                    "elapsed_seconds": row["triz"]["elapsed_seconds"],
+                },
+                "vanilla": {
+                    "final_score": row["vanilla"]["final_score"],
+                    "scores": row["vanilla"]["scores"],
+                    "submission": row["vanilla"]["submission"],
+                    "raw_output": row["vanilla"]["raw_output"],
+                    "trace": row["vanilla"]["trace"],
+                    "trace_status": row["vanilla"]["trace_status"],
+                    "elapsed_seconds": row["vanilla"]["elapsed_seconds"],
+                },
+            }))
+
+    for row in macgyver:
+        if row["triz_trace"] or row["vanilla_trace"]:
+            delta = abs(score_delta_mg(row))
+            candidates.append((delta, {
+                "source": "macgyver",
+                "problem_id": row["problem_id"],
+                "title": row["category"].replace("_", " ").title() or "MacGyver",
+                "domain": "MacGyver",
+                "problem_statement": row["problem"],
+                "delta": round(score_delta_mg(row), 2),
+                "triz": {
+                    "level": row["triz_level"],
+                    "final_score": row["triz_score"],
+                    "raw_output": row["triz_output"],
+                    "trace": row["triz_trace"],
+                    "trace_status": row["triz_trace_status"],
+                },
+                "vanilla": {
+                    "level": row["vanilla_level"],
+                    "final_score": row["vanilla_score"],
+                    "raw_output": row["vanilla_output"],
+                    "trace": row["vanilla_trace"],
+                    "trace_status": row["vanilla_trace_status"],
+                },
+                "reference": row["reference"],
+            }))
+
+    def _trace_richness(demo: dict[str, Any]) -> int:
+        t = len(demo.get("triz", {}).get("trace") or [])
+        v = len(demo.get("vanilla", {}).get("trace") or [])
+        return t + v
+
+    candidates.sort(
+        key=lambda c: (_trace_richness(c[1]) >= 10, _trace_richness(c[1]), c[0]),
+        reverse=True,
+    )
+    picked: list[dict[str, Any]] = []
+    seen_sources: dict[str, int] = {}
+    for _delta, demo in candidates:
+        if len(picked) >= 5:
+            break
+        src = demo["source"]
+        if seen_sources.get(src, 0) >= 3:
+            continue
+        picked.append(demo)
+        seen_sources[src] = seen_sources.get(src, 0) + 1
+    return picked
+
+
+def build_insights(
+    summary: dict[str, Any],
+    ratings: dict[str, float],
+    demos: list[dict[str, Any]],
+) -> list[dict[str, str]]:
+    """Generate 3-5 headline pull-quote stats auto-derived from summary."""
+    insights: list[dict[str, str]] = []
+
+    triz_elo = ratings.get("triz-engine", 1000)
+    vanilla_elo = ratings.get("vanilla-claude", 1000)
+    delta = triz_elo - vanilla_elo
+    insights.append({
+        "headline": f"+{delta:.0f} ELO advantage",
+        "body": f"TRIZ-engine leads vanilla Claude by {abs(delta):.0f} rating "
+                f"points across {summary.get('triz_wins', 0) + summary.get('vanilla_wins', 0) + summary.get('ties', 0)} head-to-head matches.",
+    })
+
+    w = summary.get("triz_wins", 0)
+    l = summary.get("vanilla_wins", 0)
+    t = summary.get("ties", 0)
+    total = w + l + t
+    if total:
+        win_rate = w / total
+        insights.append({
+            "headline": f"{win_rate:.0%} win rate",
+            "body": f"{w} wins / {l} losses / {t} draws across {total} matches.",
+        })
+
+    ext_triz = summary.get("ext_triz_f1") or 0.0
+    ext_van = summary.get("ext_vanilla_f1") or 0.0
+    if ext_triz > 0 and ext_van > 0:
+        ratio = ext_triz / ext_van if ext_van > 0 else 0
+        insights.append({
+            "headline": f"{ratio:.1f}× patent principle F1",
+            "body": f"On published TRIZBENCH patents, the plugin achieves "
+                    f"{ext_triz:.2f} principle-F1 vs vanilla's {ext_van:.2f}.",
+        })
+
+    mg_t = summary.get("mg_triz_mean") or 0.0
+    mg_v = summary.get("mg_vanilla_mean") or 0.0
+    if mg_t > 0 or mg_v > 0:
+        insights.append({
+            "headline": f"{(mg_t - mg_v):+.2f} MacGyver Δ",
+            "body": f"Creative problem-solving score: {mg_t:.2f} (TRIZ) vs "
+                    f"{mg_v:.2f} (vanilla) on {summary.get('macgyver_count', 0)} MacGyver problems.",
+        })
+
+    traced = sum(
+        1 for d in demos
+        if (d.get("triz", {}).get("trace") or d.get("vanilla", {}).get("trace"))
+    )
+    if traced:
+        insights.append({
+            "headline": f"{traced} live tool-trace demos",
+            "body": "Inspect the actual MCP calls, agent hand-offs, and reasoning steps the plugin used on representative problems.",
+        })
+
+    return insights[:5]
 
 
 def write_dashboard_html(dashboard_data: dict[str, Any]) -> None:
