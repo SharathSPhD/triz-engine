@@ -1,19 +1,19 @@
 {
-  "problem_id": "EXT-TB-010",
+  "problem_id": "EXT-TB-015",
   "participant": "triz-engine",
-  "patent_id": "US6666666",
+  "patent_id": "US6701944",
   "submission": {
     "contradiction_type": "technical",
     "triz_param_a": 7,
     "triz_param_b": 5,
     "principles_applied": [
-      1,
       7,
-      4,
-      17
+      1,
+      17,
+      4
     ],
-    "solution_summary": "Use nested, telescoping layers (Principle 7: Nested Doll) where the outer shell remains compact during transit, and inner layers unfold mechanically or pneumatically upon arrival. Volume expands on-demand without increasing transit surface area. Eliminates the contradiction by leveraging gravity and mechanical latching\u2014no new components required.",
-    "ifr_score": 4,
+    "solution_summary": "Apply Nested Doll (Principle 7) to encapsulate the moving object in concentric shells, allowing internal volume to expand while constraining external surface area to a unified boundary. This decouples 3D volume growth from 2D surface expansion, resolving the contradiction through hierarchical layering rather than lateral expansion.",
+    "ifr_score": 3,
     "contradiction_resolution": "eliminates",
     "solution_novelty": "novel_combination"
   },

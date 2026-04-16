@@ -1,0 +1,52 @@
+{
+  "problem_id": "EXT-TB-017",
+  "participant": "triz-engine",
+  "patent_id": "US6695476",
+  "submission": {
+    "contradiction_type": "technical",
+    "triz_param_a": 34,
+    "triz_param_b": 10,
+    "principles_applied": [
+      10,
+      1,
+      11
+    ],
+    "solution_summary": "Pre-engineer all force-critical parameters (preload, calibration, stress state) into sealed, irreversible mechanisms at the manufacturing phase using thread-locking, swaged joints, or thermal-set components. Restrict field service to quick-disconnect, non-force-critical component replacement. This eliminates field-level force re-tensioning, making repair simple and immediate while preserving system intensity.",
+    "ifr_score": 4,
+    "contradiction_resolution": "eliminates",
+    "solution_novelty": "novel_combination"
+  },
+  "contradiction_score": {
+    "type_correct": true,
+    "params_exact": true,
+    "params_partial": true,
+    "predicted_params": [
+      10,
+      34
+    ],
+    "ground_truth_params": [
+      10,
+      34
+    ]
+  },
+  "principle_score": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0,
+    "overlap": [
+      1,
+      10,
+      11
+    ],
+    "predicted": [
+      1,
+      10,
+      11
+    ],
+    "ground_truth": [
+      1,
+      10,
+      11
+    ]
+  }
+}

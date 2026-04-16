@@ -1,21 +1,20 @@
 {
   "problem_id": "EXT-TB-009",
-  "participant": "vanilla-claude",
+  "participant": "triz-engine",
   "patent_id": "US6700055",
   "submission": {
     "contradiction_type": "technical",
     "triz_param_a": 17,
     "triz_param_b": 3,
     "principles_applied": [
-      10,
-      35,
-      37,
-      40
+      15,
+      9,
+      19
     ],
-    "solution_summary": "Replace standard materials with low thermal expansion coefficient composites (invar alloys, carbon-fiber, bimetallic layers) to decouple operating temperature from dimensional change. Pre-stress components so thermal expansion compensates for initial compression, maintaining constant functional length across temperature ranges.",
+    "solution_summary": "Use dual-material compensating construction with matched coefficients of thermal expansion (CTE). As temperature increases, primary structural elements expand while compensating low-CTE elements remain stable, maintaining constant overall length and mechanical clearances through passive material selection alone.",
     "ifr_score": 3,
     "contradiction_resolution": "eliminates",
-    "solution_novelty": "standard"
+    "solution_novelty": "novel_combination"
   },
   "contradiction_score": {
     "type_correct": true,
@@ -31,15 +30,18 @@
     ]
   },
   "principle_score": {
-    "precision": 0.0,
-    "recall": 0.0,
-    "f1": 0.0,
-    "overlap": [],
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0,
+    "overlap": [
+      9,
+      15,
+      19
+    ],
     "predicted": [
-      10,
-      35,
-      37,
-      40
+      9,
+      15,
+      19
     ],
     "ground_truth": [
       9,

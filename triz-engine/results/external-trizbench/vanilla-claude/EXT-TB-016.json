@@ -1,0 +1,53 @@
+{
+  "problem_id": "EXT-TB-016",
+  "participant": "vanilla-claude",
+  "patent_id": "US6661345",
+  "submission": {
+    "contradiction_type": "technical",
+    "triz_param_a": 38,
+    "triz_param_b": 32,
+    "principles_applied": [
+      1,
+      10,
+      26,
+      8
+    ],
+    "solution_summary": "Implement modular, standardized automation units with universal interfaces that integrate through existing manufacturing processes without requiring custom tooling or precision modifications. Each module is independently manufacturable, decoupling automation complexity from manufacturing process difficulty.",
+    "ifr_score": 3,
+    "contradiction_resolution": "eliminates",
+    "solution_novelty": "novel_combination"
+  },
+  "contradiction_score": {
+    "type_correct": true,
+    "params_exact": true,
+    "params_partial": true,
+    "predicted_params": [
+      32,
+      38
+    ],
+    "ground_truth_params": [
+      32,
+      38
+    ]
+  },
+  "principle_score": {
+    "precision": 0.5,
+    "recall": 0.6666666666666666,
+    "f1": 0.5714285714285715,
+    "overlap": [
+      1,
+      26
+    ],
+    "predicted": [
+      1,
+      8,
+      10,
+      26
+    ],
+    "ground_truth": [
+      1,
+      13,
+      26
+    ]
+  }
+}

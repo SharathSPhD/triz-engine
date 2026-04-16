@@ -1,18 +1,19 @@
 {
-  "problem_id": "EXT-TB-010",
+  "problem_id": "EXT-TB-018",
   "participant": "vanilla-claude",
-  "patent_id": "US6666666",
+  "patent_id": "US6695341",
   "submission": {
     "contradiction_type": "technical",
-    "triz_param_a": 7,
+    "triz_param_a": 38,
     "triz_param_b": 5,
     "principles_applied": [
       1,
       7,
-      17,
-      35
+      4,
+      13,
+      34
     ],
-    "solution_summary": "Design a telescoping/modular container system with nested segments that collapse during transport (minimizing surface area) and expand vertically when deployed (maximizing volume). This decouples area from volume by shifting the problem to the vertical dimension\u2014gaining volume through height, not lateral footprint expansion.",
+    "solution_summary": "Use modular, vertically-integrated automation with collapsible subsystems and multi-axis time-sharing. Components nest or compress when idle, maintaining full automation capability while minimizing spatial footprint. Reverse the constraint by making space adaptive rather than fixed.",
     "ifr_score": 3,
     "contradiction_resolution": "eliminates",
     "solution_novelty": "novel_combination"
@@ -23,32 +24,30 @@
     "params_partial": true,
     "predicted_params": [
       5,
-      7
+      38
     ],
     "ground_truth_params": [
       5,
-      7
+      38
     ]
   },
   "principle_score": {
-    "precision": 0.75,
-    "recall": 0.75,
-    "f1": 0.75,
+    "precision": 0.2,
+    "recall": 0.3333333333333333,
+    "f1": 0.25,
     "overlap": [
-      1,
-      7,
-      17
+      13
     ],
     "predicted": [
       1,
-      7,
-      17,
-      35
-    ],
-    "ground_truth": [
-      1,
       4,
       7,
+      13,
+      34
+    ],
+    "ground_truth": [
+      13,
+      14,
       17
     ]
   }

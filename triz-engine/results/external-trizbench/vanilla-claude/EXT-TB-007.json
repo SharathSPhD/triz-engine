@@ -7,13 +7,12 @@
     "triz_param_a": 15,
     "triz_param_b": 35,
     "principles_applied": [
-      2,
+      1,
+      3,
       4,
-      6,
-      13,
-      15
+      7
     ],
-    "solution_summary": "Implement modular reconfigurable architecture with temporal separation: a primary streamlined subsystem optimizes for duration and efficiency, while secondary adaptive actuators activate on-demand. The system operates in high-efficiency mode during normal phases and transitions to adaptive mode when environmental conditions require flexibility, eliminating the zero-sum trade-off.",
+    "solution_summary": "Segment the moving object into a primary subsystem optimized for sustained, efficient operation and auxiliary modular adaptive subsystems for versatility. This separates duration (achieved through design specialization of the core) from adaptability (delegated to responsive, reconfigurable peripheral actuators), eliminating the trade-off.",
     "ifr_score": 3,
     "contradiction_resolution": "eliminates",
     "solution_novelty": "novel_combination"
@@ -32,18 +31,17 @@
     ]
   },
   "principle_score": {
-    "precision": 0.2,
+    "precision": 0.25,
     "recall": 0.3333333333333333,
-    "f1": 0.25,
+    "f1": 0.28571428571428575,
     "overlap": [
-      13
+      1
     ],
     "predicted": [
-      2,
+      1,
+      3,
       4,
-      6,
-      13,
-      15
+      7
     ],
     "ground_truth": [
       1,

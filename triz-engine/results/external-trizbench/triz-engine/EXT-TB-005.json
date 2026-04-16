@@ -7,13 +7,13 @@
     "triz_param_a": 12,
     "triz_param_b": 5,
     "principles_applied": [
-      10,
-      5,
       34,
-      4
+      4,
+      5,
+      10
     ],
-    "solution_summary": "Implement dynamic shape reconfiguration via Preliminary Action: pre-optimize geometry in advance of critical operational phases and revert to compact configuration when efficiency is not needed. This makes the area increase temporal and conditional, eliminating the permanent trade-off. Variable-geometry surfaces (morphing wings, deployable fins) activate shape optimization only when demanded.",
-    "ifr_score": 3,
+    "solution_summary": "Deploy adaptive asymmetric aerodynamic surfaces that optimize shape only during critical operational phases, then retract when at rest, while concentrating shape improvements on high-stress surfaces and eliminating redundant area from low-stress regions.",
+    "ifr_score": 4,
     "contradiction_resolution": "eliminates",
     "solution_novelty": "novel_combination"
   },

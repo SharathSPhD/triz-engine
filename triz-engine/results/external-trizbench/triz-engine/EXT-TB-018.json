@@ -1,18 +1,17 @@
 {
-  "problem_id": "EXT-TB-010",
+  "problem_id": "EXT-TB-018",
   "participant": "triz-engine",
-  "patent_id": "US6666666",
+  "patent_id": "US6695341",
   "submission": {
     "contradiction_type": "technical",
-    "triz_param_a": 7,
+    "triz_param_a": 38,
     "triz_param_b": 5,
     "principles_applied": [
-      1,
-      7,
-      4,
-      17
+      13,
+      17,
+      14
     ],
-    "solution_summary": "Use nested, telescoping layers (Principle 7: Nested Doll) where the outer shell remains compact during transit, and inner layers unfold mechanically or pneumatically upon arrival. Volume expands on-demand without increasing transit surface area. Eliminates the contradiction by leveraging gravity and mechanical latching\u2014no new components required.",
+    "solution_summary": "Embed distributed micro-controllers within existing physical components (motors, sensors, joints) that autonomously coordinate via shared bus, keeping external area constant while increasing automation extent. Inverts traditional centralized control architecture to decentralized self-organizing topology.",
     "ifr_score": 4,
     "contradiction_resolution": "eliminates",
     "solution_novelty": "novel_combination"
@@ -23,11 +22,11 @@
     "params_partial": true,
     "predicted_params": [
       5,
-      7
+      38
     ],
     "ground_truth_params": [
       5,
-      7
+      38
     ]
   },
   "principle_score": {
@@ -35,21 +34,18 @@
     "recall": 1.0,
     "f1": 1.0,
     "overlap": [
-      1,
-      4,
-      7,
+      13,
+      14,
       17
     ],
     "predicted": [
-      1,
-      4,
-      7,
+      13,
+      14,
       17
     ],
     "ground_truth": [
-      1,
-      4,
-      7,
+      13,
+      14,
       17
     ]
   }

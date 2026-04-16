@@ -1,19 +1,19 @@
 {
-  "problem_id": "EXT-TB-003",
+  "problem_id": "EXT-TB-020",
   "participant": "vanilla-claude",
-  "patent_id": "US6680961",
+  "patent_id": "US6662574",
   "submission": {
     "contradiction_type": "technical",
-    "triz_param_a": 25,
-    "triz_param_b": 31,
+    "triz_param_a": 13,
+    "triz_param_b": 22,
     "principles_applied": [
-      2,
+      5,
       10,
-      13,
-      35,
-      3
+      6,
+      28,
+      35
     ],
-    "solution_summary": "Separate harmful factor generation from the time-critical process through temporal phasing (fast beneficial action, managed harm dissipation) and spatial isolation (containment subsystems or material barriers). Apply prior conditioning to prevent harm initiation at high speed.",
+    "solution_summary": "Implement a controlled, irreversible phase transition that establishes composition stability through material property change, then rely on passive self-maintenance of the new phase to eliminate ongoing energy expenditure. This decouples initialization energy cost from operational stability requirements.",
     "ifr_score": 3,
     "contradiction_resolution": "eliminates",
     "solution_novelty": "novel_combination"
@@ -23,12 +23,12 @@
     "params_exact": true,
     "params_partial": true,
     "predicted_params": [
-      25,
-      31
+      13,
+      22
     ],
     "ground_truth_params": [
-      25,
-      31
+      13,
+      22
     ]
   },
   "principle_score": {
@@ -36,19 +36,19 @@
     "recall": 0.25,
     "f1": 0.22222222222222224,
     "overlap": [
-      35
+      6
     ],
     "predicted": [
-      2,
-      3,
+      5,
+      6,
       10,
-      13,
+      28,
       35
     ],
     "ground_truth": [
-      18,
-      22,
-      35,
+      2,
+      6,
+      14,
       39
     ]
   }

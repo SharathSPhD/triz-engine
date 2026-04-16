@@ -7,12 +7,11 @@
     "triz_param_a": 28,
     "triz_param_b": 5,
     "principles_applied": [
-      26,
       28,
-      32,
-      3
+      3,
+      26
     ],
-    "solution_summary": "Deploy external electromagnetic, acoustic, or optical sensing infrastructure to measure moving object state from fixed external systems. The moving object becomes passive, eliminating the need for embedded measurement hardware entirely. Measurement accuracy improves (sophisticated external sensors have fewer size constraints), while moving object area shrinks dramatically.",
+    "solution_summary": "Decouple high-precision measurement from the moving object by using field-based remote sensing (EM/acoustic). Fixed external infrastructure provides measurement capability; the moving system carries only lightweight wireless receivers. This inverts the traditional paradigm where moving objects must self-contain all sensing apparatus.",
     "ifr_score": 3,
     "contradiction_resolution": "eliminates",
     "solution_novelty": "novel_combination"
@@ -32,19 +31,17 @@
   },
   "principle_score": {
     "precision": 1.0,
-    "recall": 1.0,
-    "f1": 1.0,
+    "recall": 0.75,
+    "f1": 0.8571428571428571,
     "overlap": [
       3,
       26,
-      28,
-      32
+      28
     ],
     "predicted": [
       3,
       26,
-      28,
-      32
+      28
     ],
     "ground_truth": [
       3,

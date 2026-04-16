@@ -8,12 +8,12 @@
     "triz_param_b": 15,
     "principles_applied": [
       14,
-      26,
       25,
+      26,
       9
     ],
-    "solution_summary": "Replace sharp stress-concentration points in optimized shapes with smooth curves to distribute load (Principle 14). Combine with segmented replaceable modules that rotate or cycle wear zones (Principle 26), and select self-relieving materials that gradually smooth stress peaks during operation (Principle 25). This allows simultaneous achievement of optimized shape performance and extended operational durability.",
-    "ifr_score": 4,
+    "solution_summary": "Apply stress-distributing curved geometry (Principle 14) to the optimized shape to reduce fatigue stress concentration, combined with self-healing surface materials (Principle 25) that repair micro-damage in real-time. The shape remains functionally optimized while durability is preserved through load distribution and self-compensation; no new components or failure modes introduced.",
+    "ifr_score": 3,
     "contradiction_resolution": "eliminates",
     "solution_novelty": "novel_combination"
   },

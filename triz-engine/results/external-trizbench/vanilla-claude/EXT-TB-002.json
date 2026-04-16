@@ -7,11 +7,13 @@
     "triz_param_a": 28,
     "triz_param_b": 5,
     "principles_applied": [
-      2,
-      35,
-      4
+      17,
+      4,
+      10,
+      3,
+      13
     ],
-    "solution_summary": "Decouple measurement function from the moving object using non-contact sensing (optical, electromagnetic) instead of contact-based measurement. This eliminates the size-accuracy trade-off by shifting to signal-based precision that is independent of object dimensions.",
+    "solution_summary": "Replace area-expanding hardware sensors with software-compensated non-contact measurement (vision, laser, or RF-based) combined with adaptive calibration algorithms. This achieves measurement accuracy improvement without physical expansion of the moving object, leveraging signal processing and phase-coherence techniques instead of mechanical enlargement.",
     "ifr_score": 3,
     "contradiction_resolution": "eliminates",
     "solution_novelty": "novel_combination"
@@ -30,14 +32,18 @@
     ]
   },
   "principle_score": {
-    "precision": 0.0,
-    "recall": 0.0,
-    "f1": 0.0,
-    "overlap": [],
+    "precision": 0.2,
+    "recall": 0.25,
+    "f1": 0.22222222222222224,
+    "overlap": [
+      3
+    ],
     "predicted": [
-      2,
+      3,
       4,
-      35
+      10,
+      13,
+      17
     ],
     "ground_truth": [
       3,

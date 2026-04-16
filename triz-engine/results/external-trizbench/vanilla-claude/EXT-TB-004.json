@@ -9,12 +9,12 @@
     "principles_applied": [
       10,
       2,
-      1,
-      27,
-      35
+      3,
+      35,
+      13
     ],
-    "solution_summary": "Redesign the primary system to prevent harmful factor generation at the source (combustion, vibration, radiation) while integrating waste-energy recovery to offset efficiency losses. Segment operations to optimize both reduced harm and duration simultaneously, eliminating the need for parasitic external treatment systems.",
-    "ifr_score": 3,
+    "solution_summary": "Prevent harmful factors from forming in the first place using prior conditioning (material selection, surface treatment, or geometry design) rather than adding protective mechanisms that increase resistance. Apply harm-reduction selectively at critical zones using inherent material properties or modified operating conditions.",
+    "ifr_score": 4,
     "contradiction_resolution": "eliminates",
     "solution_novelty": "novel_combination"
   },
@@ -37,10 +37,10 @@
     "f1": 0.0,
     "overlap": [],
     "predicted": [
-      1,
       2,
+      3,
       10,
-      27,
+      13,
       35
     ],
     "ground_truth": [

@@ -7,11 +7,12 @@
     "triz_param_a": 31,
     "triz_param_b": 15,
     "principles_applied": [
+      15,
       22,
-      31,
-      33
+      33,
+      31
     ],
-    "solution_summary": "Replace active harmful-factor suppression with adaptive porous selective filtering using homogeneous materials. Passive porosity eliminates energy-cost and wear mechanisms, while homogeneity prevents degradation at material interfaces. Byproduct separation provides feedback signals that dynamically optimize operating parameters, extending safe duration while simultaneously reducing emissions.",
+    "solution_summary": "Implement adaptive, threshold-triggered harm-mitigation using real-time sensors. Protection systems activate only when harmful-factor emissions exceed safe thresholds, remaining dormant during low-emission phases. This eliminates continuous energy drain from safety mechanisms while maintaining emission safety, directly resolving the contradiction between reduced harmful factors and extended operational duration.",
     "ifr_score": 4,
     "contradiction_resolution": "eliminates",
     "solution_novelty": "novel_combination"
@@ -31,14 +32,16 @@
   },
   "principle_score": {
     "precision": 1.0,
-    "recall": 0.75,
-    "f1": 0.8571428571428571,
+    "recall": 1.0,
+    "f1": 1.0,
     "overlap": [
+      15,
       22,
       31,
       33
     ],
     "predicted": [
+      15,
       22,
       31,
       33

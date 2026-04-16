@@ -7,12 +7,12 @@
     "triz_param_a": 24,
     "triz_param_b": 34,
     "principles_applied": [
-      2,
-      10,
-      26,
-      35
+      1,
+      5,
+      25,
+      27
     ],
-    "solution_summary": "Implement a dual-pathway architecture: a protected production pathway with full encryption/checksums (addresses information loss), paired with a simplified diagnostic shadow replica pre-computed during idle cycles (addresses repairability). Technicians access the shadow pathway for diagnosis without decrypting production data, eliminating the contradiction between protection and maintainability.",
+    "solution_summary": "Decompose information protection into independent, modular redundancy layers with embedded diagnostics. Each layer uses sparse checksums and snapshots instead of full replication. Include a mirrored debug interface for fault isolation without impacting the production data stream. This architecture decouples data preservation from repair complexity.",
     "ifr_score": 3,
     "contradiction_resolution": "eliminates",
     "solution_novelty": "novel_combination"

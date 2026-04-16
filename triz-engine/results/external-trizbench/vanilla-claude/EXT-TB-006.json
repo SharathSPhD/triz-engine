@@ -8,11 +8,12 @@
     "triz_param_b": 15,
     "principles_applied": [
       1,
-      15,
-      28
+      3,
+      14,
+      15
     ],
-    "solution_summary": "Separate the gastric retention function (rigid, non-degradable membrane) from the drug release duration control (chemically degradable polymer matrix). The fixed-shape membrane maintains geometric stability for 3-24 hour retention while the matrix layer independently controls release kinetics and duration, decoupling the contradictory constraints.",
-    "ifr_score": 4,
+    "solution_summary": "Apply segmented geometry where shape optimization is localized to high-impact zones while structural zones retain original proportions for momentum conservation. Use smooth spheroidal transitions between segments to bridge both performance and duration requirements without compromise.",
+    "ifr_score": 3,
     "contradiction_resolution": "eliminates",
     "solution_novelty": "novel_combination"
   },
@@ -30,14 +31,17 @@
     ]
   },
   "principle_score": {
-    "precision": 0.0,
-    "recall": 0.0,
-    "f1": 0.0,
-    "overlap": [],
+    "precision": 0.25,
+    "recall": 0.25,
+    "f1": 0.25,
+    "overlap": [
+      14
+    ],
     "predicted": [
       1,
-      15,
-      28
+      3,
+      14,
+      15
     ],
     "ground_truth": [
       9,

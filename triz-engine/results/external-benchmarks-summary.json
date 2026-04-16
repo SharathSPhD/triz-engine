@@ -7,7 +7,7 @@
     "ties": 3,
     "triz_win_rate": 0.25,
     "vanilla_win_rate": 0.0,
-    "triz_mean_score": 0.875,
-    "vanilla_mean_score": 0.8125
+    "triz_mean_score": 0.9375,
+    "vanilla_mean_score": 0.875
   }
 }

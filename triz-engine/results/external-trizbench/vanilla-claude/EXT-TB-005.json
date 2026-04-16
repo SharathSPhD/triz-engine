@@ -7,12 +7,15 @@
     "triz_param_a": 12,
     "triz_param_b": 5,
     "principles_applied": [
-      1,
       2,
-      5,
-      14
+      1,
+      30,
+      14,
+      31,
+      3,
+      17
     ],
-    "solution_summary": "Segment the shape-optimized component into multiple parallel or cascading elements arranged in 3D space (nested, overlapping, or telescoping) to maintain local shape efficiency while reducing total swept/contact area through geometric arrangement. Each segment preserves the optimal profile; the ensemble minimizes redundant area.",
+    "solution_summary": "Achieve shape optimization through internal segmentation, porous structures, or flexible materials that maintain external area while improving aerodynamic/functional characteristics. Decouple external footprint from shape quality by redistributing material internally into ribs, lattices, or adaptive boundaries.",
     "ifr_score": 3,
     "contradiction_resolution": "eliminates",
     "solution_novelty": "novel_combination"
@@ -31,17 +34,18 @@
     ]
   },
   "principle_score": {
-    "precision": 0.25,
-    "recall": 0.25,
-    "f1": 0.25,
-    "overlap": [
-      5
-    ],
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": 0.0,
+    "overlap": [],
     "predicted": [
       1,
       2,
-      5,
-      14
+      3,
+      14,
+      17,
+      30,
+      31
     ],
     "ground_truth": [
       4,

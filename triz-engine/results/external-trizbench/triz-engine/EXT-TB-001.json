@@ -8,11 +8,11 @@
     "triz_param_b": 34,
     "principles_applied": [
       1,
-      16,
       7,
-      4
+      4,
+      16
     ],
-    "solution_summary": "Segment the system into independent, loosely-coupled modules where each module encapsulates multiple functions internally while exposing a minimal, stable repair interface. Adaptability is achieved by swapping or extending modules without touching core repair infrastructure, thus localizing complexity per module and keeping repair procedures simple.",
+    "solution_summary": "Segment the adaptable system into independent modular units, then nest adaptive configuration logic in a replaceable outer layer above a stable, diagnostically-simple core. This enables full versatility at the macro level while preserving repair simplicity at the module level. Alternatively, implement asymmetric interfaces where the config path is adaptive but the repair path is hardcoded and immune to configuration state.",
     "ifr_score": 3,
     "contradiction_resolution": "eliminates",
     "solution_novelty": "novel_combination"

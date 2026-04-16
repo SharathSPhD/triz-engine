@@ -9,12 +9,12 @@
     "principles_applied": [
       1,
       2,
-      3,
-      10,
-      27
+      7,
+      27,
+      35
     ],
-    "solution_summary": "Implement a modular, hot-swappable architecture with standardized interfaces that encapsulate adaptive capabilities into replaceable units. Embed lightweight self-diagnostics to automatically identify failing modules. Replace modules as units rather than attempting internal repairs, converting the contradiction from 'complex and hard to fix' into 'modular and easy to service.'",
-    "ifr_score": 3,
+    "solution_summary": "Implement a modular architecture separating a simple, standardized repairable core from swappable adaptive modules. Shift versatility to firmware/software and plug-in components rather than hardware complexity. This decouples repair simplicity from adaptability, allowing each to be optimized independently.",
+    "ifr_score": 4,
     "contradiction_resolution": "eliminates",
     "solution_novelty": "novel_combination"
   },
@@ -32,18 +32,19 @@
     ]
   },
   "principle_score": {
-    "precision": 0.2,
-    "recall": 0.25,
-    "f1": 0.22222222222222224,
+    "precision": 0.4,
+    "recall": 0.5,
+    "f1": 0.4444444444444445,
     "overlap": [
-      1
+      1,
+      7
     ],
     "predicted": [
       1,
       2,
-      3,
-      10,
-      27
+      7,
+      27,
+      35
     ],
     "ground_truth": [
       1,

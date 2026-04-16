@@ -1,18 +1,16 @@
 {
-  "problem_id": "EXT-TB-008",
+  "problem_id": "EXT-TB-020",
   "participant": "triz-engine",
-  "patent_id": "US6664520",
+  "patent_id": "US6662574",
   "submission": {
     "contradiction_type": "technical",
-    "triz_param_a": 22,
-    "triz_param_b": 13,
+    "triz_param_a": 13,
+    "triz_param_b": 22,
     "principles_applied": [
-      6,
       2,
-      39,
       14
     ],
-    "solution_summary": "Design a unified, self-regulating mechanism where energy-loss reduction and composition stabilization are intrinsically linked through coupled feedback or resonant design. The system becomes self-resolving, making both properties mutually reinforcing rather than competing. This eliminates the contradiction by eliminating the trade-off itself.",
+    "solution_summary": "Eliminate energy-consuming stabilization mechanisms by redesigning the object's composition with inherently stable geometry and smooth transitions. Use passive structural design where curvature and distributed load paths provide self-stabilization through shape, not through active protective systems.",
     "ifr_score": 4,
     "contradiction_resolution": "eliminates",
     "solution_novelty": "novel_combination"
@@ -32,19 +30,15 @@
   },
   "principle_score": {
     "precision": 1.0,
-    "recall": 1.0,
-    "f1": 1.0,
+    "recall": 0.5,
+    "f1": 0.6666666666666666,
     "overlap": [
       2,
-      6,
-      14,
-      39
+      14
     ],
     "predicted": [
       2,
-      6,
-      14,
-      39
+      14
     ],
     "ground_truth": [
       2,
