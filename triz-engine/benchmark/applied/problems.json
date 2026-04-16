@@ -1,0 +1,17 @@
+{
+  "description": "Open-ended inventive problems outside any published benchmark. Used to demonstrate what the TRIZ Engine plugin does on real creative tasks versus vanilla Claude. No ground truth — qualitative showcase only.",
+  "problems": [
+    {
+      "id": "APP-01",
+      "title": "Tangle-free wired earbuds",
+      "domain": "Consumer product design",
+      "problem_statement": "Wired earbuds tangle in pockets and bags. Design a solution that eliminates the tangling entirely (not reduces it) without: (a) asking the user to change behavior, (b) adding a case, clip, or storage accessory, (c) going wireless, (d) adding motors or battery-powered active components. The solution must preserve current audio quality, weight, and price point. Identify the core contradiction, pick the most relevant TRIZ inventive principles, and propose a concrete engineering solution that eliminates the contradiction at the source."
+    },
+    {
+      "id": "APP-02",
+      "title": "Shower that halves water use with identical experience",
+      "domain": "Sustainability / appliance design",
+      "problem_statement": "Design a shower that uses 50% less water per minute while keeping the subjective user experience (warmth, rinse feel, spray coverage, hair-wash performance) indistinguishable from a standard 9 L/min shower. Constraints: no heated recirculation loops requiring long warm-up, no user interaction beyond the normal handle, no mist-only experience (users must feel real droplets), must work with standard household 2-3 bar water pressure. Identify the core contradiction, map to TRIZ parameters, and propose a concrete mechanism that eliminates — not merely trades off — the contradiction."
+    }
+  ]
+}

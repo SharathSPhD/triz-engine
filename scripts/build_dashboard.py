@@ -382,6 +382,8 @@ def build_dashboard_data() -> dict[str, Any]:
         )
     cresowlve.sort(key=lambda r: sort_problem_id(r["problem_id"]))
 
+    applied = load_applied()
+
     scores: dict[tuple[str, str], float] = {}
     for pid in internal_ids:
         st = final_score_from_result(triz_tb[pid])
@@ -470,10 +472,50 @@ def build_dashboard_data() -> dict[str, Any]:
         "external_trizbench": external_trizbench,
         "macgyver": macgyver,
         "cresowlve": cresowlve,
+        "applied": applied,
         "summary": summary,
         "demos": demos,
         "insights": insights,
     }
+
+
+def load_applied() -> list[dict[str, Any]]:
+    """Load applied-problem runs (real inventive tasks outside benchmarks)."""
+    applied_dir = RESULTS / "applied"
+    if not applied_dir.exists():
+        return []
+    out: list[dict[str, Any]] = []
+    for path in sorted(applied_dir.glob("APP-*.json")):
+        data = load_json(path)
+        out.append(
+            {
+                "problem_id": str(data.get("problem_id") or path.stem),
+                "title": str(data.get("title") or ""),
+                "domain": str(data.get("domain") or ""),
+                "problem_statement": truncate_str(
+                    data.get("problem_statement"), 2000
+                ),
+                "invocation": data.get("invocation") or {},
+                "vanilla_output": truncate_str(
+                    data.get("vanilla_output"), RAW_OUTPUT_MAX
+                ),
+                "vanilla_trace": data.get("vanilla_trace") or [],
+                "vanilla_trace_status": str(
+                    data.get("vanilla_trace_status") or "disabled"
+                ),
+                "vanilla_elapsed_seconds": data.get("vanilla_elapsed_seconds"),
+                "triz_output": truncate_str(
+                    data.get("triz_output"), RAW_OUTPUT_MAX
+                ),
+                "triz_trace": data.get("triz_trace") or [],
+                "triz_trace_status": str(
+                    data.get("triz_trace_status") or "disabled"
+                ),
+                "triz_elapsed_seconds": data.get("triz_elapsed_seconds"),
+            }
+        )
+    out.sort(key=lambda r: r["problem_id"])
+    return out
 
 
 def build_demos(
@@ -647,13 +689,14 @@ def main() -> None:
     ext_n = len(dashboard_data["external_trizbench"])
     mg_n = len(dashboard_data["macgyver"])
     co_n = len(dashboard_data["cresowlve"])
+    app_n = len(dashboard_data.get("applied") or [])
 
     print("TRIZ Arena dashboard build")
     print(f"  Repo root: {ROOT}")
     print(
         f"  Loaded internal TRIZBENCH pairs: {internal_n}, "
         f"external TRIZBENCH pairs: {ext_n}, "
-        f"MacGyver: {mg_n}, CresOWLve: {co_n}"
+        f"MacGyver: {mg_n}, CresOWLve: {co_n}, Applied: {app_n}"
     )
     print(f"  ELO matches: {dashboard_data['match_count']}")
     for p in PARTICIPANTS:

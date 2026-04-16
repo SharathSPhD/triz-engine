@@ -384,6 +384,8 @@ section{padding:60px 0}
 .trace-event.t-system .trace-event-header{color:var(--text3)}
 .trace-event-body{color:var(--text2);white-space:pre-wrap;line-height:1.5}
 .trace-empty{padding:40px 20px;text-align:center;color:var(--text3);font-size:13px}
+.trace-event-header .trace-tool{color:var(--triz);text-transform:none;font-size:11px}
+.trace-event-header .trace-meta{color:var(--text3);text-transform:none;font-weight:500;font-size:10px;letter-spacing:0}
 .demo-summary-banner{
   background:var(--bg3);border-radius:var(--radius-sm);padding:12px 16px;
   display:flex;justify-content:space-between;align-items:center;
@@ -445,6 +447,7 @@ section{padding:60px 0}
     <a href="#install">Install</a>
     <a href="#leaderboard">Leaderboard</a>
     <a href="#demos">Live Demos</a>
+    <a href="#applied">Applied</a>
     <a href="#architecture">Architecture</a>
     <a href="#benchmarks">Benchmarks</a>
     <a href="#methodology">Methodology</a>
@@ -456,6 +459,10 @@ section{padding:60px 0}
 <section class="hero" id="hero">
   <h1 class="hero-title"><span class="triz-text">TRIZ</span> Arena</h1>
   <p class="hero-tagline">Inventive Problem Solving vs Vanilla LLM &mdash; Head-to-Head Benchmark Battle</p>
+  <p class="hero-tagline" style="font-size:13px;margin-top:6px;color:var(--text3)">
+    Participants run on <code style="color:var(--triz)">claude -p --model haiku</code> (Haiku 4.5) &middot;
+    LLM-as-judge runs on <code style="color:var(--purple)">claude -p --model sonnet</code> (Sonnet 4.6)
+  </p>
 
   <div class="arena" id="arena-stage">
     <!-- EINSTEIN (TRIZ) -->
@@ -701,6 +708,36 @@ $ python scripts/build_dashboard.py</pre>
   </div>
 </section>
 
+<!-- ========== APPLIED ========== -->
+<section id="applied">
+  <div class="container">
+    <h2 class="section-title">&#128161; Applied &mdash; inventive problems outside benchmarks</h2>
+    <p class="section-sub">
+      The plugin's real purpose isn't to win benchmarks &mdash; it's to guide Claude through
+      tough, open-ended inventive problems by systematically applying TRIZ. Here are a
+      couple of practical challenges solved live by the installed plugin (via
+      <code>/triz-engine:analyze</code>) alongside plain vanilla Claude. No ground-truth,
+      no scoring &mdash; this is a qualitative side-by-side so you can see how the plugin
+      reshapes the reasoning.
+    </p>
+
+    <div class="demo-tabs" id="applied-tabs"></div>
+    <div id="applied-panels"></div>
+
+    <div class="feature-card" style="margin-top:20px">
+      <div class="feature-title">How to try your own</div>
+      <div class="feature-desc" style="line-height:1.9">
+        Once the plugin is installed (<a href="#install">see Install</a>), just invoke
+        the slash command in any Claude Code session:
+        <pre style="margin:8px 0;padding:10px;background:var(--bg2);border-radius:6px;white-space:pre-wrap;color:var(--green)">$ claude -p "/triz-engine:analyze How do I make a backpack that's waterproof in rain but breathable in sun, with no moving parts?" --model haiku</pre>
+        The plugin identifies the contradiction, queries the 39&times;39 contradiction matrix
+        via MCP, picks the most relevant inventive principles, and hands off between the
+        three specialist agents to produce a concrete, non-obvious solution.
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ========== ARCHITECTURE ========== -->
 <section id="architecture">
   <div class="container">
@@ -821,6 +858,23 @@ $ python scripts/build_dashboard.py</pre>
     <h2 class="section-title">&#128200; Methodology</h2>
     <p class="section-sub">How benchmarks are scored and ELO ratings computed</p>
 
+    <div class="feature-card" style="margin-bottom:16px;border-left:3px solid var(--triz)">
+      <div class="feature-title">Claude Models Used</div>
+      <div class="feature-desc" style="line-height:1.9">
+        <strong style="color:var(--triz)">Participants</strong> (both TRIZ Engine plugin and Vanilla Claude baseline):
+        <code>claude -p --model haiku</code> &mdash; <strong>claude-haiku-4-5</strong> (Claude Haiku 4.5).
+        Same model for both sides so the only variable is the plugin itself.<br>
+        <strong style="color:var(--purple)">LLM-as-judge</strong> for Solution Novelty (SN) and Contradiction Resolution (CR),
+        plus the MacGyver 4-level rubric: <code>claude -p --model sonnet</code> &mdash;
+        <strong>claude-sonnet-4-5</strong> (Claude Sonnet 4.6, the stronger reasoning model).<br>
+        All runs use <code>--dangerously-skip-permissions</code> in headless mode; trace-enabled runs
+        add <code>--output-format stream-json --verbose</code>. See
+        <a href="https://github.com/sharathsphd/triz-engine/blob/main/triz-engine/benchmark/runner.py"><code>benchmark/runner.py</code></a>
+        and <a href="https://github.com/sharathsphd/triz-engine/blob/main/triz-engine/benchmark/scorer.py"><code>scorer.py</code></a>
+        for the exact invocations.
+      </div>
+    </div>
+
     <div class="feature-grid" style="grid-template-columns:repeat(auto-fit,minmax(340px,1fr))">
       <div class="feature-card">
         <div class="feature-title">Internal TRIZBENCH Scoring (5 dimensions)</div>
@@ -891,8 +945,7 @@ $ python scripts/build_dashboard.py</pre>
 <footer class="footer">
   <p>TRIZ Arena Dashboard &mdash; auto-generated from benchmark data on <span id="gen-date"></span></p>
   <p style="margin-top:4px">
-    <a href="https://github.com/sharathsphd/triz-engine">GitHub</a> &middot;
-    Data is real, not synthetic. All scores from actual Claude CLI runs.
+    <a href="https://github.com/sharathsphd/triz-engine">GitHub</a>
   </p>
 </footer>
 
@@ -1663,56 +1716,126 @@ document.addEventListener('keydown', function(e){
   });
 })();
 
+/* ===== APPLIED VIEWER ===== */
+(function renderApplied(){
+  var applied = D.applied || [];
+  var tabsEl = document.getElementById('applied-tabs');
+  var panelsEl = document.getElementById('applied-panels');
+  if(!tabsEl || !panelsEl) return;
+  if(!applied.length){
+    panelsEl.innerHTML = '<p style="color:var(--text2)">No applied runs yet. Run <code>python scripts/run_applied.py</code> to populate this section.</p>';
+    return;
+  }
+
+  var tabsHtml = '', panelsHtml = '';
+  applied.forEach(function(d, idx){
+    var label = d.problem_id + ' · ' + (d.title || d.domain || '');
+    tabsHtml += '<div class="demo-tab'+(idx===0?' active':'')+'" data-applied="applied-panel-'+idx+'">'+escHtml(label.substring(0,48))+'</div>';
+
+    var vEl = (d.vanilla_elapsed_seconds != null) ? ' · ' + fmt(d.vanilla_elapsed_seconds,1) + 's' : '';
+    var tEl = (d.triz_elapsed_seconds != null) ? ' · ' + fmt(d.triz_elapsed_seconds,1) + 's' : '';
+    var vTrCount = (d.vanilla_trace || []).length;
+    var tTrCount = (d.triz_trace || []).length;
+
+    panelsHtml += '<div class="demo-panel'+(idx===0?' active':'')+'" id="applied-panel-'+idx+'">';
+    panelsHtml += '<div class="demo-summary-banner">';
+    panelsHtml += '<div class="demo-summary-problem"><strong>'+escHtml(d.problem_id)+' · '+escHtml(d.title)+'</strong><br><span style="color:var(--text3);font-size:12px">'+escHtml(d.domain)+'</span><br><br>'+escHtml(d.problem_statement)+'</div>';
+    panelsHtml += '</div>';
+
+    panelsHtml += '<div class="demo-split">';
+
+    panelsHtml += '<div class="demo-col" style="border-left:3px solid var(--van)">';
+    panelsHtml += '<div class="demo-col-header"><span class="demo-col-title" style="color:var(--van)">Vanilla Claude</span><span class="demo-col-meta">'+vTrCount+' events'+vEl+'</span></div>';
+    panelsHtml += renderTrace(d.vanilla_trace || [], d.vanilla_output, 'vanilla');
+    panelsHtml += '</div>';
+
+    panelsHtml += '<div class="demo-col" style="border-left:3px solid var(--triz)">';
+    panelsHtml += '<div class="demo-col-header"><span class="demo-col-title" style="color:var(--triz)">TRIZ Plugin · /triz-engine:analyze</span><span class="demo-col-meta">'+tTrCount+' events'+tEl+'</span></div>';
+    panelsHtml += renderTrace(d.triz_trace || [], d.triz_output, 'triz');
+    panelsHtml += '</div>';
+
+    panelsHtml += '</div></div>';
+  });
+
+  tabsEl.innerHTML = tabsHtml;
+  panelsEl.innerHTML = panelsHtml;
+
+  document.querySelectorAll('[data-applied]').forEach(function(t){
+    t.addEventListener('click', function(){
+      document.querySelectorAll('[data-applied]').forEach(function(x){x.classList.remove('active')});
+      document.querySelectorAll('#applied-panels .demo-panel').forEach(function(p){p.classList.remove('active')});
+      t.classList.add('active');
+      var p = document.getElementById(t.dataset.applied);
+      if(p) p.classList.add('active');
+    });
+  });
+})();
+
 function renderTrace(trace, rawOutput, side){
   var html = '<div class="trace-timeline">';
   if(!trace || !trace.length){
     if(rawOutput){
-      html += '<div class="trace-event t-assistant_text"><div class="trace-event-header">Final output</div>';
+      html += '<div class="trace-event t-assistant_text"><div class="trace-event-header">💬  Final answer</div>';
       html += '<div class="trace-event-body">'+escHtml(rawOutput.substring(0,3000))+(rawOutput.length>3000?'…':'')+'</div></div>';
     } else {
-      html += '<div class="trace-empty">No trace captured for this run. Vanilla runs without <code>--capture-trace</code> store only the final answer.</div>';
+      html += '<div class="trace-empty">No trace captured for this run. Runs without <code>--capture-trace</code> store only the final answer.</div>';
     }
     html += '</div>';
     return html;
   }
 
   trace.forEach(function(ev){
-    var type = ev.type || 'system';
-    var cls = 't-' + type;
+    var kind = ev.kind || ev.type || 'system';
+    var baseKind = kind.indexOf('system_') === 0 ? 'system' : kind;
+    var cls = 't-' + baseKind;
     html += '<div class="trace-event '+cls+'">';
+
     var header = '';
-    if(type === 'tool_use'){
-      header = '🛠  tool_use · ' + escHtml(ev.name || 'unknown');
-    } else if(type === 'tool_result'){
-      header = '↩  tool_result' + (ev.tool_use_id ? (' · ' + escHtml(String(ev.tool_use_id).substring(0,12))) : '');
-    } else if(type === 'assistant_text'){
-      header = '💬  assistant';
-    } else if(type === 'system'){
-      header = '⚙  ' + escHtml(ev.subtype || 'system');
-    } else {
-      header = escHtml(type);
-    }
-    html += '<div class="trace-event-header">'+header+'</div>';
     var body = '';
-    if(type === 'tool_use' && ev.input){
-      try { body = JSON.stringify(ev.input, null, 2); }
-      catch(_){ body = String(ev.input); }
-    } else if(type === 'tool_result'){
-      body = ev.content || ev.text || '';
+    if(kind === 'tool_use'){
+      var toolName = ev.tool || ev.name || 'unknown';
+      header = '🛠  tool_use · <span class="trace-tool">'+escHtml(toolName)+'</span>';
+      if(ev.summary_val){
+        header += ' <span class="trace-meta">· '+escHtml((ev.summary_key?ev.summary_key+'=':'')+ev.summary_val)+'</span>';
+      }
+      body = ev.input_preview || '';
+      if(!body && ev.input){
+        try { body = JSON.stringify(ev.input, null, 2); } catch(_){ body = String(ev.input); }
+      }
+    } else if(kind === 'tool_result'){
+      var idTxt = ev.tool_use_id ? String(ev.tool_use_id).substring(0,12) : '';
+      header = '↩  tool_result' + (idTxt ? ' <span class="trace-meta">· '+escHtml(idTxt)+'</span>' : '');
+      if(ev.is_error) header += ' <span class="trace-meta" style="color:var(--red)">[error]</span>';
+      body = ev.output_preview || ev.content || ev.text || '';
       if(typeof body !== 'string') body = JSON.stringify(body);
-    } else if(type === 'assistant_text'){
+    } else if(kind === 'assistant_text'){
+      header = '💬  assistant';
       body = ev.text || '';
+    } else if(baseKind === 'system'){
+      var sub = kind === 'system' ? (ev.subtype || 'system') : kind.replace(/^system_/, '');
+      header = '⚙  '+escHtml(sub);
+      body = ev.info || ev.message || ev.text || '';
+      if(typeof body !== 'string') body = JSON.stringify(body);
     } else {
+      header = escHtml(kind);
       body = ev.text || ev.content || ev.message || '';
       if(typeof body !== 'string') body = JSON.stringify(body);
     }
+
+    html += '<div class="trace-event-header">'+header+'</div>';
     if(body){
-      var truncated = body.substring(0, 800);
-      if(body.length > 800) truncated += '\n… (' + (body.length - 800) + ' more chars)';
+      var truncated = body.substring(0, 1200);
+      if(body.length > 1200) truncated += '\n… (' + (body.length - 1200) + ' more chars)';
       html += '<div class="trace-event-body">'+escHtml(truncated)+'</div>';
     }
     html += '</div>';
   });
+
+  if(rawOutput){
+    html += '<div class="trace-event t-assistant_text" style="border-top:2px solid var(--triz-bg);margin-top:6px">';
+    html += '<div class="trace-event-header">💬  Final answer</div>';
+    html += '<div class="trace-event-body">'+escHtml(rawOutput.substring(0,3000))+(rawOutput.length>3000?'…':'')+'</div></div>';
+  }
   html += '</div>';
   return html;
 }

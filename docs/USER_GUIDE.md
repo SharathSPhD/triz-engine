@@ -45,8 +45,29 @@ TRIZ Engine is a Claude Code plugin that brings Altshuller's Theory of Inventive
 | For | You need |
 |-----|----------|
 | Using the plugin in Claude Code | [Claude Code CLI](https://docs.anthropic.com/en/docs/claude-code) (`claude --version`) |
+| Running the bundled MCP server (auto on plugin install) | [`uv`](https://docs.astral.sh/uv/) (PEP 723 inline-deps launcher) |
 | Running benchmarks / editing code | Python 3.11+, `git` |
 | CresOWLve dataset (optional) | `pip install datasets` |
+
+The plugin launches its `triz-knowledge` MCP server via
+`uv run --script servers/triz_server.py` &mdash; `uv` auto-provisions `fastmcp`
+and other deps declared in a PEP 723 script header, so you don't need a
+pre-configured Python environment. Install `uv` via
+`curl -LsSf https://astral.sh/uv/install.sh | sh`.
+
+### Models used
+
+Every benchmark run in TRIZ Arena uses:
+
+- **Participants** (both TRIZ Engine plugin and Vanilla Claude baseline) &mdash;
+  `claude -p --model haiku` (Claude **Haiku 4.5**). Same model on both sides so
+  the only variable is the plugin itself.
+- **LLM-as-judge** for Solution Novelty, Contradiction Resolution, and the
+  MacGyver 4-level rubric &mdash; `claude -p --model sonnet`
+  (Claude **Sonnet 4.6**, the stronger reasoning model).
+- Trace capture (`--output-format stream-json --verbose`) is used selectively
+  on representative problems to record the full MCP-call timeline shown in the
+  "Live Demos" and "Applied" sections of the dashboard.
 
 ### 1. Install as a Claude Code plugin (primary path)
 
