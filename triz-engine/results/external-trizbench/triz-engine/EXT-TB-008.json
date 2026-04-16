@@ -1,0 +1,56 @@
+{
+  "problem_id": "EXT-TB-008",
+  "participant": "triz-engine",
+  "patent_id": "US6664520",
+  "submission": {
+    "contradiction_type": "technical",
+    "triz_param_a": 22,
+    "triz_param_b": 13,
+    "principles_applied": [
+      14,
+      2,
+      39,
+      6
+    ],
+    "solution_summary": "Implement a multi-functional inert-environment isolation system that (1) extracts vulnerable components using Taking Out (Principle 2); (2) employs a unified dual-function coating/barrier that both insulates against energy loss and chemically stabilizes composition using Universality (Principle 6); (3) encapsulates the system in an inert atmosphere to prevent reactive degradation (Principle 39); (4) distributes energy dissipation smoothly via curved paths to avoid hotspots that destabilize composition (Principle 14). This resolves the contradiction by making composition stability a direct benefit of energy-loss reduction, not a competing goal.",
+    "ifr_score": 4,
+    "contradiction_resolution": "eliminates",
+    "solution_novelty": "novel_combination"
+  },
+  "contradiction_score": {
+    "type_correct": true,
+    "params_exact": true,
+    "params_partial": true,
+    "predicted_params": [
+      13,
+      22
+    ],
+    "ground_truth_params": [
+      13,
+      22
+    ]
+  },
+  "principle_score": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0,
+    "overlap": [
+      2,
+      6,
+      14,
+      39
+    ],
+    "predicted": [
+      2,
+      6,
+      14,
+      39
+    ],
+    "ground_truth": [
+      2,
+      6,
+      14,
+      39
+    ]
+  }
+}

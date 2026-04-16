@@ -1,18 +1,18 @@
 {
-  "problem_id": "EXT-TB-001",
+  "problem_id": "EXT-TB-010",
   "participant": "triz-engine",
-  "patent_id": "US5717390",
+  "patent_id": "US6666666",
   "submission": {
     "contradiction_type": "technical",
-    "triz_param_a": 35,
-    "triz_param_b": 34,
+    "triz_param_a": 7,
+    "triz_param_b": 5,
     "principles_applied": [
-      1,
-      16,
       7,
-      4
+      17,
+      4,
+      1
     ],
-    "solution_summary": "Segment the system into independent, loosely-coupled modules where each module encapsulates multiple functions internally while exposing a minimal, stable repair interface. Adaptability is achieved by swapping or extending modules without touching core repair infrastructure, thus localizing complexity per module and keeping repair procedures simple.",
+    "solution_summary": "Deploy a telescoping/nested-doll design where the moving object remains compact (low area) during transit and elastically expands to high volume only when stationary or in use. Asymmetric elongation maximizes volume-to-area ratio. Temporal and spatial separation via deployment states eliminates the contradiction by ensuring the object never needs to satisfy both constraints simultaneously.",
     "ifr_score": 3,
     "contradiction_resolution": "eliminates",
     "solution_novelty": "novel_combination"
@@ -22,12 +22,12 @@
     "params_exact": true,
     "params_partial": true,
     "predicted_params": [
-      34,
-      35
+      5,
+      7
     ],
     "ground_truth_params": [
-      34,
-      35
+      5,
+      7
     ]
   },
   "principle_score": {
@@ -38,19 +38,19 @@
       1,
       4,
       7,
-      16
+      17
     ],
     "predicted": [
       1,
       4,
       7,
-      16
+      17
     ],
     "ground_truth": [
       1,
       4,
       7,
-      16
+      17
     ]
   }
 }

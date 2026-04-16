@@ -1,0 +1,46 @@
+{
+  "status": "success",
+  "participant": "vanilla-claude",
+  "problem_id": "TB-10",
+  "problem_title": "Documentation Completeness vs Development Speed",
+  "domain": "Organisational",
+  "submission": {
+    "contradiction_type": "technical",
+    "triz_param_a": 9,
+    "triz_param_b": 30,
+    "principles_applied": [
+      2,
+      13,
+      6,
+      27
+    ],
+    "solution_summary": "Replace manual documentation with schema-driven auto-generation and enforcement: API changes automatically generate OpenAPI specs; data flows extracted via static analysis and distributed tracing; developers tag commits with lightweight requirement IDs (enforced via git hooks). Tools generate audit-ready traceability reports in real-time. Documentation becomes a byproduct of development, not a separate task. Overhead drops from 31% to ~5%, and undocumented changes are blocked pre-commit, eliminating both speed and safety trade-offs.",
+    "ifr_score": 3,
+    "contradiction_resolution": "eliminates",
+    "solution_novelty": "novel_combination"
+  },
+  "validation_issues": [],
+  "scores": {
+    "ci": 30.0,
+    "ps": 0.0,
+    "sn": 32.0,
+    "cr": 100.0,
+    "ifr": 75.0,
+    "final_score": 46.4,
+    "judge_mode": "llm",
+    "dimensions": {
+      "ci_raw": 30.0,
+      "ps_raw": 0.0,
+      "sn_raw": 32.0,
+      "sn_level": "standard",
+      "cr_raw": 100.0,
+      "cr_level": "eliminates",
+      "ifr_raw": 75.0,
+      "ifr_value": 3
+    }
+  },
+  "final_score": 46.4,
+  "raw_output": "Looking at this organizational TRIZ problem, I'll work through the framework systematically.\n\n## TRIZ Analysis\n\n### 1. Identify the Contradiction\n\nThis is a **technical contradiction**: Improving X (development speed/productivity) directly worsens Y (documentation completeness and regulatory safety).\n\nThe core issue: When developers rush, they skip documentation \u2192 undocumented data flow changes \u2192 security incidents and audit failures. When documentation is thorough, it consumes 31% of time, killing velocity.\n\n### 2. Map to TRIZ Parameters\n\n- **Parameter 9 (Speed)**: Developing faster, reducing time spent on documentation work\n- **Parameter 30 (Object-generated harmful factors)**: The undocumented changes that create security incidents, compliance failures, and regulatory penalties\n\nThis framing captures the essence: faster development *itself* generates harmful factors (unknown data flows, traceability gaps).\n\n### 3. Apply Inventive Principles\n\nThe TRIZ contradiction matrix (9, 30) suggests principles: 2, 6, 13, 27.\n\n**Selected principles**:\n- **Principle 2 (Extraction/Taking out)**: Extract what's actually needed\u2014traceability and data flow information *from the code itself*, not written separately\n- **Principle 13 (Inversion/Feedback)**: Reverse the flow\u2014make code changes *automatically generate* documentation, rather than documentation following code\n- **Principle 6 (Universality)**: One unified system handles all regulatory, traceability, and audit needs simultaneously\n- **Principle 27 (Cheap/Disposable objects)**: Use lightweight, automated mechanisms instead of heavy manual documentation\n\n### 4. Concrete Solution: Schema-Driven Self-Documenting Architecture\n\n**Instead of developers writing documentation, implement three integrated mechanisms:**\n\n1. **Schema-First Data Flow Traceability**\n   - All architectural decisions \u2192 ADR format with git history (immutable record, zero extra work)\n   - All API/data structure changes \u2192 OpenAPI/AsyncAPI + generated data dictionary (single source of truth)\n   - Static analysis + distributed tracing (OpenTelemetry) \u2192 automatically captures *actual* data flows at runtime\n   - **Developer overhead**: Tag commits with requirement IDs (2-second discipline, git hook enforced)\n\n2. **Automated Requirement-to-Test-to-Deployment Linking**\n   - Code includes lightweight `@requires(REQ-123)` tags instead of narrative documentation\n   - Git hooks reject commits lacking traceability links (catches 99% of undocumented changes at commit time, not audit time)\n   - Automated reporting system: Requirement ID \u2192 Commits \u2192 Tests \u2192 Deployment Logs \u2192 FDA audit export (zero manual effort)\n\n3. **Self-Enforcing Code Patterns**\n   - Structured logging with trace IDs for automatic audit trail\n   - Naming conventions that make data classification obvious (e.g., `pii_user_ssn`, `hipaa_encrypted_payload`)\n   - TypeScript interfaces/schema annotations double as both code constraints *and* regulatory documentation\n\n**Why this eliminates the contradiction**:\n\n| Metric | Before | After |\n|--------|--------|-------|\n| Documentation time | 31% | ~5% (tagging only) |\n| Undocumented changes | High (caused 2 failed audits) | ~0% (blocked by hooks) |\n| Audit pass rate | 100% (but slow) | 100% (faster, automated) |\n| Traceability freshness | Stale (docs lag code) | Always current (generated from code) |\n\n---\n\n## Why This Solves the Contradiction\n\n- \u2705 **Speed improves**: 26 percentage points of developer time freed (developers code faster, tools document)\n- \u2705 **Harmful factors eliminated**: Undocumented changes are impossible (pre-commit enforcement), security incidents tied to traceability gaps drop to near-zero\n- \u2705 **No trade-off**: These *reinforce* each other\u2014faster developers = better-documented changes, because speed no longer requires cutting documentation corners\n\n---\n\n## Ideal Final Result (IFR) Evaluation\n\n| IFR Principle | Score |\n|---------------|-------|\n| Minimal new components | \u2705 Mostly COTS (git, OpenTelemetry, OpenAPI) |\n| Self-resolving system | \u2705 Once patterns embedded, developers follow them automatically |\n| Minimal cost | \u2705 One-time setup; ongoing cost is framework maintenance |\n| Minimal side-effects | \u26a0\ufe0f Initial resistance to tag discipline (~1-2 weeks onboarding) |\n\n**IFR Score: 3/4** \u2014 Near-ideal. The only friction is behavioral (developers adopting tagging discipline), which resolves with training and is far smaller than the 31% documentation burden it replaces.\n\n---\n\n```json\n{\n  \"contradiction_type\": \"technical\",\n  \"triz_param_a\": 9,\n  \"triz_param_b\": 30,\n  \"principles_applied\": [2, 13, 6, 27],\n  \"solution_summary\": \"Replace manual documentation with schema-driven auto-generation and enforcement: API changes automatically generate OpenAPI specs; data flows extracted via static analysis and distributed tracing; developers tag commits with lightweight requirement IDs (enforced via git hooks). Tools generate audit-ready traceability reports in real-time. Documentation becomes a byproduct of development, not a separate task. Overhead drops from 31% to ~5%, and undocumented changes are blocked pre-commit, eliminating both speed and safety trade-offs.\",\n  \"ifr_score\": 3,\n  \"contradiction_resolution\": \"eliminates\",\n  \"solution_novelty\": \"novel_combination\"\n}\n```\n\n---\n\n### Key Insight\n\n\u2605 Insight \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\nThe breakthrough is recognizing that documentation and compliance are *symptoms of missing structure*, not separate work. In poorly organized systems, documentation is detective (find what happened, write it down). The solution makes it *preventive*: enforce structure *into the code itself* (schemas, tags, tracing), so documentation is generated automatically as a side-effect. This is why it eliminates rather than merely reduces the contradiction\u2014you're no longer managing a trade-off; you're solving the root cause (lack of enforced traceability structure).\n\nFor healthcare/FDA contexts, this also has a secondary benefit: regulatory auditors see *machine-generated evidence* (git commits, test runs, deployment logs with trace IDs) rather than hand-written narrative documentation that drifts from reality.\n\n\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500",
+  "elapsed_seconds": 48.0,
+  "timestamp": "2026-04-15T20:08:59Z"
+}

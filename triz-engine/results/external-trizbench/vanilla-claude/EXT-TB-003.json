@@ -7,12 +7,12 @@
     "triz_param_a": 25,
     "triz_param_b": 31,
     "principles_applied": [
-      2,
+      1,
+      3,
       10,
-      34,
       35
     ],
-    "solution_summary": "Decouple speed acceleration from harmful factor generation by integrating an in-process extraction/recovery subsystem (Principle 2+34) that continuously removes byproducts during the fast operation, combined with preliminary input treatment (Principle 10) and catalytic/parameter optimization (Principle 35) to prevent harm generation in the first place.",
+    "solution_summary": "Implement spatially-segmented dual-stage processing with active feedback-controlled suppression that engages only during acceleration phases. The suppression mechanism targets harmful factor generation in real-time, decoupling speed gains from emission increases through parameter modulation (catalyst activation, energy state changes, or chemical neutralization).",
     "ifr_score": 3,
     "contradiction_resolution": "eliminates",
     "solution_novelty": "novel_combination"
@@ -38,9 +38,9 @@
       35
     ],
     "predicted": [
-      2,
+      1,
+      3,
       10,
-      34,
       35
     ],
     "ground_truth": [

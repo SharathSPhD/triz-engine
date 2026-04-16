@@ -1,0 +1,46 @@
+{
+  "status": "success",
+  "participant": "triz-engine",
+  "problem_id": "TB-11",
+  "problem_title": "Sub-second Latency AND 4K Video Quality",
+  "domain": "Network Protocol",
+  "submission": {
+    "contradiction_type": "technical",
+    "triz_param_a": 28,
+    "triz_param_b": 25,
+    "principles_applied": [
+      34,
+      24,
+      28,
+      32
+    ],
+    "solution_summary": "Shift encoding workload from per-frame compression to client-side motion prediction. Cloud encoder produces keyframes only (2-4ms encode latency) while streaming motion deltas (2-4ms per frame). Client reconstructs display-ready frames using hardware-accelerated motion compensation. Total latency: ~20ms; quality VMAF > 95 on keyframes; accessible across all bandwidth tiers (15 Mbps average).",
+    "ifr_score": 3,
+    "contradiction_resolution": "eliminates",
+    "solution_novelty": "novel_combination"
+  },
+  "validation_issues": [],
+  "scores": {
+    "ci": 0.0,
+    "ps": 0.0,
+    "sn": 60.0,
+    "cr": 60.0,
+    "ifr": 75.0,
+    "final_score": 34.5,
+    "judge_mode": "llm",
+    "dimensions": {
+      "ci_raw": 0.0,
+      "ps_raw": 0.0,
+      "sn_raw": 60.0,
+      "sn_level": "novel_combination",
+      "cr_raw": 60.0,
+      "cr_level": "reduces",
+      "ifr_raw": 75.0,
+      "ifr_value": 3
+    }
+  },
+  "final_score": 34.5,
+  "raw_output": "---\n\n## **TRIZ Analysis: Cloud Gaming Latency \u2194 Quality Contradiction**\n\n### **1. Contradiction Identification**\n\n**Type**: **Technical Contradiction**\n\n**The Core Trade-off**:\n- **Improving**: Visual fidelity (Parameter 28: Measurement accuracy) \u2014 VMAF score, color depth, artifact-free fast-motion playback\n- **Worsening**: End-to-end latency (Parameter 25: Loss of time) \u2014 the encode-transmit-decode pipeline overhead consumes 42ms of the 50ms budget\n\nThe contradiction is stark: **better compression quality requires more sophisticated encoder work (H.265, perceptual optimization), which increases encode time. Faster encoding sacrifices visual quality.** The 38% of users with <25 Mbps connections are locked out of quality tiers, while those with 35 Mbps connections experience latency creep.\n\n---\n\n### **2. Parameter Mapping**\n\n| Dimension | TRIZ Parameter | Interpretation |\n|-----------|---|---|\n| **Improving** | 28 (Measurement accuracy) | Visual fidelity, VMAF score, freedom from compression artifacts |\n| **Worsening** | 25 (Loss of time) | Latency in encode-transmit-decode pipeline (42ms current) |\n\n---\n\n### **3. Recommended Principles (TRIZ Matrix)**\n\nThe contradiction matrix (28 \u2192 25) recommends principles **24, 34, 28, 32**:\n\n#### **Principle 34: Discarding and Recovering** \u2b50 **TOP RANK** (IFR: 3)\n*\"Make parts that fulfilled their function disappear or become modified.\"*\n\n**Domain-Specific Solution: Motion Delta Prediction Encoding**\n- Shift the computational burden from frame-to-frame encoder work to **client-side motion prediction**\n- Game engine at the streaming server generates motion vectors, delta objects, and lighting changes\u2014not pixel data\n- Cloud encoder produces **keyframes only** (intra-refresh every 200ms) while streaming motion-compensated predictions\n- Discard full frame re-encoding for 99% of frames\u2014replace with lightweight 2-4ms delta updates (motion vector application + blend operations)\n- **Result**: Encode latency drops from 42ms \u2192 2-4ms. Network payload: ~15 Mbps average (keyframes + motion deltas + scene updates)\n- **Quality preservation**: High-frequency keyframe validation + perceptual loss metrics ensure motion quality remains at 4K standard\n- **Why this works**: The heavy work (quality encoding) is discarded after each keyframe; ongoing frames use cheap motion math instead\n\n---\n\n#### **Principle 24: Intermediary (Edge Encoding Proxy)** \u2b50 **STRONG ALTERNATIVE** (IFR: 3)\n*\"Use an intermediary carrier to translate protocols or buffer mismatched speeds.\"*\n\n**Domain-Specific Solution: CDN Edge-Split Encoding**\n- Place lightweight transcoding proxies at ISP/CDN edge locations (5-15ms from players)\n- Origin server encodes reference quality (high-detail 4K at 25 Mbps); transmission begins immediately\n- **Intermediary proxy** sends low-latency anchor frames (intra-refresh keyframes at 15fps using H.265 zero-latency mode)\n- Client displays anchor in ~8ms total (encode + edge transit); perceives playable latency\n- Heavy quality enhancement (detail layers, B-frames) happens asynchronously at origin, streamed via proxy\n- **Result**: User-perceived latency ~20ms (anchor frames); quality converges over 50-200ms\n- **Accessibility**: 15 Mbps anchor + 10 Mbps progressive detail = 25 Mbps typical (reachable by 89% of subscribers)\n- **Why this works**: Intermediary decouples the encoder-transmit bottleneck, hiding the full quality pipeline behind a fast-path\n\n---\n\n#### **Principle 28: Mechanics Substitution (Parallel Channels)** (IFR: 2)\n*\"Replace linear mechanical processing with field-distributed parallel channels.\"*\n\n**Domain-Specific Solution: Hierarchical Resolution Pyramid**\n- Encode two simultaneous streams:\n  - **Reference stream**: 1080p @ 15 Mbps (encode latency ~10ms)\n  - **Detail layer**: 4K residual enhancement @ 32 Mbps (encode latency ~32ms)\n- Transmit reference on high-priority TCP; detail on secondary UDP\n- Client reconstructs display-ready frame from reference in ~12ms, applies detail asynchronously\n- **Result**: Total latency = 12ms (reference) + 8ms network + 8ms display = **28ms**, leaving 22ms variance headroom\n- **Quality**: Reference ensures playability; detail layer converges to full 4K on good links\n- **Accessibility**: Works across all bandwidth tiers\n- **Why this works**: Parallel encoding substitutes the serial pipeline bottleneck with simultaneous encode tasks\n\n---\n\n### **4. IFR Evaluation (Ideal Final Result)**\n\nThe IFR for this problem: *\"The system encodes pristine 4K quality and transmits at wire-speed latency, with near-zero overhead and no new infrastructure.\"*\n\n| Solution | IFR Score | Eliminates Contradiction? | Key Tradeoff |\n|----------|-----------|---------------------------|--------------|\n| **Motion Delta Prediction** | **3/4** | **YES** \u2014 eliminates encoder overhead by discarding unnecessary work | Requires game engine integration (moderate complexity) |\n| **Edge-Split Encoding** | **3/4** | **YES** \u2014 eliminates latency serialization via intermediary | Requires CDN infrastructure deployment |\n| **Resolution Pyramid** | **2/4** | Partial \u2014 reduces (not eliminates) latency via parallelization | Increases bandwidth overhead; quality still progressive |\n\n---\n\n### **5. Top Recommendation: Motion Delta Prediction**\n\n**Why this wins:**\n- Eliminates the contradiction by **removing the root cause** (expensive per-frame encoding)\n- Leverages existing game engine capabilities (motion vectors, scene deltas are already computed)\n- **Minimal infrastructure cost** \u2014 no new CDN or hardware required\n- Scales across all bandwidth tiers automatically\n- **Sub-20ms latency achievable** while maintaining VMAF > 95 on keyframes\n\n**Implementation Roadmap:**\n1. **Game Engine Interface**: Expose motion vectors + object deltas from the game loop (e.g., DirectX/Vulkan motion estimation APIs)\n2. **Keyframe Scheduling**: Adaptive keyframe insertion every 100-300ms based on scene complexity\n3. **Quality Validation**: Measure VMAF on keyframes; validate motion quality via frame interpolation metrics\n4. **Client Reconstruction**: Use hardware-accelerated motion compensation (shader-based) for <5ms decode latency\n5. **Network Adaptation**: Prioritize keyframes on low-bandwidth connections; quality gracefully degrades\n\n---\n\n### **Analysis Summary**\n\nThis cloud gaming contradiction is fundamentally an **encoding workload problem disguised as a quality problem**. TRIZ points toward **eliminating the expensive work** (Principle 34) rather than trading off speed for quality. By shifting the encode burden to motion prediction\u2014work the game engine already does\u2014the system achieves both pristine quality and sub-20ms latency without sacrificing accessibility.\n\nThe contradiction is **not eliminable via compression alone**. It requires a **structural shift** in how video streaming is conceptualized: from \"encode frames \u2192 transmit \u2192 decode frames\" to \"predict motion \u2192 transmit deltas \u2192 reconstruct locally.\"\n\n---\n\n```json\n{\n  \"contradiction_type\": \"technical\",\n  \"triz_param_a\": 28,\n  \"triz_param_b\": 25,\n  \"principles_applied\": [34, 24, 28, 32],\n  \"solution_summary\": \"Shift encoding workload from per-frame compression to client-side motion prediction. Cloud encoder produces keyframes only (2-4ms encode latency) while streaming motion deltas (2-4ms per frame). Client reconstructs display-ready frames using hardware-accelerated motion compensation. Total latency: ~20ms; quality VMAF > 95 on keyframes; accessible across all bandwidth tiers (15 Mbps average).\",\n  \"ifr_score\": 3,\n  \"contradiction_resolution\": \"eliminates\",\n  \"solution_novelty\": \"novel_combination\"\n}\n```",
+  "elapsed_seconds": 81.6,
+  "timestamp": "2026-04-15T20:06:07Z"
+}

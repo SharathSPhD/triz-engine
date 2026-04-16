@@ -1,0 +1,14 @@
+{
+  "problem_id": "CO-008",
+  "difficulty": 4,
+  "creative_domains": [
+    "lateral thinking",
+    "joke"
+  ],
+  "triz_correct": false,
+  "vanilla_correct": false,
+  "question": "The hero of a novella by the famous 19th-century writer Dickens says he would not condemn HIM for running away: his service in cold weather is difficult, and he cannot count on tobacco. Name HIM.",
+  "correct_answer": "Nose.",
+  "triz_answer": "I need to think through this literary riddle carefully.\n\nThe clues point to a character in a Dickens novella who:\n- Would be condemned for running away but the narrator wouldn't\n- Has difficult service in cold weather\n- Cannot count on tobacco\n\nThe phrase \"cannot count on tobacco\" is the key—this appears to be wordplay. In Dickens's \"**The Chimes**,\" the main character is **Toby Veck**, a poor ticket porter. The name \"Toby\" contains the sound/letters relating to \"tobacco.\"\n\nToby works as a street porter in harsh winter conditions with meager earnings and no reliable comforts. Someone might reasonably say they wouldn't condemn him for abandoning such difficult, unrewarding service in cold weather—especially since he cannot count on (have access to) even basic comforts like tobacco.\n\n**Answer: Toby** (or Toby Veck, from \"The Chimes\")\n\nThe riddle works by hiding the answer phonetically within the constraint itself—the \"tobacco\" clue contains the name you're looking for.",
+  "vanilla_answer": "I don't have immediate certainty about this trivia question, and I want to give you an accurate answer rather than guess.\n\nThe question references a specific passage from a Dickens novella where a hero declines to condemn someone for running away due to difficult service in cold weather and lack of tobacco. While this could plausibly refer to a soldier, servant, or even an animal character from novellas like *A Christmas Carol*, *The Cricket on the Hearth*, or *The Battle of Life*, I cannot definitively identify the character without verification.\n\nCould you provide the novella title or any additional context? That would help me give you the correct answer."
+}

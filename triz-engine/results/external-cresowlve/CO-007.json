@@ -1,0 +1,14 @@
+{
+  "problem_id": "CO-007",
+  "difficulty": 2,
+  "creative_domains": [
+    "joke",
+    "lateral thinking"
+  ],
+  "triz_correct": false,
+  "vanilla_correct": false,
+  "question": "In one of the plots of the humorous TV show \"Six Frames,\" Lenin, shortly after the revolution, invites Inessa Armand to a restaurant the next day. But the secretary reminds him that tomorrow is Krupskaya's birthday. However, Lenin finds a way out and says: \"But we still haven't...\". Complete this phrase of Lenin's. The answer is accepted by meaning.",
+  "correct_answer": "\"... switched to the Gregorian calendar yet.\"",
+  "triz_answer": "I don't have access to the specific TV show \"Six Frames\" or this particular episode's script, so I can't confirm the exact phrase Lenin uses.\n\nHowever, based on the setup—where Lenin needs to excuse dining with Inessa Armand by invoking something that hasn't been done yet—the joke likely involves him citing a political or revolutionary obligation (a meeting with the Politburo, an urgent party matter, visiting the workers, etc.) rather than a personal reason.\n\n**Could you provide the answer or more context?** That way I can understand the specific humor and meaning of the phrase intended.",
+  "vanilla_answer": "I appreciate the question, but it's outside the scope of what I'm here to help with. I'm focused on software engineering tasks in your TRIZ plugin project.\n\nIf you have questions about the codebase, features you'd like to add, bugs to fix, or the project's direction, I'm ready to help with those. What would you like to work on?"
+}

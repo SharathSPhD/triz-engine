@@ -1,0 +1,53 @@
+{
+  "problem_id": "EXT-TB-008",
+  "participant": "vanilla-claude",
+  "patent_id": "US6664520",
+  "submission": {
+    "contradiction_type": "technical",
+    "triz_param_a": 22,
+    "triz_param_b": 13,
+    "principles_applied": [
+      3,
+      6,
+      15,
+      35
+    ],
+    "solution_summary": "Use segmented, multi-zone material design or phase-change composites where energy-loss reduction (insulation/sealing) and compositional stability are decoupled spatially or temporally. Activate stabilization mechanisms dynamically, separate from energy-loss reduction, via self-healing matrices or polymorphic materials that transform between low-loss (operational) and high-stability (rest) states.",
+    "ifr_score": 3,
+    "contradiction_resolution": "eliminates",
+    "solution_novelty": "novel_combination"
+  },
+  "contradiction_score": {
+    "type_correct": true,
+    "params_exact": true,
+    "params_partial": true,
+    "predicted_params": [
+      13,
+      22
+    ],
+    "ground_truth_params": [
+      13,
+      22
+    ]
+  },
+  "principle_score": {
+    "precision": 0.25,
+    "recall": 0.25,
+    "f1": 0.25,
+    "overlap": [
+      6
+    ],
+    "predicted": [
+      3,
+      6,
+      15,
+      35
+    ],
+    "ground_truth": [
+      2,
+      6,
+      14,
+      39
+    ]
+  }
+}

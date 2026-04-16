@@ -1,0 +1,56 @@
+{
+  "problem_id": "EXT-TB-005",
+  "participant": "triz-engine",
+  "patent_id": "US6685962",
+  "submission": {
+    "contradiction_type": "technical",
+    "triz_param_a": 12,
+    "triz_param_b": 5,
+    "principles_applied": [
+      10,
+      5,
+      34,
+      4
+    ],
+    "solution_summary": "Implement dynamic shape reconfiguration via Preliminary Action: pre-optimize geometry in advance of critical operational phases and revert to compact configuration when efficiency is not needed. This makes the area increase temporal and conditional, eliminating the permanent trade-off. Variable-geometry surfaces (morphing wings, deployable fins) activate shape optimization only when demanded.",
+    "ifr_score": 3,
+    "contradiction_resolution": "eliminates",
+    "solution_novelty": "novel_combination"
+  },
+  "contradiction_score": {
+    "type_correct": true,
+    "params_exact": true,
+    "params_partial": true,
+    "predicted_params": [
+      5,
+      12
+    ],
+    "ground_truth_params": [
+      5,
+      12
+    ]
+  },
+  "principle_score": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0,
+    "overlap": [
+      4,
+      5,
+      10,
+      34
+    ],
+    "predicted": [
+      4,
+      5,
+      10,
+      34
+    ],
+    "ground_truth": [
+      4,
+      5,
+      10,
+      34
+    ]
+  }
+}

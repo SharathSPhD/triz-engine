@@ -7,12 +7,13 @@
     "triz_param_a": 35,
     "triz_param_b": 34,
     "principles_applied": [
+      1,
       2,
-      6,
+      3,
       10,
-      28
+      27
     ],
-    "solution_summary": "Replace internal reconfigurability with modular slot architecture. Core system remains simple and repairable; adaptability is achieved through hot-swappable modules with standardized interfaces. Repair becomes module replacement, eliminating the need to understand complex internals.",
+    "solution_summary": "Implement a modular, hot-swappable architecture with standardized interfaces that encapsulate adaptive capabilities into replaceable units. Embed lightweight self-diagnostics to automatically identify failing modules. Replace modules as units rather than attempting internal repairs, converting the contradiction from 'complex and hard to fix' into 'modular and easy to service.'",
     "ifr_score": 3,
     "contradiction_resolution": "eliminates",
     "solution_novelty": "novel_combination"
@@ -31,15 +32,18 @@
     ]
   },
   "principle_score": {
-    "precision": 0.0,
-    "recall": 0.0,
-    "f1": 0.0,
-    "overlap": [],
+    "precision": 0.2,
+    "recall": 0.25,
+    "f1": 0.22222222222222224,
+    "overlap": [
+      1
+    ],
     "predicted": [
+      1,
       2,
-      6,
+      3,
       10,
-      28
+      27
     ],
     "ground_truth": [
       1,

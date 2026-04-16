@@ -2,118 +2,126 @@
 
 > Systematic contradiction resolution using the 40 Inventive Principles — a Claude Code plugin
 
-[![Tests](https://img.shields.io/badge/tests-passing-brightgreen?style=flat-square)](./triz-engine) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](./LICENSE)
+[![Tests](https://img.shields.io/badge/tests-327_passing-brightgreen?style=flat-square)](./triz-engine)
+[![Python](https://img.shields.io/badge/python-3.11+-blue?style=flat-square)](./triz-engine/pyproject.toml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](./LICENSE)
+[![ELO](https://img.shields.io/badge/ELO-1015-blueviolet?style=flat-square)](./triz-engine/LEADERBOARD.md)
 
 ## What is TRIZ?
 
-**TRIZ** (Theory of Inventive Problem Solving, *Teoriya Resheniya Izobretatelskikh Zadatch*) is a structured innovation methodology developed by Genrich Altshuller and his school from the study of hundreds of thousands of patents. Instead of brainstorming in a vacuum, TRIZ treats difficult design situations as **contradictions** and uses repeatable patterns of resolution.
+**TRIZ** (Theory of Inventive Problem Solving) is a structured innovation methodology developed by Genrich Altshuller from the study of hundreds of thousands of patents. Instead of brainstorming, TRIZ treats difficult design situations as **contradictions** and uses repeatable patterns of resolution.
 
-The **40 Inventive Principles** are abstract strategies (e.g. segmentation, dynamics, feedback) that recur across domains. The **Contradiction Matrix** (39×39 engineering parameters) suggests which principles historically helped when improving one parameter tended to worsen another. Together they turn “we can’t have both A and B” into a navigable search over known inventive moves.
+The **40 Inventive Principles** are abstract strategies (segmentation, dynamics, feedback, etc.) that recur across domains. The **Contradiction Matrix** (39x39 engineering parameters) suggests which principles historically resolved specific improving-vs-worsening trade-offs.
 
-## Quick Start (productive in &lt; 10 minutes)
+## Quick Start
 
-1. **Clone the repo**
+```bash
+git clone https://github.com/SharathSPhD/triz-engine.git
+cd TRIZ-plugin/triz-engine
+python3.11 -m venv .venv && source .venv/bin/activate
+pip install -e ".[dev]"
+pytest                    # 327 tests
+```
 
-   ```bash
-   git clone <your-fork-or-remote-url>
-   cd TRIZ-plugin
-   ```
+Then use in Claude Code:
 
-2. **Install the Python package (editable, with dev deps)**
+```
+/triz:analyze "Our API needs lower latency but adding caching increases memory usage and stale-data risk"
+```
 
-   ```bash
-   cd triz-engine
-   python3.11 -m venv .venv
-   source .venv/bin/activate   # Windows: .venv\Scripts\activate
-   pip install -e ".[dev]"
-   ```
+See [docs/QUICKSTART.md](docs/QUICKSTART.md) for the full getting-started guide and [docs/USER_GUIDE.md](docs/USER_GUIDE.md) for detailed usage.
 
-3. **Run the test suite**
+## Commands
 
-   ```bash
-   pytest
-   ```
+| Command | What it does |
+|---------|-------------|
+| `/triz:analyze` | Full contradiction analysis: classify, map parameters, look up matrix, generate solutions, score against IFR |
+| `/triz:principles` | Browse or search the 40 Inventive Principles with domain-specific examples |
+| `/triz:matrix` | Navigate the Contradiction Matrix for an improving/worsening parameter pair |
+| `/triz:ifr` | Formulate the Ideal Final Result — maximum benefit, zero cost/harm/complexity |
+| `/triz:ariz` | Full ARIZ-85C step-by-step analysis for deeply intractable contradictions |
+| `/triz:benchmark` | Run TRIZBENCH evaluation on the current session |
 
-4. **Use the plugin in Claude Code**  
-   After installing the plugin, these slash commands are available:
+## MCP Tools
 
-   | Command | Purpose |
-   |---------|---------|
-   | `/triz:analyze` | Full contradiction → matrix → principles → ranked solutions |
-   | `/triz:principles` | Browse or search the 40 Inventive Principles |
-   | `/triz:matrix` | Navigate the Contradiction Matrix |
-   | `/triz:ifr` | Formulate the Ideal Final Result (IFR) |
-   | `/triz:ariz` | Step through ARIZ-85C-style analysis |
-   | `/triz:benchmark` | TRIZBENCH evaluation hooks for the current session |
+The `triz-knowledge` server exposes 8 tools:
 
-## Commands Reference
+| Tool | Description |
+|------|-------------|
+| `get_principle` | Fetch one inventive principle by ID (1-40) |
+| `search_principles` | Keyword search over principles with optional domain filter |
+| `lookup_matrix` | Matrix lookup for an improving/worsening parameter pair (1-39) |
+| `list_parameters` | List all 39 engineering parameters |
+| `get_separation_principles` | Separation strategies (time, space, condition, system level) for physical contradictions |
+| `suggest_parameters` | Map a natural-language description to candidate TRIZ parameters |
+| `score_solution` | IFR-oriented score (0-4) for a proposed solution |
+| `log_session_entry` | Append a structured entry to the session innovation ledger |
 
-| Command | What it does | When to use it |
-|--------|----------------|----------------|
-| `/triz:analyze` | Classifies technical vs physical contradictions, maps to 39 parameters, looks up the matrix (or separation strategies), pulls principle definitions, sketches solutions, scores against IFR, and recommends a top path | Default entry point for any real trade-off or “impossible” requirement |
-| `/triz:principles` | Explores individual principles, examples, and software-oriented patterns | You already know the contradiction and want depth on one or more principles |
-| `/triz:matrix` | Interactively explores improving/worsening parameter pairs and recommended principles | You have two competing metrics and want matrix-grounded suggestions |
-| `/triz:ifr` | Sharpens the “ideal” outcome: maximum benefit with zero cost, harm, or complexity | Before or after analysis to avoid premature compromise |
-| `/triz:ariz` | Guided ARIZ-style workflow for stubborn or ill-defined problems | Large, ambiguous problems needing staged refinement |
-| `/triz:benchmark` | Connects to TRIZBENCH problems and scoring context | Comparing approaches, regression-testing reasoning, or Arena-style evaluation |
+## Agent Pipeline
+
+**contradiction-agent** &#8594; **solution-agent** &#8594; **evaluator-agent**
+
+1. **Contradiction** — Extract and classify the contradiction; map to TRIZ parameters
+2. **Solution** — Generate matrix- or separation-guided principle sketches for the user's domain
+3. **Evaluator** — Score sketches on TRIZBENCH dimensions and surface the strongest recommendation
 
 ## Architecture
-
-Text layout of the plugin package (under `triz-engine/`):
 
 ```
 triz-engine/
 ├── .claude-plugin/plugin.json     # Plugin manifest
-├── commands/                       # 6 slash commands
-├── agents/                         # 3-agent pipeline
+├── commands/                       # 6 slash commands (analyze, principles, matrix, ifr, ariz, benchmark)
+├── agents/                         # 3-agent pipeline (contradiction, solution, evaluator)
 ├── skills/triz-core.md            # Auto-activation skill
 ├── hooks/                          # Pre/post tool-use hooks
 ├── servers/triz_server.py          # FastMCP server (8 tools)
-├── data/                           # Knowledge base + matrix
-└── benchmark/                      # TRIZBENCH + Arena
+├── data/                           # Knowledge base (40 principles + 39x39 matrix)
+├── benchmark/                      # TRIZBENCH problems, scorer, ELO, external adapters
+│   ├── problems/                   # 12 canonical problems (TB-01 to TB-12)
+│   ├── participants/               # Participant configs (triz-engine, vanilla-claude, etc.)
+│   ├── external/                   # External benchmark adapters (TRIZBENCH, MacGyver, CresOWLve)
+│   ├── runner.py                   # Benchmark execution engine
+│   ├── scorer.py                   # 5-dimension scoring with LLM-as-judge
+│   ├── elo.py                      # Bradley-Terry ELO rating system
+│   └── leaderboard.py              # Leaderboard generator
+└── results/                        # Benchmark output artifacts
 ```
 
-### MCP tools (`triz-knowledge` server)
+## Benchmarks
 
-| Tool | Description |
-|------|-------------|
-| `get_principle` | Fetch one inventive principle by ID (1–40) |
-| `search_principles` | Keyword search over principles, optional domain filter |
-| `lookup_matrix` | Matrix lookup for an improving/worsening parameter pair (1–39) |
-| `list_parameters` | List all 39 engineering parameters |
-| `get_separation_principles` | Separation hints (time, space, condition, system level) for physical contradictions |
-| `score_solution` | Semantic IFR-oriented score (0–4) for a proposed solution |
-| `suggest_parameters` | Map a natural-language description to candidate TRIZ parameters |
-| `log_session_entry` | Append a structured entry to the session innovation ledger (`.triz/session.jsonl`) |
+### Internal TRIZBENCH
 
-### Agent pipeline
+12 canonical problems (TB-01 to TB-12) spanning distributed systems, security, ML, APIs, DevOps, privacy, IoT, search, compilers, org design, networking, and AI safety. Five-dimension weighted scoring:
 
-**contradiction-agent → solution-agent → evaluator-agent**
+| Dimension | Weight | Method |
+|-----------|--------|--------|
+| Contradiction Identification (CI) | 25% | Verified ground truth |
+| Principle Selection (PS) | 20% | Verified ground truth |
+| Solution Novelty (SN) | 20% | LLM-as-judge (Sonnet) |
+| Contradiction Resolution (CR) | 25% | LLM-as-judge (Sonnet) |
+| IFR Proximity (IFR) | 10% | Verified ground truth |
 
-1. **Contradiction** — Extract and type the contradiction; map to TRIZ parameters.  
-2. **Solution** — Instantiate matrix- or separation-guided principle sketches for the user’s domain.  
-3. **Evaluator** — Score sketches on TRIZBENCH-style dimensions and surface the strongest recommendation.
+### External Benchmarks
 
-## TRIZBENCH
+| Benchmark | What it tests | Problems |
+|-----------|--------------|----------|
+| **Published TRIZBENCH** | Patent contradiction analysis with ground-truth parameters and principles | 167 classic-range patents |
+| **MacGyver** | Constrained creative problem-solving with inventive object usage | 1,683 problems |
+| **CresOWLve** | Lateral/divergent creative reasoning | 2,061 problems |
 
-**TRIZBENCH** is a benchmark of **12 canonical problems** (TB-01 … TB-12) spanning distributed systems, security/UX, ML, APIs, DevOps, privacy, IoT, search, compilers, org design, networking, and AI safety. Each problem has structured ground truth (contradiction type, parameter IDs, target principles, IFR baseline) for consistent evaluation.
+### Leaderboard
 
-**Five-dimension scoring** (weighted to a 0–100 score):
-
-| Code | Dimension | Weight |
-|------|-----------|--------|
-| CI | Contradiction identification | 25% |
-| PS | Principle selection | 20% |
-| SN | Solution novelty | 20% |
-| CR | Contradiction resolution | 25% |
-| IFR | Ideal Final Result proximity | 10% |
-
-**TRIZ Arena** ranks participants (prompts, models, or configurations) using **Bradley–Terry ELO** on head-to-head or per-problem outcomes, producing a leaderboard you can regenerate from benchmark artifacts.
+See [LEADERBOARD.md](triz-engine/LEADERBOARD.md) for current rankings. The TRIZ Arena ranks participants using Bradley-Terry ELO with bootstrap confidence intervals.
 
 ## Development
 
-- **Tests:** `pytest` — full test suite in `triz-engine/`.  
-- **Lint:** `ruff check .` (from `triz-engine/` with dev dependencies installed).
+```bash
+cd triz-engine
+source .venv/bin/activate
+pytest                     # Run full test suite
+ruff check .               # Lint
+python -m benchmark.runner --problems TB-01 TB-02 --participants triz-engine vanilla-claude
+```
 
 ## Contributing
 

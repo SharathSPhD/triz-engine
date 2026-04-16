@@ -1,0 +1,14 @@
+{
+  "problem_id": "CO-004",
+  "difficulty": 4,
+  "creative_domains": [
+    "pun",
+    "lateral thinking"
+  ],
+  "triz_correct": false,
+  "vanilla_correct": false,
+  "question": "For a time, a secret agent was following Coleridge. Eventually, the agent decided he was exposed when he heard Coleridge cursing \"the nosy spy.\" Who was Coleridge actually talking about?",
+  "correct_answer": "About [Benedict] Spinoza.",
+  "triz_answer": "**The spy** (or a government agent different from the secret agent following him).\n\nHere's the TRIZ inversion: The agent assumed Coleridge's curse \"the nosy spy\" was directed at *them*, but the apparent paradox reveals the opposite. Coleridge was likely cursing about **someone else spying on him** — perhaps another government operative, a rival, or someone in his personal circle. The agent's fear of exposure caused them to misidentify the target of the curse.\n\n**Key insight (Principle 13 - Inversion)**: The agent inverted the situation. They weren't the subject being cursed; they were merely overhearing someone's complaint about a *different* threat to Coleridge. The agent exposed themselves through false assumption, not through actual discovery.",
+  "vanilla_answer": "I'm not confident in the specific historical anecdote you're referring to. While there are various stories about Coleridge being watched or observed during his lifetime (particularly given the political suspicions of the Napoleonic era), I don't have a reliable recollection of this particular incident about the \"nosy spy\" quote.\n\nCould you provide more context about when this occurred or where you encountered this story? That would help me give you an accurate answer rather than guessing."
+}

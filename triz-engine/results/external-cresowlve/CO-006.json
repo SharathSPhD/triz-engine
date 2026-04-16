@@ -1,0 +1,14 @@
+{
+  "problem_id": "CO-006",
+  "difficulty": 4,
+  "creative_domains": [
+    "analogy",
+    "metaphor"
+  ],
+  "triz_correct": false,
+  "vanilla_correct": false,
+  "question": "Describing HIS last concert, Melor Sturua compared HIM to an exhausted warrior, barely holding a sword in weakened hands. Name HIS last name.",
+  "correct_answer": "Armstrong.",
+  "triz_answer": "I don't have reliable information about this specific quote from Melor Sturua or which performer's last concert it describes. Rather than guess, I'd recommend searching for this reference directly, or checking if you have access to Sturua's music criticism archives or reviews.\n\nIf you can provide additional context (like the approximate era, musical genre, or nationality of the performer), I could help narrow down the search.",
+  "vanilla_answer": "I don't have reliable information to answer this trivia question accurately. The specific comparison by Melor Sturua (a Georgian director) about someone's last concert isn't something I can confidently identify from my training data.\n\nIf you'd like, I can search the web for this information, but that seems unrelated to your TRIZ plugin project work. Is there something about the codebase I can help you with instead?"
+}

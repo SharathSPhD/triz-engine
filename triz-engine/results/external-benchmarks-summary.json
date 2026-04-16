@@ -1,45 +1,13 @@
 {
-  "cresowlve": {
-    "benchmark": "CresOWLve",
-    "total_problems": 3,
-    "triz_correct": 0,
-    "vanilla_correct": 0,
-    "triz_accuracy": 0.0,
-    "vanilla_accuracy": 0.0,
-    "accuracy_delta": 0.0,
-    "by_difficulty": {
-      "3": {
-        "total": 1,
-        "triz_accuracy": 0.0,
-        "vanilla_accuracy": 0.0
-      },
-      "4": {
-        "total": 2,
-        "triz_accuracy": 0.0,
-        "vanilla_accuracy": 0.0
-      }
-    },
-    "by_domain": {
-      "lateral thinking": {
-        "total": 3,
-        "triz_accuracy": 0.0,
-        "vanilla_accuracy": 0.0
-      },
-      "analogy": {
-        "total": 1,
-        "triz_accuracy": 0.0,
-        "vanilla_accuracy": 0.0
-      },
-      "pun": {
-        "total": 1,
-        "triz_accuracy": 0.0,
-        "vanilla_accuracy": 0.0
-      },
-      "proverb": {
-        "total": 1,
-        "triz_accuracy": 0.0,
-        "vanilla_accuracy": 0.0
-      }
-    }
+  "macgyver": {
+    "benchmark": "MacGyver",
+    "total_problems": 4,
+    "triz_wins": 1,
+    "vanilla_wins": 0,
+    "ties": 3,
+    "triz_win_rate": 0.25,
+    "vanilla_win_rate": 0.0,
+    "triz_mean_score": 0.875,
+    "vanilla_mean_score": 0.8125
   }
 }

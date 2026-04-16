@@ -1,0 +1,46 @@
+{
+  "status": "success",
+  "participant": "triz-engine",
+  "problem_id": "TB-09",
+  "problem_title": "Optimized Code Output vs Fast Compilation",
+  "domain": "Compiler Engineering",
+  "submission": {
+    "contradiction_type": "technical",
+    "triz_param_a": 9,
+    "triz_param_b": 15,
+    "principles_applied": [
+      3,
+      19,
+      35,
+      5
+    ],
+    "solution_summary": "Implement heterogeneous shader optimization: classify shaders by complexity and apply -O1 to simple shaders (0.8s, < 1ms frame impact), -O2 to medium (5s), and -O3 only to critical-path shaders (47s). This eliminates the false assumption that all shaders need uniform optimization. Enable fast iterative builds (32 min all-O1) with a background daemon continuously re-optimizing hot paths identified by runtime profiling.",
+    "ifr_score": 2,
+    "contradiction_resolution": "eliminates",
+    "solution_novelty": "novel_combination"
+  },
+  "validation_issues": [],
+  "scores": {
+    "ci": 30.0,
+    "ps": 40.0,
+    "sn": 32.0,
+    "cr": 60.0,
+    "ifr": 50.0,
+    "final_score": 41.9,
+    "judge_mode": "llm",
+    "dimensions": {
+      "ci_raw": 30.0,
+      "ps_raw": 40.0,
+      "sn_raw": 32.0,
+      "sn_level": "standard",
+      "cr_raw": 60.0,
+      "cr_level": "reduces",
+      "ifr_raw": 50.0,
+      "ifr_value": 2
+    }
+  },
+  "final_score": 41.9,
+  "raw_output": "---\n\n## **TRIZ Analysis Summary**\n\n**Contradiction Card:**\n- **Type**: Technical contradiction\n- **Improving dimension**: Speed of compiled shader code execution (Parameter 9)\n- **Worsening dimension**: Duration of compilation process (Parameter 15)\n- **Core trade-off**: More optimization passes \u2192 faster code execution BUT slower compilation\n\n**Recommended Principles (ranked by elimination potential):**\n\n1. **Principle 3 (Local Quality) \u2014 TOP RECOMMENDATION**\n   - **How it applies**: Heterogeneous optimization strategy. Not all shaders have equal optimization ROI. Simple shaders show negligible frame-time improvement from -O3 but pay full compilation cost. Complex shaders on critical paths need -O3 to maintain VR performance.\n   - **Concrete implementation**: Pre-analyze each shader for complexity (instruction count, control flow depth, register demand). Route simple shaders (80% of codebase) to -O1 (0.8s, acceptable < 1ms frame impact). Route complex critical shaders to -O3 (47s, delivers 2% deviation). Route medium-complexity to -O2 (5-8s).\n   - **Expected outcome**: Full rebuild \u2192 4 hours (vs 31 hours) while maintaining 2% performance target on critical paths. Iterative dev cycle: 32 min at all-O1.\n\n2. **Principle 19 (Periodic Action)**\n   - **How it applies**: Staged compilation pipeline. Immediate iteration uses fast -O1 (all 2,400 shaders in 32 min). Background daemon batches identified hot-path shaders for re-optimization with -O3 during idle CPU cycles. Release builds pull pre-cached -O3 versions.\n   - **Expected outcome**: Dev feedback in 32 min; production gets hand-tuned quality asynchronously. Removes sync compilation bottleneck.\n\n3. **Principle 5 (Merging) \u2014 Infrastructure option**\n   - **How it applies**: Parallelize shader compilation across CPU cores (8, 16, or 32 cores depending on build machine). Shared IR enables global inlining. Serialization bottleneck removed.\n   - **Expected outcome**: 31 hours \u2192 ~1 hour for full -O3 rebuild. But doesn't address iteration speed without tiers.\n\n---\n\n### **Why Principle 3 Eliminates the Contradiction**\n\nThe contradiction exists because the system assumes **all shaders have equal optimization potential**. This is provably false:\n\n- A simple skybox shader (5 instructions, no branches) spends 46.2s in -O3 optimization for a 0.1ms frame-time gain. Uneconomical.\n- A complex PBR shader (200 instructions, multiple branches, reused across 500 objects) spends 47s and saves 40ms per frame. Essential.\n\n**Local Quality breaks the false uniformity**: Apply differentiated optimization depth. The contradiction dissolves when we stop pretending all shaders need -O3.\n\n**IFR Assessment**: Score 2/4 \u2014 Partial IFR.\n- \u2713 Uses existing compiler infrastructure (no new tools)\n- \u2713 Introduces no new problems (tiered approach doesn't degrade either dimension)\n- \u2717 Requires new complexity analysis (shader classification step)\n- \u2717 Still needs profiling feedback to identify hot paths (not fully self-tuning)\n\nTo approach IFR 3-4, add **automatic profiling**: runtime frame-time measurements automatically trigger re-compilation of shaders exceeding a threshold. Then the system becomes self-tuning with minimal manual intervention.\n\n---\n\n```json\n{\n  \"contradiction_type\": \"technical\",\n  \"triz_param_a\": 9,\n  \"triz_param_b\": 15,\n  \"principles_applied\": [3, 19, 35, 5],\n  \"solution_summary\": \"Implement heterogeneous shader optimization: classify shaders by complexity and apply -O1 to simple shaders (0.8s, < 1ms frame impact), -O2 to medium (5s), and -O3 only to critical-path shaders (47s). This eliminates the false assumption that all shaders need uniform optimization. Enable fast iterative builds (32 min all-O1) with a background daemon continuously re-optimizing hot paths identified by runtime profiling.\",\n  \"ifr_score\": 2,\n  \"contradiction_resolution\": \"eliminates\",\n  \"solution_novelty\": \"novel_combination\"\n}\n```",
+  "elapsed_seconds": 90.5,
+  "timestamp": "2026-04-15T20:03:23Z"
+}

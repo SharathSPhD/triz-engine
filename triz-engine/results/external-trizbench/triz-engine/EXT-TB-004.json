@@ -1,0 +1,53 @@
+{
+  "problem_id": "EXT-TB-004",
+  "participant": "triz-engine",
+  "patent_id": "US6686564",
+  "submission": {
+    "contradiction_type": "technical",
+    "triz_param_a": 31,
+    "triz_param_b": 15,
+    "principles_applied": [
+      22,
+      31,
+      33
+    ],
+    "solution_summary": "Replace active harmful-factor suppression with adaptive porous selective filtering using homogeneous materials. Passive porosity eliminates energy-cost and wear mechanisms, while homogeneity prevents degradation at material interfaces. Byproduct separation provides feedback signals that dynamically optimize operating parameters, extending safe duration while simultaneously reducing emissions.",
+    "ifr_score": 4,
+    "contradiction_resolution": "eliminates",
+    "solution_novelty": "novel_combination"
+  },
+  "contradiction_score": {
+    "type_correct": true,
+    "params_exact": true,
+    "params_partial": true,
+    "predicted_params": [
+      15,
+      31
+    ],
+    "ground_truth_params": [
+      15,
+      31
+    ]
+  },
+  "principle_score": {
+    "precision": 1.0,
+    "recall": 0.75,
+    "f1": 0.8571428571428571,
+    "overlap": [
+      22,
+      31,
+      33
+    ],
+    "predicted": [
+      22,
+      31,
+      33
+    ],
+    "ground_truth": [
+      15,
+      22,
+      31,
+      33
+    ]
+  }
+}

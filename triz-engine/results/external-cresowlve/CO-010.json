@@ -1,0 +1,14 @@
+{
+  "problem_id": "CO-010",
+  "difficulty": 5,
+  "creative_domains": [
+    "lateral thinking",
+    "analogy"
+  ],
+  "triz_correct": false,
+  "vanilla_correct": false,
+  "question": "Before you is the portrait of Ginevra de' Benci by Leonardo. Part of this painting is considered lost, which is confirmed by the existence of a series of sketches for the portrait. There is also a hypothesis that someone was well acquainted with these sketches... Who?",
+  "correct_answer": "Maurits Escher.",
+  "triz_answer": "I'm not confident in the specific historical hypothesis you're referencing about the Ginevra de' Benci portrait and who was well acquainted with its sketches.\n\nWhile I know this Leonardo painting is incomplete (the back contains a wreath motif, and preparatory sketches exist), I don't want to guess at the particular historical claim about which person the hypothesis identifies. \n\nCould you provide additional context or clarify what source this refers to? That would help me give you an accurate answer.",
+  "vanilla_answer": "I appreciate the question, but this is an art history query rather than a software engineering task—which is what Claude Code is designed to help with.\n\nThat said, I'm not confident in the specific answer you're looking for regarding who was acquainted with the sketches for the lost portion of Ginevra de' Benci. This seems like a specialized art historical detail that would require more authoritative sources to answer accurately.\n\nIs there something related to the TRIZ-plugin project I can help you with instead?"
+}

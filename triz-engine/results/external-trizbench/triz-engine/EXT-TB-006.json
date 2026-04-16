@@ -1,0 +1,56 @@
+{
+  "problem_id": "EXT-TB-006",
+  "participant": "triz-engine",
+  "patent_id": "US6685962",
+  "submission": {
+    "contradiction_type": "technical",
+    "triz_param_a": 12,
+    "triz_param_b": 15,
+    "principles_applied": [
+      14,
+      26,
+      25,
+      9
+    ],
+    "solution_summary": "Replace sharp stress-concentration points in optimized shapes with smooth curves to distribute load (Principle 14). Combine with segmented replaceable modules that rotate or cycle wear zones (Principle 26), and select self-relieving materials that gradually smooth stress peaks during operation (Principle 25). This allows simultaneous achievement of optimized shape performance and extended operational durability.",
+    "ifr_score": 4,
+    "contradiction_resolution": "eliminates",
+    "solution_novelty": "novel_combination"
+  },
+  "contradiction_score": {
+    "type_correct": true,
+    "params_exact": true,
+    "params_partial": true,
+    "predicted_params": [
+      12,
+      15
+    ],
+    "ground_truth_params": [
+      12,
+      15
+    ]
+  },
+  "principle_score": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0,
+    "overlap": [
+      9,
+      14,
+      25,
+      26
+    ],
+    "predicted": [
+      9,
+      14,
+      25,
+      26
+    ],
+    "ground_truth": [
+      9,
+      14,
+      25,
+      26
+    ]
+  }
+}

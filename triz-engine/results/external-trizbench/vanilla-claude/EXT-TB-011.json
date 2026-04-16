@@ -1,0 +1,39 @@
+{
+  "problem_id": "EXT-TB-011",
+  "participant": "vanilla-claude",
+  "patent_id": "US6682757",
+  "submission": {
+    "contradiction_type": "technical",
+    "triz_param_a": 24,
+    "triz_param_b": 34,
+    "principles_applied": [
+      2,
+      6,
+      19,
+      25,
+      35
+    ],
+    "solution_summary": "Separate data preservation from repair pathways by using a dedicated transparent diagnostic layer with queryable error logs and autonomous health-checks. Technicians repair via standardized interfaces and cryptographic error packets, not by reverse-engineering complex data states. Data protection moves to hardware-level algorithms and periodic decoupling windows.",
+    "ifr_score": 2,
+    "contradiction_resolution": "eliminates",
+    "solution_novelty": "novel_combination"
+  },
+  "contradiction_score": {
+    "type_correct": true,
+    "params_exact": true,
+    "params_partial": true,
+    "predicted_params": [
+      24,
+      34
+    ],
+    "ground_truth_params": [
+      24,
+      34
+    ]
+  },
+  "principle_score": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": 0.0
+  }
+}

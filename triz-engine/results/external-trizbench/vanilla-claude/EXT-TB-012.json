@@ -1,0 +1,55 @@
+{
+  "problem_id": "EXT-TB-012",
+  "participant": "vanilla-claude",
+  "patent_id": "US6674744",
+  "submission": {
+    "contradiction_type": "technical",
+    "triz_param_a": 14,
+    "triz_param_b": 31,
+    "principles_applied": [
+      35,
+      1,
+      3,
+      28,
+      13
+    ],
+    "solution_summary": "Apply Segmentation and Parameter Changes to concentrate high-strength properties only in critical stress regions while using harmless, low-strength materials elsewhere. Implement localized feedback/damping to suppress object-generated harmful factors at their source without compromising structural integrity. Use compositional or phase-state gradation to achieve strength through selective activation rather than uniform enhancement.",
+    "ifr_score": 3,
+    "contradiction_resolution": "eliminates",
+    "solution_novelty": "novel_combination"
+  },
+  "contradiction_score": {
+    "type_correct": true,
+    "params_exact": true,
+    "params_partial": true,
+    "predicted_params": [
+      14,
+      31
+    ],
+    "ground_truth_params": [
+      14,
+      31
+    ]
+  },
+  "principle_score": {
+    "precision": 0.2,
+    "recall": 0.25,
+    "f1": 0.22222222222222224,
+    "overlap": [
+      35
+    ],
+    "predicted": [
+      1,
+      3,
+      13,
+      28,
+      35
+    ],
+    "ground_truth": [
+      2,
+      15,
+      22,
+      35
+    ]
+  }
+}

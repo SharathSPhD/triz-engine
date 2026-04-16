@@ -1,0 +1,47 @@
+{
+  "status": "success",
+  "participant": "vanilla-claude",
+  "problem_id": "TB-09",
+  "problem_title": "Optimized Code Output vs Fast Compilation",
+  "domain": "Compiler Engineering",
+  "submission": {
+    "contradiction_type": "technical",
+    "triz_param_a": 13,
+    "triz_param_b": 20,
+    "principles_applied": [
+      3,
+      10,
+      4,
+      15,
+      27
+    ],
+    "solution_summary": "Implement profile-driven tiered compilation: classify shaders into critical (\u2192-O3), standard (\u2192-O2), and non-critical (\u2192-O1) tiers based on first-pass analysis. Apply full optimization only to the ~5% of shaders that benefit; parallelize tier pipelines to deliver <1s iteration feedback on non-critical shaders while maintaining 2% hand-tuned performance on critical paths during release builds.",
+    "ifr_score": 3,
+    "contradiction_resolution": "eliminates",
+    "solution_novelty": "novel_combination"
+  },
+  "validation_issues": [],
+  "scores": {
+    "ci": 30.0,
+    "ps": 0.0,
+    "sn": 32.0,
+    "cr": 60.0,
+    "ifr": 75.0,
+    "final_score": 36.4,
+    "judge_mode": "llm",
+    "dimensions": {
+      "ci_raw": 30.0,
+      "ps_raw": 0.0,
+      "sn_raw": 32.0,
+      "sn_level": "standard",
+      "cr_raw": 60.0,
+      "cr_level": "reduces",
+      "ifr_raw": 75.0,
+      "ifr_value": 3
+    }
+  },
+  "final_score": 36.4,
+  "raw_output": "# TRIZ Analysis: Shader Compiler Optimization vs. Speed Paradox\n\nI'll work through this systematically using the TRIZ framework you've provided.\n\n## 1. Contradiction Type & Parameters\n\n**Type: Technical Contradiction**\n\nThe core conflict is:\n- **Improving**: Code performance/optimization quality (parameter 13: *Stability of composition*)\n- **Worsening**: Compilation throughput (parameter 20: *Power/Energy throughput*)\n\nThe 14-pass optimization pipeline creates a direct trade-off: adding passes improves runtime performance but degrades compilation speed\u2014and you can't simply add resources (CPU cores, memory) to escape this because compilation is largely sequential (instruction scheduling, graph-coloring register allocation have strict dependencies).\n\n---\n\n## 2. TRIZ Principles Analysis\n\nFrom the contradiction matrix at (13, 20), the most applicable principles are:\n\n| Principle | Why It Applies |\n|-----------|---|\n| **3 - Local Quality** | Apply intense optimization only where it matters\u2014not uniformly to all 2,400 shaders |\n| **10 - Preliminary Action** | Pre-analyze shaders to identify which actually need -O3 |\n| **4 - Asymmetry** | Treat different shader types (vertex, fragment, compute) with different optimization intensity |\n| **15 - Dynamics** | Make optimization level *variable* based on development phase (iteration vs. release build) |\n| **27 - Cheap Consumable** | Use fast approximate optimizations as a first pass before expensive ones |\n\n---\n\n## 3. Concrete Solution: Adaptive Tiered Compilation\n\n**The Insight:** The contradiction dissolves when you recognize that **not all shaders equally benefit from all 14 optimization passes**. The solution doesn't compromise\u2014it eliminates the false constraint.\n\n### Implementation Strategy:\n\n**Phase A \u2013 Profile-Driven Categorization** (runs once per shader, very fast):\n- Analyze shader complexity, instruction count, register pressure, loop nesting depth\n- Classify into three tiers:\n  - **Tier 1 (Critical, ~5%)**: Heavy compute, frequent frame-time bottlenecks \u2192 -O3 (14 passes, 47s)\n  - **Tier 2 (Standard, ~45%)**: General-purpose rendering \u2192 -O2 variant (10 passes, 8s)\n  - **Tier 3 (UI/Post-process, ~50%)**: Simple, non-critical \u2192 -O1 (4 passes, 0.8s)\n\n**Phase B \u2013 Parallel Pipeline Execution**:\n- Spin up three independent optimization chains processing different tier shaders in parallel\n- During *development iteration*: batch shaders by tier; developers get Tier 3 shaders back in <1s, Tier 1 in ~10s (acceptable for critical paths)\n- During *release build*: apply tier-appropriate optimization; total time collapses to ~2 hours (vs. 31 hours) because you're not running 14 expensive passes on simple UI shaders\n\n**Phase C \u2013 Incremental Compilation & AST Caching**:\n- Cache the intermediate representation (IR) after passes 1-4\n- If shader source changes but only in a non-performance-critical section, skip passes 5-14\n- Reuse cached IR from previous compilations for unchanged shaders\n\n### Expected Results:\n- **Iteration loop**: 0.8\u201310 seconds per shader (tier-dependent) \u2713 Meets interactive requirement\n- **Release build**: ~2 hours for 2,400 shaders with full -O3 on critical paths \u2713 Meets 5% performance target\n- **No shader correctness regression**: Tier 1 shaders still get the same 14-pass treatment\n\n---\n\n## 4. IFR Evaluation\n\n\u2705 **Minimal new components**: Reuses existing -O1, -O2, -O3 pipeline infrastructure; adds only a profiler and router.  \n\u2705 **Self-resolving**: Profiling is deterministic\u2014no manual shader classification needed.  \n\u2705 **No side effects**: Shader behavior is identical across tiers; only performance profile changes.  \n\u2705 **Low cost**: Profiler adds <50ms per shader on first compile; fully amortized by reuse.  \n\u26a0\ufe0f **Minor trade-off**: Requires profiling overhead and multi-tier testing (negligible vs. 29-hour time savings).\n\n**IFR Score: 3.5/4** \u2014 Near-ideal because it uses existing compiler infrastructure without inventing new optimization techniques; the innovation is in *distribution*, not addition.\n\n---\n\n## 5. Why This Eliminates (Not Manages) the Contradiction\n\nThe original problem framed a false binary: \"**all shaders** must be fast-compiled **and** highly optimized.\"\n\nThis solution reframes: **different shaders have different optimization ROI**. By applying Principle 3 (Local Quality), you eliminate the contradiction\u2014it was never a single constraint, but a mislabeled optimization problem. The contradiction resolution is **eliminates** because:\n- You're not trading speed for quality; you're investing optimization effort where it generates value\n- The 5% hand-tuned performance target is achievable on critical shaders in ~10s (not 47s) when the non-critical 50% compile in 0.8s\n- Developers get sub-second feedback loops during iteration; the full release still hits performance targets\n\n---\n\n## 6. Comparison to Na\u00efve Approaches\n\n| Approach | Outcome |\n|----------|---------|\n| \"Use -O1 always\" | Fast but fails VR 60fps target \u2717 |\n| \"Use -O3 always\" | Meets perf target but 31-hour builds \u2717 |\n| \"Throw more cores/GPU at compilation\" | Doesn't work; -O3 passes are sequential \u2717 |\n| **Adaptive tiering** | Fast iteration + release performance \u2713 |\n\n---\n\n```json\n{\n  \"contradiction_type\": \"technical\",\n  \"triz_param_a\": 13,\n  \"triz_param_b\": 20,\n  \"principles_applied\": [3, 10, 4, 15, 27],\n  \"solution_summary\": \"Implement profile-driven tiered compilation: classify shaders into critical (\u2192-O3), standard (\u2192-O2), and non-critical (\u2192-O1) tiers based on first-pass analysis. Apply full optimization only to the ~5% of shaders that benefit; parallelize tier pipelines to deliver <1s iteration feedback on non-critical shaders while maintaining 2% hand-tuned performance on critical paths during release builds.\",\n  \"ifr_score\": 3,\n  \"contradiction_resolution\": \"eliminates\",\n  \"solution_novelty\": \"novel_combination\"\n}\n```\n\n---\n\n`\u2605 Insight \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500`\n**Why This Works:** TRIZ Principle 3 (Local Quality) is the key unlock\u2014it reveals that the contradiction assumes **uniform treatment** of all shaders, which is wasteful. Real-world problems rarely have uniform constraints; the art is identifying where intensity *should vary*. In compiler design, this maps to profile-guided optimization\u2014a standard technique in production compilers (gcc, clang, MSVC), but underutilized here.\n\n**The Profiling Insight:** Principle 10 (Preliminary Action) adds crucial leverage: a 50ms analysis pass per shader pays for itself 1,000\u00d7 over if it saves even one of the 47-second -O3 runs. This is the \"preliminary condition\" that dissolves false choices.\n\n**Distribution > Innovation:** The solution doesn't invent new optimization passes\u2014it recognizes that compiler engineers already have good passes (14 of them), but are applying them indiscriminately. The invention is in *routing*, not in pushing the optimization frontier.\n`\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500`",
+  "elapsed_seconds": 43.1,
+  "timestamp": "2026-04-15T20:08:02Z"
+}

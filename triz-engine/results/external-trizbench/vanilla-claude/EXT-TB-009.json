@@ -1,0 +1,54 @@
+{
+  "problem_id": "EXT-TB-009",
+  "participant": "vanilla-claude",
+  "patent_id": "US6700055",
+  "submission": {
+    "contradiction_type": "technical",
+    "triz_param_a": 17,
+    "triz_param_b": 3,
+    "principles_applied": [
+      37,
+      35,
+      2,
+      15,
+      1
+    ],
+    "solution_summary": "Use a bi-material composite structure where the moving object combines a functional primary material with a compensating material having precisely opposite thermal expansion coefficients. As operating temperature increases for improved system performance, thermal expansion of one material is offset by contraction or reduced expansion of the other, maintaining constant overall length while decoupling temperature improvement from dimensional change.",
+    "ifr_score": 3,
+    "contradiction_resolution": "eliminates",
+    "solution_novelty": "novel_combination"
+  },
+  "contradiction_score": {
+    "type_correct": true,
+    "params_exact": true,
+    "params_partial": true,
+    "predicted_params": [
+      3,
+      17
+    ],
+    "ground_truth_params": [
+      3,
+      17
+    ]
+  },
+  "principle_score": {
+    "precision": 0.2,
+    "recall": 0.3333333333333333,
+    "f1": 0.25,
+    "overlap": [
+      15
+    ],
+    "predicted": [
+      1,
+      2,
+      15,
+      35,
+      37
+    ],
+    "ground_truth": [
+      9,
+      15,
+      19
+    ]
+  }
+}
