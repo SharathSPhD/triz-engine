@@ -1,8 +1,18 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run --script
+# /// script
+# requires-python = ">=3.11"
+# dependencies = [
+#   "fastmcp>=2.0",
+#   "jsonschema>=4.20",
+# ]
+# ///
 """TRIZ Knowledge Base MCP Server.
 
 Exposes the 40 Inventive Principles, 39x39 Contradiction Matrix,
 and supporting tools via the FastMCP protocol over stdio.
+
+Runs standalone via `uv run --script` so Claude Code plugin installs
+do not require a pre-configured Python environment.
 """
 
 import json

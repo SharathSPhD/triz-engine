@@ -30,7 +30,12 @@
   ],
   "mcpServers": {
     "triz-knowledge": {
-      "command": "${CLAUDE_PLUGIN_ROOT}/servers/triz_server.py",
+      "command": "uv",
+      "args": [
+        "run",
+        "--script",
+        "${CLAUDE_PLUGIN_ROOT}/servers/triz_server.py"
+      ],
       "transport": "stdio"
     }
   }
