@@ -13,34 +13,51 @@
 
 The **40 Inventive Principles** are abstract strategies (segmentation, dynamics, feedback, etc.) that recur across domains. The **Contradiction Matrix** (39x39 engineering parameters) suggests which principles historically resolved specific improving-vs-worsening trade-offs.
 
-## Quick Start
+## Install as a Claude Code plugin (recommended)
+
+TRIZ Engine is a **Claude Code plugin**. Install it via the marketplace flow so all slash commands, agents, MCP tools, and hooks activate automatically in every Claude Code session.
+
+### From this repository (local)
 
 ```bash
 git clone https://github.com/SharathSPhD/triz-engine.git
-cd TRIZ-plugin/triz-engine
-python3.11 -m venv .venv && source .venv/bin/activate
-pip install -e ".[dev]"
-pytest                    # 327 tests
+cd triz-engine                       # repo root with .claude-plugin/marketplace.json
+
+claude plugin marketplace add ./     # register the local marketplace
+claude plugin install triz-engine@triz-arena
+claude plugin list                   # verify: triz-engine shown "enabled"
 ```
 
-Then use in Claude Code:
+### From GitHub (once published)
 
-```
-/triz:analyze "Our API needs lower latency but adding caching increases memory usage and stale-data risk"
+```bash
+claude plugin marketplace add SharathSPhD/triz-engine
+claude plugin install triz-engine@triz-arena
 ```
 
-See [docs/QUICKSTART.md](docs/QUICKSTART.md) for the full getting-started guide and [docs/USER_GUIDE.md](docs/USER_GUIDE.md) for detailed usage.
+### Verify the install
+
+```bash
+claude -p "/triz-engine:analyze How do we reduce weight without losing strength?" \
+  --model haiku --dangerously-skip-permissions --output-format json
+```
+
+You should see a structured TRIZ analysis with contradiction, principles, and a concrete solution. The run invokes the `contradiction-agent` → `solution-agent` → `evaluator-agent` pipeline and the `triz-knowledge` MCP server automatically.
+
+See [docs/QUICKSTART.md](docs/QUICKSTART.md) for the full getting-started guide, [docs/USER_GUIDE.md](docs/USER_GUIDE.md) for detailed usage, and the live dashboard at **[TRIZ Arena](https://sharathsphd.github.io/triz-engine/)** for benchmark results.
 
 ## Commands
 
+Once installed, the plugin exposes the following slash commands (all namespaced `/triz-engine:...`):
+
 | Command | What it does |
 |---------|-------------|
-| `/triz:analyze` | Full contradiction analysis: classify, map parameters, look up matrix, generate solutions, score against IFR |
-| `/triz:principles` | Browse or search the 40 Inventive Principles with domain-specific examples |
-| `/triz:matrix` | Navigate the Contradiction Matrix for an improving/worsening parameter pair |
-| `/triz:ifr` | Formulate the Ideal Final Result — maximum benefit, zero cost/harm/complexity |
-| `/triz:ariz` | Full ARIZ-85C step-by-step analysis for deeply intractable contradictions |
-| `/triz:benchmark` | Run TRIZBENCH evaluation on the current session |
+| `/triz-engine:analyze` | Full contradiction analysis: classify, map parameters, look up matrix, generate solutions, score against IFR |
+| `/triz-engine:principles` | Browse or search the 40 Inventive Principles with domain-specific examples |
+| `/triz-engine:matrix` | Navigate the Contradiction Matrix for an improving/worsening parameter pair |
+| `/triz-engine:ifr` | Formulate the Ideal Final Result — maximum benefit, zero cost/harm/complexity |
+| `/triz-engine:ariz` | Full ARIZ-85C step-by-step analysis for deeply intractable contradictions |
+| `/triz-engine:benchmark` | Run TRIZBENCH evaluation on the current session |
 
 ## MCP Tools
 
@@ -113,15 +130,31 @@ triz-engine/
 
 See [LEADERBOARD.md](triz-engine/LEADERBOARD.md) for current rankings. The TRIZ Arena ranks participants using Bradley-Terry ELO with bootstrap confidence intervals.
 
-## Development
+## Development (running benchmarks / editing the plugin)
+
+For development work — running benchmarks, extending the knowledge base, or
+editing the plugin code — set up a standalone Python environment in addition
+to installing the plugin:
 
 ```bash
 cd triz-engine
-source .venv/bin/activate
-pytest                     # Run full test suite
+python3.11 -m venv .venv && source .venv/bin/activate
+pip install -e ".[dev]"
+pytest                     # 295 tests pass (plugin + benchmark suites)
 ruff check .               # Lint
-python -m benchmark.runner --problems TB-01 TB-02 --participants triz-engine vanilla-claude
+
+# Run benchmarks against the installed plugin, capturing full trace
+python -m benchmark.runner \
+  --problems TB-01 TB-02 \
+  --participants triz-engine vanilla-claude \
+  --capture-trace
 ```
+
+### Standalone MCP (no plugin)
+
+If you prefer to use just the MCP server (no slash commands or agents), copy
+`triz-engine/mcp-standalone.json` into your Claude Code MCP config. The server
+exposes the same 8 knowledge tools.
 
 ## Contributing
 

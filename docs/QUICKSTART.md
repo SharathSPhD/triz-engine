@@ -1,131 +1,116 @@
 # Quick Start Guide
 
-Get TRIZ Engine running in under 5 minutes.
+Get TRIZ Engine running in Claude Code in under 5 minutes.
 
 ## Prerequisites
 
-- Python 3.11+
-- [Claude Code](https://docs.anthropic.com/en/docs/claude-code) (for plugin integration)
+- [Claude Code](https://docs.anthropic.com/en/docs/claude-code) CLI installed (`claude --version`)
+- Python 3.11+ (only required if you want to run benchmarks or edit the plugin code)
 - Git
 
-## Installation
+## Install as a Claude Code plugin
 
-### 1. Clone and install
+TRIZ Engine is distributed as a plugin. Install once; every Claude Code session
+gets slash commands, MCP tools, and the specialized agent pipeline.
+
+### Option A — from this repo (local marketplace)
 
 ```bash
 git clone https://github.com/SharathSPhD/triz-engine.git
-cd TRIZ-plugin/triz-engine
-python3.11 -m venv .venv
-source .venv/bin/activate   # Windows: .venv\Scripts\activate
-pip install -e ".[dev]"
+cd triz-engine                       # repo root (contains .claude-plugin/marketplace.json)
+
+claude plugin marketplace add ./
+claude plugin install triz-engine@triz-arena
 ```
 
-### 2. Verify installation
+### Option B — from GitHub (once published)
 
 ```bash
-pytest
-# Expected: 327 passed
+claude plugin marketplace add SharathSPhD/triz-engine
+claude plugin install triz-engine@triz-arena
 ```
 
-### 3. Start the MCP server (standalone)
+## Verify the plugin is live
+
+Run this verification checklist before first use:
 
 ```bash
-python servers/triz_server.py
+# 1. Plugin is listed and enabled
+claude plugin list | grep triz-engine
+# → triz-engine@triz-arena  Version: 1.0.0  Scope: user  Status: ✔ enabled
+
+# 2. Slash command reaches the plugin pipeline
+claude -p "/triz-engine:analyze How do we reduce drone weight without sacrificing flight time?" \
+  --model haiku --dangerously-skip-permissions --output-format json | jq '.num_turns, .result | @text'
+# → multiple turns (agent pipeline fired) + a structured TRIZ answer
+
+# 3. MCP knowledge server is healthy
+# (This happens automatically when the plugin runs — no manual startup needed.)
 ```
 
-The server runs on stdio and exposes 8 TRIZ tools. Claude Code will start this automatically when you use the plugin.
-
-## Using the Plugin in Claude Code
-
-Once the plugin is installed, six slash commands become available:
-
-### Analyze a contradiction
-
-```
-/triz:analyze "We need our microservice to handle 10x more traffic,
-but scaling horizontally increases inter-service latency and data consistency issues"
-```
-
-The analyze command will:
-1. Classify the contradiction (technical vs physical)
-2. Map dimensions to TRIZ parameters (e.g. Speed vs Reliability)
-3. Look up the Contradiction Matrix for recommended principles
-4. Generate domain-specific solutions
-5. Score each solution against the Ideal Final Result
-
-### Browse principles
-
-```
-/triz:principles "segmentation"
-```
-
-Returns matching principles with definitions, classical examples, and software-domain applications.
-
-### Look up the matrix
-
-```
-/triz:matrix
-```
-
-Interactive exploration of the 39x39 Contradiction Matrix. Specify the improving parameter (e.g. "Speed") and worsening parameter (e.g. "Reliability") to get recommended principles.
-
-### Formulate the Ideal Final Result
-
-```
-/triz:ifr "The system should handle unlimited concurrent users
-with zero additional infrastructure cost"
-```
-
-Helps you articulate the perfect outcome before compromising, following Altshuller's IFR discipline.
-
-### Deep analysis with ARIZ
-
-```
-/triz:ariz "Our compiler optimization passes improve runtime speed
-but the compilation time becomes unacceptable for developer iteration"
-```
-
-Walks you through the full ARIZ-85C algorithm (9 parts) for problems that resist standard analysis.
-
-## Standalone MCP Usage
-
-You can use the TRIZ tools directly without the plugin via MCP:
-
-```python
-from servers.triz_server import mcp
-
-# Tools available:
-# get_principle, search_principles, lookup_matrix,
-# list_parameters, get_separation_principles,
-# suggest_parameters, score_solution, log_session_entry
-```
-
-Or connect via Claude CLI:
+If `claude plugin list` shows `triz-engine` as disabled, enable it:
 
 ```bash
-claude --mcp-config mcp-config.json -p "Look up TRIZ principles for improving speed without worsening reliability"
+claude plugin enable triz-engine@triz-arena
 ```
 
-## Running Benchmarks
+## Your first TRIZ analysis
 
-Run a quick benchmark to see the scoring system in action:
+In any Claude Code session:
+
+```
+/triz-engine:analyze Our API needs lower latency but adding caching increases memory usage and stale-data risk.
+```
+
+Behind the scenes the plugin:
+
+1. Loads the `commands/analyze.md` system prompt
+2. Invokes the **contradiction-agent** to classify technical vs physical
+3. Invokes the **solution-agent** to retrieve principles from the `triz-knowledge` MCP server and the Contradiction Matrix
+4. Invokes the **evaluator-agent** to score candidates on the TRIZBENCH 5-dimension rubric (CI, PS, SN, CR, IFR)
+5. Returns a structured recommendation
+
+## Other slash commands
+
+| Command | Use for |
+|---------|---------|
+| `/triz-engine:principles <query>` | Browse / search the 40 Inventive Principles |
+| `/triz-engine:matrix <improving> <worsening>` | Look up the Contradiction Matrix |
+| `/triz-engine:ifr <problem>` | Formulate the Ideal Final Result |
+| `/triz-engine:ariz <problem>` | Full ARIZ-85C step-by-step analysis |
+| `/triz-engine:benchmark` | Run TRIZBENCH evaluation on the current conversation |
+
+## Dev setup (optional — only for running benchmarks)
+
+If you want to run the benchmark suite or extend the plugin:
 
 ```bash
 cd triz-engine
+python3.11 -m venv .venv && source .venv/bin/activate
+pip install -e ".[dev]"
+pytest                                      # 295 passing tests
 
-# Run two problems for triz-engine vs vanilla-claude
-python -m benchmark.runner --problems TB-01 TB-02 \
-  --participants triz-engine vanilla-claude
-
-# Run external benchmarks (needs Claude CLI)
-python -m benchmark.external.run_external --benchmarks trizbench --limit 3
+# Run one problem with the live plugin via the benchmark runner
+python -m benchmark.runner \
+  --problems TB-01 \
+  --participants triz-engine vanilla-claude \
+  --capture-trace
 ```
 
-Results are saved to `results/` and the leaderboard is at `LEADERBOARD.md`.
+Results land in `triz-engine/results/` and include full stream-json traces
+(tool_use / tool_result / agent turns) when `--capture-trace` is set.
 
-## What's Next
+## Troubleshooting
 
-- Read the [User Guide](USER_GUIDE.md) for detailed usage of every command, tool, and agent
-- Explore the 12 TRIZBENCH problems in `benchmark/problems/`
-- Check the [LEADERBOARD.md](../triz-engine/LEADERBOARD.md) for current rankings
-- Add your own participant config in `benchmark/participants/`
+| Symptom | Fix |
+|---------|-----|
+| `Slash command '/triz-engine:analyze' not found` | Run `claude plugin list` — reinstall if missing. Restart Claude Code if needed. |
+| MCP server fails to start | Verify the plugin copy has `servers/triz_server.py` executable: `ls -la $(dirname $(claude plugin list --json 2>/dev/null \| jq -r '.[] \| select(.name==\"triz-engine\") .path' ))/servers/*.py` |
+| "out of extra usage" error | Claude Pro/Max daily usage exhausted — wait for the 5-hour reset. The benchmark runner raises `QuotaExhaustedError` and stops cleanly. |
+| Python 3.9 import errors during tests | Use Python 3.11+. `python3 -m pytest tests/ --ignore=tests/test_server.py --ignore=tests/test_mcp_live.py` for tests that don't need `fastmcp`. |
+
+## Next
+
+- Read the [User Guide](USER_GUIDE.md) for a deeper walk-through
+- Explore the [TRIZ Arena leaderboard](https://sharathsphd.github.io/triz-engine/)
+- See [CONTRIBUTING.md](../CONTRIBUTING.md) to extend the knowledge base

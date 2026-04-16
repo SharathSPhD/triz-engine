@@ -22,8 +22,19 @@ ROOT = Path(__file__).parent.parent.parent
 RESULTS_DIR = ROOT / "results"
 
 
-def make_claude_fn(use_mcp: bool = False, system_prompt_path: str | None = None):
-    """Create a callable that invokes Claude CLI."""
+def make_claude_fn(
+    use_mcp: bool = False,
+    system_prompt_path: str | None = None,
+    slash_command: str | None = None,
+    capture_trace: bool = False,
+):
+    """Create a callable that invokes Claude CLI.
+
+    When capture_trace=True, returned fn yields (text, trace, trace_status).
+    Otherwise returns a plain string for backward compatibility.
+    When slash_command is provided (e.g. "/triz-engine:analyze"), it is
+    prepended to the user prompt so the installed plugin command fires.
+    """
     from benchmark.runner import invoke_claude, _generate_mcp_config, load_system_prompt
 
     mcp_config = None
@@ -32,8 +43,10 @@ def make_claude_fn(use_mcp: bool = False, system_prompt_path: str | None = None)
 
     base_sys_prompt = load_system_prompt(system_prompt_path)
 
-    def fn(prompt: str, system_prompt: str = "") -> str:
+    def fn(prompt: str, system_prompt: str = ""):
         combined_prompt = prompt
+        if slash_command:
+            combined_prompt = f"{slash_command} {combined_prompt}"
         full_sys = ""
         if base_sys_prompt:
             full_sys = base_sys_prompt
@@ -47,8 +60,9 @@ def make_claude_fn(use_mcp: bool = False, system_prompt_path: str | None = None)
             system_prompt=full_sys if full_sys else None,
             model="haiku",
             budget_usd=1.00,
-            timeout_seconds=120,
+            timeout_seconds=240 if (slash_command or use_mcp) else 120,
             retries=2,
+            capture_trace=capture_trace,
         )
 
     return fn
@@ -130,7 +144,12 @@ def run_trizbench(limit: int = 20):
     return {"triz": triz_results, "vanilla": vanilla_results}
 
 
-def run_macgyver(limit: int = 50):
+def run_macgyver(
+    limit: int = 50,
+    capture_trace: bool = False,
+    use_plugin: bool = True,
+    start_offset: int = 0,
+):
     """Run MacGyver creative problem-solving evaluation."""
     from benchmark.external.macgyver_adapter import run_macgyver_benchmark
 
@@ -138,11 +157,22 @@ def run_macgyver(limit: int = 50):
     print("EXTERNAL BENCHMARK: MacGyver (Constrained Invention)")
     print("=" * 60)
 
-    triz_fn = make_claude_fn(use_mcp=True, system_prompt_path="commands/analyze.md")
-    vanilla_fn = make_claude_fn(use_mcp=False)
+    triz_fn = make_claude_fn(
+        use_mcp=True,
+        system_prompt_path="commands/analyze.md",
+        slash_command="/triz-engine:analyze" if use_plugin else None,
+        capture_trace=capture_trace,
+    )
+    vanilla_fn = make_claude_fn(
+        use_mcp=False,
+        capture_trace=capture_trace,
+    )
     judge_fn = make_judge_fn()
 
-    results = run_macgyver_benchmark(triz_fn, vanilla_fn, judge_fn, limit=limit)
+    results = run_macgyver_benchmark(
+        triz_fn, vanilla_fn, judge_fn,
+        limit=limit, start_offset=start_offset,
+    )
 
     print(f"\n--- Results ({results['total_problems']} problems) ---")
     print(f"  TRIZ wins:    {results['triz_wins']}")
@@ -201,6 +231,14 @@ def main():
         default=10,
         help="Max problems per benchmark (default: 10 for cost control)",
     )
+    parser.add_argument(
+        "--capture-trace", action="store_true",
+        help="Capture stream-json trace (tool_use / tool_result / agent turns) in each result JSON",
+    )
+    parser.add_argument(
+        "--start-offset", type=int, default=0,
+        help="Skip first N MacGyver problems before running",
+    )
     args = parser.parse_args()
 
     all_results = {}
@@ -213,7 +251,11 @@ def main():
 
     if "macgyver" in args.benchmarks:
         try:
-            all_results["macgyver"] = run_macgyver(limit=args.limit)
+            all_results["macgyver"] = run_macgyver(
+                limit=args.limit,
+                capture_trace=args.capture_trace,
+                start_offset=args.start_offset,
+            )
         except Exception as e:
             print(f"\nMacGyver failed: {e}", file=sys.stderr)
 

@@ -91,10 +91,16 @@ def download_dataset() -> Path:
         raise
 
 
-def load_problems(limit: int = 50, categories: list[str] | None = None) -> list[dict]:
+def load_problems(
+    limit: int = 50,
+    categories: list[str] | None = None,
+    start_offset: int = 0,
+    skip_completed: bool = False,
+) -> list[dict]:
     """Load MacGyver problems.
 
     Returns list of dicts with: id, problem, reference_solution, category.
+    When skip_completed=True, also skips problems whose result JSON already exists.
     """
     data_path = DATA_DIR / "macgyver_problems.json"
     if not data_path.exists():
@@ -110,16 +116,23 @@ def load_problems(limit: int = 50, categories: list[str] | None = None) -> list[
             if p.get("category", "").lower() in cat_lower
         ]
 
-    selected = all_problems[:limit]
-    return [
+    labelled = [
         {
             "id": f"MG-{i+1:03d}",
             "problem": p["problem"],
             "reference_solution": p["reference_solution"],
             "category": p.get("category", "general"),
         }
-        for i, p in enumerate(selected)
+        for i, p in enumerate(all_problems)
     ]
+
+    if start_offset:
+        labelled = labelled[start_offset:]
+
+    if skip_completed:
+        labelled = [p for p in labelled if not (RESULTS_DIR / f"{p['id']}.json").exists()]
+
+    return labelled[:limit]
 
 
 def format_prompt(problem: dict) -> str:
@@ -187,6 +200,8 @@ def run_macgyver_benchmark(
     vanilla_fn,
     judge_fn=None,
     limit: int = 50,
+    start_offset: int = 0,
+    skip_completed: bool = True,
 ) -> dict:
     """Run MacGyver benchmark comparing TRIZ-augmented vs vanilla.
 
@@ -196,8 +211,10 @@ def run_macgyver_benchmark(
 
     Returns comparison report.
     """
-    problems = load_problems(limit=limit)
     RESULTS_DIR.mkdir(parents=True, exist_ok=True)
+    problems = load_problems(
+        limit=limit, start_offset=start_offset, skip_completed=skip_completed,
+    )
 
     triz_wins = 0
     vanilla_wins = 0
@@ -210,8 +227,16 @@ def run_macgyver_benchmark(
         prompt = format_prompt(problem)
         print(f"  {problem['id']}: {problem['problem'][:60]}...", file=sys.stderr)
 
+        triz_trace = None
+        triz_trace_status = "disabled"
+        vanilla_trace = None
+        vanilla_trace_status = "disabled"
         try:
-            triz_raw = triz_fn(prompt, TRIZ_SYSTEM_PROMPT)
+            triz_response = triz_fn(prompt, TRIZ_SYSTEM_PROMPT)
+            if isinstance(triz_response, tuple):
+                triz_raw, triz_trace, triz_trace_status = triz_response
+            else:
+                triz_raw = triz_response
             triz_score = score_macgyver_solution(
                 problem["problem"], triz_raw, problem["reference_solution"], judge_fn,
             )
@@ -223,7 +248,11 @@ def run_macgyver_benchmark(
             triz_score = {"level": "error", "score": 0.0}
 
         try:
-            vanilla_raw = vanilla_fn(prompt, VANILLA_SYSTEM_PROMPT)
+            vanilla_response = vanilla_fn(prompt, VANILLA_SYSTEM_PROMPT)
+            if isinstance(vanilla_response, tuple):
+                vanilla_raw, vanilla_trace, vanilla_trace_status = vanilla_response
+            else:
+                vanilla_raw = vanilla_response
             vanilla_score = score_macgyver_solution(
                 problem["problem"], vanilla_raw, problem["reference_solution"], judge_fn,
             )
@@ -250,12 +279,20 @@ def run_macgyver_benchmark(
         results.append(result)
 
         result_path = RESULTS_DIR / f"{problem['id']}.json"
-        result_path.write_text(json.dumps({
+        result_payload = {
             **result,
+            "problem": problem["problem"],
             "triz_output": triz_raw[:2000],
             "vanilla_output": vanilla_raw[:2000],
             "reference": problem["reference_solution"],
-        }, indent=2))
+        }
+        if triz_trace is not None:
+            result_payload["triz_trace"] = triz_trace
+            result_payload["triz_trace_status"] = triz_trace_status
+        if vanilla_trace is not None:
+            result_payload["vanilla_trace"] = vanilla_trace
+            result_payload["vanilla_trace_status"] = vanilla_trace_status
+        result_path.write_text(json.dumps(result_payload, indent=2))
 
     total = len(results)
     return {

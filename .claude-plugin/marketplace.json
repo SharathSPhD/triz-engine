@@ -1,0 +1,29 @@
+{
+  "name": "triz-arena",
+  "owner": {
+    "name": "TRIZ Engine contributors"
+  },
+  "metadata": {
+    "description": "TRIZ Arena marketplace: inventive problem solving plugin for Claude Code with contradiction analysis, 40 principles, ARIZ-85C, and benchmark arena."
+  },
+  "plugins": [
+    {
+      "name": "triz-engine",
+      "description": "TRIZ 40 Inventive Principles engine with contradiction analysis, ARIZ-85C, and benchmark arena. Brings systematic inventive thinking to Claude Code via slash commands, specialized agents, an MCP knowledge server, and auto-activation skills.",
+      "version": "1.0.0",
+      "source": "./triz-engine",
+      "author": {
+        "name": "TRIZ Engine contributors"
+      },
+      "homepage": "https://github.com/SharathSPhD/triz-engine",
+      "license": "MIT",
+      "keywords": [
+        "triz",
+        "inventive-problem-solving",
+        "contradiction",
+        "ariz",
+        "benchmark"
+      ]
+    }
+  ]
+}

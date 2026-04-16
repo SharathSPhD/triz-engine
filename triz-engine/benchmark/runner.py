@@ -213,6 +213,126 @@ def format_prompt(problem: dict) -> str:
     )
 
 
+TRACE_EVENT_LIMIT = 80
+TRACE_INPUT_CHARS = 600
+TRACE_OUTPUT_CHARS = 600
+
+
+def _truncate(s: str, limit: int) -> str:
+    if s is None:
+        return ""
+    if len(s) <= limit:
+        return s
+    return s[:limit] + "… [truncated]"
+
+
+def parse_stream_events(stdout: str) -> tuple[str, list[dict], str]:
+    """Parse claude stream-json NDJSON output.
+
+    Returns (final_text, trace_events, trace_status).
+    - final_text: concatenated assistant text blocks or the `result` event text
+    - trace_events: list of bounded event dicts suitable for dashboard display
+    - trace_status: "ok" | "partial" | "unparseable"
+    """
+    trace: list[dict] = []
+    final_text_chunks: list[str] = []
+    final_result_text: str | None = None
+    trace_status = "ok"
+    seq = 0
+
+    lines = [ln for ln in stdout.splitlines() if ln.strip()]
+    for line in lines:
+        try:
+            ev = json.loads(line)
+        except json.JSONDecodeError:
+            trace_status = "partial"
+            continue
+
+        etype = ev.get("type")
+
+        if etype == "assistant":
+            msg = ev.get("message") or {}
+            for block in (msg.get("content") or []):
+                btype = block.get("type")
+                if btype == "text":
+                    text_val = block.get("text") or ""
+                    final_text_chunks.append(text_val)
+                    if len(trace) < TRACE_EVENT_LIMIT:
+                        trace.append({
+                            "seq": seq,
+                            "kind": "assistant_text",
+                            "text": _truncate(text_val, TRACE_OUTPUT_CHARS),
+                        })
+                        seq += 1
+                elif btype == "tool_use":
+                    tool_name = block.get("name") or "unknown"
+                    tool_input = block.get("input") or {}
+                    tool_use_id = block.get("id")
+                    summary_key = None
+                    summary_val = None
+                    for k in ("skill", "subagent_type", "description", "command", "file_path", "query"):
+                        if k in tool_input and isinstance(tool_input[k], (str, int)):
+                            summary_key = k
+                            summary_val = str(tool_input[k])
+                            break
+                    if len(trace) < TRACE_EVENT_LIMIT:
+                        trace.append({
+                            "seq": seq,
+                            "kind": "tool_use",
+                            "tool": tool_name,
+                            "id": tool_use_id,
+                            "summary_key": summary_key,
+                            "summary_val": _truncate(summary_val or "", 200),
+                            "input_preview": _truncate(
+                                json.dumps(tool_input, ensure_ascii=False), TRACE_INPUT_CHARS
+                            ),
+                        })
+                        seq += 1
+        elif etype == "user":
+            msg = ev.get("message") or {}
+            for block in (msg.get("content") or []):
+                if block.get("type") == "tool_result":
+                    result_content = block.get("content")
+                    if isinstance(result_content, list):
+                        parts = []
+                        for p in result_content:
+                            if isinstance(p, dict) and p.get("type") == "text":
+                                parts.append(p.get("text") or "")
+                        result_text = "\n".join(parts)
+                    elif isinstance(result_content, str):
+                        result_text = result_content
+                    else:
+                        result_text = ""
+                    if len(trace) < TRACE_EVENT_LIMIT:
+                        trace.append({
+                            "seq": seq,
+                            "kind": "tool_result",
+                            "tool_use_id": block.get("tool_use_id"),
+                            "is_error": bool(block.get("is_error")),
+                            "output_preview": _truncate(result_text, TRACE_OUTPUT_CHARS),
+                        })
+                        seq += 1
+        elif etype == "system":
+            sub = ev.get("subtype")
+            if sub in ("task_started", "task_notification") and len(trace) < TRACE_EVENT_LIMIT:
+                trace.append({
+                    "seq": seq,
+                    "kind": f"system_{sub}",
+                    "info": _truncate(
+                        ev.get("message") or ev.get("task_description") or str(sub),
+                        200,
+                    ),
+                })
+                seq += 1
+        elif etype == "result":
+            final_result_text = ev.get("result") or ""
+
+    final_text = final_result_text if final_result_text else "".join(final_text_chunks)
+    if not final_text and not trace:
+        trace_status = "unparseable"
+    return final_text, trace, trace_status
+
+
 def invoke_claude(
     prompt: str,
     *,
@@ -223,19 +343,26 @@ def invoke_claude(
     budget_usd: float = 2.00,
     timeout_seconds: int = 180,
     retries: int = 3,
-) -> str:
+    capture_trace: bool = False,
+) -> str | tuple[str, list[dict], str]:
     """Call Claude Code CLI in print mode and return the text result.
 
-    Uses --output-format json for reliable parsing.
+    When capture_trace=True, uses --output-format stream-json --verbose and returns
+    (final_text, trace_events, trace_status). Otherwise uses --output-format json
+    and returns a single string.
     Retries on transient API errors with exponential backoff.
     """
     cmd = [
         "claude", "-p", prompt,
         "--model", model,
-        "--output-format", "json",
         "--max-budget-usd", str(budget_usd),
         "--dangerously-skip-permissions",
     ]
+
+    if capture_trace:
+        cmd.extend(["--output-format", "stream-json", "--verbose"])
+    else:
+        cmd.extend(["--output-format", "json"])
 
     if use_mcp and mcp_config_path and mcp_config_path.exists():
         cmd.extend(["--mcp-config", str(mcp_config_path)])
@@ -254,7 +381,21 @@ def invoke_claude(
         )
 
         stdout = result.stdout.strip()
-        if result.returncode == 0 and stdout:
+
+        if capture_trace and result.returncode == 0 and stdout:
+            text, trace, trace_status = parse_stream_events(stdout)
+            lower = stdout.lower()
+            if (
+                '"subtype":"error"' in lower
+                and ("out of extra usage" in lower or "you're out of" in lower)
+            ):
+                raise QuotaExhaustedError(
+                    f"Claude quota exhausted (exit {result.returncode})"
+                )
+            if text:
+                return text, trace, trace_status
+
+        elif not capture_trace and result.returncode == 0 and stdout:
             try:
                 envelope = json.loads(stdout)
 
@@ -275,7 +416,7 @@ def invoke_claude(
         last_error = result.stderr.strip() or stdout[:500]
 
         combined = (stdout + " " + result.stderr).lower()
-        if "out of" in combined and "usage" in combined:
+        if "out of extra usage" in combined or "you're out of" in combined:
             raise QuotaExhaustedError(
                 f"Claude quota exhausted (exit {result.returncode}): {last_error[:200]}"
             )
@@ -431,29 +572,47 @@ def run_problem(
     mcp_config_path: Path | None = None,
     budget_usd: float = 2.00,
     use_llm_judge: bool = True,
+    capture_trace: bool = False,
 ) -> dict:
     """Run a single problem for a participant and return scored result.
 
     Returns a result dict with 'status' field indicating success or failure type.
     Never raises — all errors are captured in the result.
+    When capture_trace=True, Claude invocations use stream-json and the result
+    includes a bounded `trace` field + `trace_status`.
     """
     problem = load_problem(problem_id)
     prompt = format_prompt(problem)
     sys_prompt = load_system_prompt(cfg.get("system_prompt_source"))
 
+    slash_command = (cfg.get("invocation") or {}).get("slash_command")
+    if slash_command:
+        prompt = f"{slash_command} {prompt}"
+
+    trace: list[dict] = []
+    trace_status: str = "disabled"
+
     t0 = time.time()
+
+    timeout_s = int((cfg.get("invocation") or {}).get("timeout_seconds", 180))
 
     try:
         if cfg.get("type") == "external":
             raw_output = invoke_external_runner(cfg, prompt, system_prompt=sys_prompt)
         else:
-            raw_output = invoke_claude(
+            response = invoke_claude(
                 prompt,
                 use_mcp=cfg.get("use_mcp", False),
                 mcp_config_path=mcp_config_path,
                 system_prompt=sys_prompt,
                 budget_usd=budget_usd,
+                capture_trace=capture_trace,
+                timeout_seconds=timeout_s,
             )
+            if capture_trace and isinstance(response, tuple):
+                raw_output, trace, trace_status = response
+            else:
+                raw_output = response
     except subprocess.TimeoutExpired as e:
         elapsed = time.time() - t0
         return _failure_result(
@@ -509,6 +668,10 @@ def run_problem(
         "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
     }
 
+    if capture_trace:
+        result["trace"] = trace
+        result["trace_status"] = trace_status
+
     _save_result(result)
     return result
 
@@ -555,6 +718,7 @@ def run_benchmark(
     participant_names: list[str] | None = None,
     budget_usd: float = 2.00,
     use_llm_judge: bool = True,
+    capture_trace: bool = False,
 ) -> dict[tuple[str, str], dict]:
     """Run benchmark for specified problems and participants.
 
@@ -608,6 +772,7 @@ def run_benchmark(
                     mcp_config_path=mcp_config_path,
                     budget_usd=budget_usd,
                     use_llm_judge=use_llm_judge,
+                    capture_trace=capture_trace,
                 )
             except QuotaExhaustedError as e:
                 print(f"    QUOTA EXHAUSTED: {e}", file=sys.stderr)
@@ -679,6 +844,10 @@ if __name__ == "__main__":
         "--no-llm-judge", action="store_true",
         help="Disable LLM-as-judge for SN/CR (use deterministic scoring)",
     )
+    parser.add_argument(
+        "--capture-trace", action="store_true",
+        help="Capture full stream-json trace (tool_use / tool_result / agent turns)",
+    )
     args = parser.parse_args()
 
     results = run_benchmark(
@@ -686,6 +855,7 @@ if __name__ == "__main__":
         participant_names=args.participants,
         budget_usd=args.budget,
         use_llm_judge=not args.no_llm_judge,
+        capture_trace=args.capture_trace,
     )
 
     scores = extract_scores(results)

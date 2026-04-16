@@ -7,12 +7,12 @@ Comprehensive reference for every feature of the TRIZ Engine Claude Code plugin.
 1. [Overview](#overview)
 2. [Installation](#installation)
 3. [Commands](#commands)
-   - [/triz:analyze](#trizanalyze)
-   - [/triz:principles](#trizprinciples)
-   - [/triz:matrix](#trizmatrix)
-   - [/triz:ifr](#trizifr)
-   - [/triz:ariz](#trizariz)
-   - [/triz:benchmark](#trizbenchmark)
+   - [/triz-engine:analyze](#trizanalyze)
+   - [/triz-engine:principles](#trizprinciples)
+   - [/triz-engine:matrix](#trizmatrix)
+   - [/triz-engine:ifr](#trizifr)
+   - [/triz-engine:ariz](#trizariz)
+   - [/triz-engine:benchmark](#trizbenchmark)
 4. [MCP Tools](#mcp-tools)
 5. [Agent Pipeline](#agent-pipeline)
 6. [Auto-Activation Skill](#auto-activation-skill)
@@ -42,40 +42,76 @@ TRIZ Engine is a Claude Code plugin that brings Altshuller's Theory of Inventive
 
 ### Requirements
 
-- Python 3.11 or higher
-- Claude Code (for plugin features)
-- Claude CLI (for benchmark execution)
+| For | You need |
+|-----|----------|
+| Using the plugin in Claude Code | [Claude Code CLI](https://docs.anthropic.com/en/docs/claude-code) (`claude --version`) |
+| Running benchmarks / editing code | Python 3.11+, `git` |
+| CresOWLve dataset (optional) | `pip install datasets` |
 
-### Setup
+### 1. Install as a Claude Code plugin (primary path)
+
+This is how end-users should install TRIZ Engine. The plugin ships slash
+commands, the 3-agent pipeline, the `triz-knowledge` MCP server, and hooks —
+all auto-loaded in every Claude Code session.
 
 ```bash
 git clone https://github.com/SharathSPhD/triz-engine.git
-cd TRIZ-plugin/triz-engine
+cd triz-engine
 
-python3.11 -m venv .venv
-source .venv/bin/activate
+# Register the local marketplace (the .claude-plugin/marketplace.json at repo root)
+claude plugin marketplace add ./
 
-# Core + development dependencies
-pip install -e ".[dev]"
-
-# Additional benchmark dependencies (optional)
-pip install -e ".[benchmark]"
-
-# For CresOWLve dataset download
-pip install datasets
+# Install the plugin (scope defaults to "user")
+claude plugin install triz-engine@triz-arena
 ```
 
-### Verify
+Or, once the marketplace is published upstream:
 
 ```bash
-pytest  # Should report 327+ tests passing
+claude plugin marketplace add SharathSPhD/triz-engine
+claude plugin install triz-engine@triz-arena
+```
+
+### 2. Verifying installation
+
+A quick checklist to confirm the plugin is fully active:
+
+```bash
+# A. Plugin registered and enabled
+claude plugin list | grep -A2 triz-engine
+# Expected: Status: ✔ enabled
+
+# B. Slash command fires the full agent pipeline
+claude -p "/triz-engine:analyze How do we reduce drone weight without losing flight time?" \
+  --model haiku --dangerously-skip-permissions --output-format json \
+  | jq '{turns: .num_turns, ok: (.is_error | not)}'
+# Expected: {"turns": 3+, "ok": true}   <- multiple turns = multi-agent pipeline fired
+
+# C. Validate manifests (optional)
+claude plugin validate ./            # marketplace.json
+claude plugin validate triz-engine/  # plugin.json
+```
+
+If the slash command isn't found, run `claude plugin enable triz-engine@triz-arena`.
+
+### 3. Dev setup (only needed for benchmarks or plugin editing)
+
+```bash
+cd triz-engine
+python3.11 -m venv .venv && source .venv/bin/activate
+pip install -e ".[dev]"
+pip install -e ".[benchmark]"   # optional: external benchmarks
+pip install datasets            # optional: CresOWLve
+
+pytest tests/ --ignore=tests/test_mcp_live.py --ignore=tests/test_server.py
+# Expected: 295 passed (plugin + benchmark suites; mcp live tests need fastmcp)
 ```
 
 ---
 
 ## Commands
 
-### /triz:analyze
+### /triz-engine:analyze
 
 **The primary entry point.** Runs a complete TRIZ analysis cycle on any problem.
 
@@ -96,7 +132,7 @@ pytest  # Should report 327+ tests passing
 **Example:**
 
 ```
-/triz:analyze "Our distributed cache reduces API latency by 10x,
+/triz-engine:analyze "Our distributed cache reduces API latency by 10x,
 but cache invalidation causes stale reads and the cache nodes
 add operational complexity and memory costs"
 ```
@@ -116,15 +152,15 @@ add operational complexity and memory costs"
 
 ---
 
-### /triz:principles
+### /triz-engine:principles
 
 Browse, search, and explore the 40 Inventive Principles.
 
 **Modes:**
-- **By ID:** `/triz:principles 1` — full details for Principle #1 (Segmentation)
-- **By keyword:** `/triz:principles "feedback"` — search for principles involving feedback
-- **By domain:** `/triz:principles domain:software` — filter to software-relevant principles
-- **Browse all:** `/triz:principles` — overview of all 40 principles
+- **By ID:** `/triz-engine:principles 1` — full details for Principle #1 (Segmentation)
+- **By keyword:** `/triz-engine:principles "feedback"` — search for principles involving feedback
+- **By domain:** `/triz-engine:principles domain:software` — filter to software-relevant principles
+- **Browse all:** `/triz-engine:principles` — overview of all 40 principles
 
 **Output for each principle includes:**
 - ID, name, and full description
@@ -135,7 +171,7 @@ Browse, search, and explore the 40 Inventive Principles.
 
 ---
 
-### /triz:matrix
+### /triz-engine:matrix
 
 Navigate the 39x39 Contradiction Matrix interactively.
 
@@ -148,7 +184,7 @@ Navigate the 39x39 Contradiction Matrix interactively.
 **Example:**
 
 ```
-/triz:matrix
+/triz-engine:matrix
 > Improving: Speed (#9)
 > Worsening: Reliability (#27)
 > Recommended principles: #11 (Beforehand Cushioning), #35 (Parameter Changes), ...
@@ -156,7 +192,7 @@ Navigate the 39x39 Contradiction Matrix interactively.
 
 ---
 
-### /triz:ifr
+### /triz-engine:ifr
 
 Formulate the Ideal Final Result for your problem.
 
@@ -173,15 +209,15 @@ The IFR is Altshuller's technique for defining the theoretically perfect solutio
 3. Reality gap analysis identifies what prevents the IFR
 4. Gaps map directly to where inventive principles should be applied
 
-**When to use:** Before or after `/triz:analyze`. Using IFR first prevents premature compromise. Using it after analysis validates whether solutions approach the ideal.
+**When to use:** Before or after `/triz-engine:analyze`. Using IFR first prevents premature compromise. Using it after analysis validates whether solutions approach the ideal.
 
 ---
 
-### /triz:ariz
+### /triz-engine:ariz
 
 Full ARIZ-85C step-by-step analysis for deeply intractable problems.
 
-**When to use ARIZ instead of `/triz:analyze`:**
+**When to use ARIZ instead of `/triz-engine:analyze`:**
 - Direct matrix lookup yields no satisfying principles
 - The problem has nested or compound contradictions
 - Standard analysis produces only incremental improvements
@@ -205,7 +241,7 @@ The command guides you through each part sequentially. It waits for your respons
 
 ---
 
-### /triz:benchmark
+### /triz-engine:benchmark
 
 Run the TRIZBENCH evaluation suite.
 
@@ -340,7 +376,7 @@ The `triz-core` skill automatically activates when it detects contradiction-rela
 When triggered, the skill:
 1. Acknowledges the contradiction explicitly
 2. Frames it in TRIZ terms
-3. Suggests running `/triz:analyze` for full analysis
+3. Suggests running `/triz-engine:analyze` for full analysis
 4. Provides a quick principle recommendation using MCP tools
 
 The skill will not activate for simple questions or non-contradictory problems.

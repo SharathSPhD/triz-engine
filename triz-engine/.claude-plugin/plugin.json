@@ -1,30 +1,37 @@
 {
   "name": "triz-engine",
   "version": "1.0.0",
-  "description": "TRIZ 40 Inventive Principles engine for systematic contradiction resolution",
-  "author": "triz-engine contributors",
+  "description": "TRIZ 40 Inventive Principles engine for systematic contradiction resolution, ARIZ-85C analysis, and benchmark arena",
+  "author": {
+    "name": "TRIZ Engine contributors"
+  },
   "license": "MIT",
+  "homepage": "https://github.com/SharathSPhD/triz-engine",
+  "keywords": [
+    "triz",
+    "inventive-problem-solving",
+    "contradiction",
+    "ariz",
+    "benchmark",
+    "creative-problem-solving"
+  ],
   "commands": [
-    { "name": "analyze", "description": "Analyse a problem using TRIZ contradiction framework" },
-    { "name": "principles", "description": "Browse or search the 40 Inventive Principles" },
-    { "name": "matrix", "description": "Navigate the TRIZ Contradiction Matrix" },
-    { "name": "ifr", "description": "Formulate the Ideal Final Result for your problem" },
-    { "name": "ariz", "description": "Full ARIZ-85C step-by-step analysis" },
-    { "name": "benchmark", "description": "Run TRIZBENCH evaluation on current session" }
+    "./commands/analyze.md",
+    "./commands/principles.md",
+    "./commands/matrix.md",
+    "./commands/ifr.md",
+    "./commands/ariz.md",
+    "./commands/benchmark.md"
   ],
   "agents": [
-    { "name": "contradiction-agent", "description": "Identifies and classifies engineering contradictions" },
-    { "name": "solution-agent", "description": "Generates principle-based solution sketches" },
-    { "name": "evaluator-agent", "description": "Scores solutions on TRIZBENCH dimensions" }
+    "./agents/contradiction-agent.md",
+    "./agents/solution-agent.md",
+    "./agents/evaluator-agent.md"
   ],
   "mcpServers": {
     "triz-knowledge": {
       "command": "${CLAUDE_PLUGIN_ROOT}/servers/triz_server.py",
       "transport": "stdio"
     }
-  },
-  "hooks": {
-    "PreToolUse": "${CLAUDE_PLUGIN_ROOT}/hooks/pre-tool-use.json",
-    "PostToolUse": "${CLAUDE_PLUGIN_ROOT}/hooks/post-tool-use.json"
   }
 }

@@ -5,7 +5,8 @@
   "type": "plugin",
   "invocation": {
     "command": "claude",
-    "timeout_seconds": 180
+    "slash_command": "/triz-engine:analyze",
+    "timeout_seconds": 360
   },
-  "features": ["mcp_tools", "agents", "commands", "hooks", "knowledge_base"]
+  "features": ["mcp_tools", "agents", "commands", "hooks", "knowledge_base", "plugin_installed"]
 }
