@@ -548,6 +548,30 @@ Example `mcp-config.json`:
 
 ---
 
+## Known limitations
+
+- **Resource-bound problems require an explicit resource list.** The plugin's
+  practical-problem guardrails (added after MacGyver diagnostics) only trigger
+  when the problem statement names the available items. If a resource list is
+  implied but not written out, the model may still introduce out-of-list items.
+  Workaround: include the available tools in your prompt verbatim when you
+  want the guardrail to apply.
+- **CresOWLve is a known domain mismatch.** The benchmark measures trivia and
+  lateral-thinking retrieval (specific names, book titles, cultural references).
+  TRIZ does not help when the task is retrieval rather than construction, so
+  both systems score near zero. The plugin is configured to reply "I don't
+  know" rather than hallucinate a confident-but-wrong answer on this class of
+  questions.
+- **Retry-on-empty safety net.** The external benchmark runner retries once
+  without the slash command if the first invocation returns empty output.
+  This eliminates silent-failure scores of 0.0 on MacGyver but masks the root
+  cause (typically a plugin-load race). Watch stderr for `[retry]` lines.
+- **Matrix-lookup coverage is uneven.** A minority of TRIZ parameter pairs
+  have no recommended principles in Altshuller's original 1971 matrix; in
+  those cases the plugin falls back to separation-principle reasoning.
+
+---
+
 ## Troubleshooting
 
 ### "Command not found: claude"

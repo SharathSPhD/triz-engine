@@ -8,6 +8,7 @@
   "vanilla_correct": false,
   "question": "The character of Wodehouse, an elderly housekeeper, is a great expert in a certain field. For example, she knows how many times who divorced whom, as well as how many brothers are in IT. Write down ITS name.",
   "correct_answer": "Warner Brothers.",
-  "triz_answer": "I appreciate the creative question, but I need to be honest: I'm not able to identify this specific reference with confidence.\n\nThe clues suggest someone who specializes in knowledge about people—their divorces, family relationships, and professional connections. However, without being certain of the literary or puzzle source you're referencing, I don't want to guess incorrectly.\n\nCould you provide additional context? For example:\n- Is this from a specific P.G. Wodehouse work?\n- Is this a riddle from a particular book or puzzle collection?\n- Is \"Wodehouse\" the character's actual name, or are you referencing P.G. Wodehouse's writing style?\n\nThat would help me give you an accurate answer rather than speculating.",
-  "vanilla_answer": "I'm not able to confidently identify this character or their field of expertise from your description alone. While the character sounds like they might be from a novel (the combination of being an elderly housekeeper with detailed knowledge of personal/family details is evocative of certain literary types), I'm not certain which specific work you're referencing.\n\nCould you provide:\n- The book, film, or show title?\n- The author?\n- Any other context about where this character appears?\n\nThat would help me give you an accurate answer."
+  "triz_answer": "I don't know.",
+  "vanilla_answer": "I don't know.",
+  "revalidated": true
 }
