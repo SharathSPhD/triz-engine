@@ -18,6 +18,9 @@ import time
 from enum import Enum
 from pathlib import Path
 
+import contextlib
+
+from benchmark._plugin_toggle import plugin_disabled
 from benchmark.scorer import (
     compute_final_score,
     score_ci,
@@ -761,46 +764,53 @@ def run_benchmark(
             print(f"  Skipping {pname}: {reason}", file=sys.stderr)
             continue
 
+        plugin_guard = (
+            plugin_disabled()
+            if cfg.get("disable_plugin")
+            else contextlib.nullcontext()
+        )
+
         quota_hit = False
-        for pid in problem_ids:
-            if quota_hit:
-                break
-            print(f"  Running {pname} on {pid}...", file=sys.stderr)
-            try:
-                result = run_problem(
-                    pid, pname, cfg,
-                    mcp_config_path=mcp_config_path,
-                    budget_usd=budget_usd,
-                    use_llm_judge=use_llm_judge,
-                    capture_trace=capture_trace,
-                )
-            except QuotaExhaustedError as e:
-                print(f"    QUOTA EXHAUSTED: {e}", file=sys.stderr)
-                print("    Stopping benchmark — quota needs to reset.", file=sys.stderr)
-                quota_hit = True
-                break
+        with plugin_guard:
+            for pid in problem_ids:
+                if quota_hit:
+                    break
+                print(f"  Running {pname} on {pid}...", file=sys.stderr)
+                try:
+                    result = run_problem(
+                        pid, pname, cfg,
+                        mcp_config_path=mcp_config_path,
+                        budget_usd=budget_usd,
+                        use_llm_judge=use_llm_judge,
+                        capture_trace=capture_trace,
+                    )
+                except QuotaExhaustedError as e:
+                    print(f"    QUOTA EXHAUSTED: {e}", file=sys.stderr)
+                    print("    Stopping benchmark — quota needs to reset.", file=sys.stderr)
+                    quota_hit = True
+                    break
 
-            all_results[(pname, pid)] = result
+                all_results[(pname, pid)] = result
 
-            status = result["status"]
-            if isinstance(status, RunStatus):
-                status = status.value
+                status = result["status"]
+                if isinstance(status, RunStatus):
+                    status = status.value
 
-            if status == RunStatus.SUCCESS.value:
-                scores = result["scores"]
-                print(
-                    f"    Score: {result['final_score']:.1f} "
-                    f"(CI={scores['ci']:.0f} PS={scores['ps']:.0f} "
-                    f"SN={scores['sn']:.0f} CR={scores['cr']:.0f} "
-                    f"IFR={scores['ifr']:.0f}) "
-                    f"[{result['elapsed_seconds']:.0f}s]",
-                    file=sys.stderr,
-                )
-            else:
-                print(
-                    f"    {status}: {result.get('error', 'unknown')}",
-                    file=sys.stderr,
-                )
+                if status == RunStatus.SUCCESS.value:
+                    scores = result["scores"]
+                    print(
+                        f"    Score: {result['final_score']:.1f} "
+                        f"(CI={scores['ci']:.0f} PS={scores['ps']:.0f} "
+                        f"SN={scores['sn']:.0f} CR={scores['cr']:.0f} "
+                        f"IFR={scores['ifr']:.0f}) "
+                        f"[{result['elapsed_seconds']:.0f}s]",
+                        file=sys.stderr,
+                    )
+                else:
+                    print(
+                        f"    {status}: {result.get('error', 'unknown')}",
+                        file=sys.stderr,
+                    )
         if quota_hit:
             break
 

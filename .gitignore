@@ -51,3 +51,7 @@ triz-engine/benchmark/external/data/
 
 # Duplicate venv entry
 .venv/
+
+# uv-generated lockfile (environment-specific; not required for non-uv consumers)
+uv.lock
+triz-engine/uv.lock

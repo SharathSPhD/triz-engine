@@ -8,5 +8,6 @@
     "args": ["--system-prompt", "Think step by step. For each problem: 1) Identify the core tension, 2) List possible approaches, 3) Evaluate each approach, 4) Select the best solution with justification."],
     "timeout_seconds": 120
   },
+  "disable_plugin": true,
   "features": ["chain_of_thought"]
 }

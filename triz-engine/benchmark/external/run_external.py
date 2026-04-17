@@ -27,6 +27,7 @@ def make_claude_fn(
     system_prompt_path: str | None = None,
     slash_command: str | None = None,
     capture_trace: bool = False,
+    disable_plugin: bool = False,
 ):
     """Create a callable that invokes Claude CLI.
 
@@ -34,7 +35,13 @@ def make_claude_fn(
     Otherwise returns a plain string for backward compatibility.
     When slash_command is provided (e.g. "/triz-engine:analyze"), it is
     prepended to the user prompt so the installed plugin command fires.
+    When disable_plugin=True, the user-scoped TRIZ plugin is temporarily
+    disabled for the duration of every invocation, so vanilla baselines
+    do not get contaminated by the auto-activating plugin skill.
     """
+    import contextlib
+
+    from benchmark._plugin_toggle import plugin_disabled
     from benchmark.runner import invoke_claude, _generate_mcp_config, load_system_prompt
 
     mcp_config = None
@@ -48,6 +55,9 @@ def make_claude_fn(
             return result[0] if result else ""
         return result or ""
 
+    def _guard():
+        return plugin_disabled() if disable_plugin else contextlib.nullcontext()
+
     def fn(prompt: str, system_prompt: str = ""):
         combined_prompt = prompt
         if slash_command:
@@ -58,43 +68,44 @@ def make_claude_fn(
         if system_prompt:
             full_sys = (full_sys + "\n\n" + system_prompt).strip() if full_sys else system_prompt
 
-        result = invoke_claude(
-            combined_prompt,
-            use_mcp=use_mcp,
-            mcp_config_path=mcp_config,
-            system_prompt=full_sys if full_sys else None,
-            model="haiku",
-            budget_usd=1.00,
-            timeout_seconds=240 if (slash_command or use_mcp) else 120,
-            retries=2,
-            capture_trace=capture_trace,
-        )
-
-        text = _extract_text(result)
-        if text.strip():
-            return result
-
-        if slash_command:
-            print(
-                f"  [retry] empty output with {slash_command}; retrying without slash command",
-                file=sys.stderr,
-            )
-            retry = invoke_claude(
-                prompt,
+        with _guard():
+            result = invoke_claude(
+                combined_prompt,
                 use_mcp=use_mcp,
                 mcp_config_path=mcp_config,
                 system_prompt=full_sys if full_sys else None,
                 model="haiku",
                 budget_usd=1.00,
-                timeout_seconds=180,
+                timeout_seconds=240 if (slash_command or use_mcp) else 120,
                 retries=2,
                 capture_trace=capture_trace,
             )
-            retry_text = _extract_text(retry)
-            if retry_text.strip():
-                return retry
 
-        return result
+            text = _extract_text(result)
+            if text.strip():
+                return result
+
+            if slash_command:
+                print(
+                    f"  [retry] empty output with {slash_command}; retrying without slash command",
+                    file=sys.stderr,
+                )
+                retry = invoke_claude(
+                    prompt,
+                    use_mcp=use_mcp,
+                    mcp_config_path=mcp_config,
+                    system_prompt=full_sys if full_sys else None,
+                    model="haiku",
+                    budget_usd=1.00,
+                    timeout_seconds=180,
+                    retries=2,
+                    capture_trace=capture_trace,
+                )
+                retry_text = _extract_text(retry)
+                if retry_text.strip():
+                    return retry
+
+            return result
 
     return fn
 
@@ -118,6 +129,8 @@ def run_trizbench(limit: int = 20):
 
     mcp_config = _generate_mcp_config()
     sys_prompt = load_system_prompt("commands/analyze.md")
+
+    from benchmark._plugin_toggle import plugin_disabled
 
     def triz_participant(problem_statement: str) -> str:
         from benchmark.runner import format_prompt
@@ -144,15 +157,16 @@ def run_trizbench(limit: int = 20):
             "title": "Patent Contradiction",
             "problem_statement": problem_statement,
         })
-        return invoke_claude(
-            prompt,
-            use_mcp=False,
-            system_prompt=None,
-            model="haiku",
-            budget_usd=1.00,
-            timeout_seconds=120,
-            retries=2,
-        )
+        with plugin_disabled():
+            return invoke_claude(
+                prompt,
+                use_mcp=False,
+                system_prompt=None,
+                model="haiku",
+                budget_usd=1.00,
+                timeout_seconds=120,
+                retries=2,
+            )
 
     print("\n--- TRIZ-Engine ---")
     triz_results = run_external_trizbench(
@@ -197,6 +211,7 @@ def run_macgyver(
     vanilla_fn = make_claude_fn(
         use_mcp=False,
         capture_trace=capture_trace,
+        disable_plugin=True,
     )
     judge_fn = make_judge_fn()
 
@@ -225,7 +240,7 @@ def run_cresowlve(limit: int = 100):
     print("=" * 60)
 
     triz_fn = make_claude_fn(use_mcp=False)
-    vanilla_fn = make_claude_fn(use_mcp=False)
+    vanilla_fn = make_claude_fn(use_mcp=False, disable_plugin=True)
     judge_fn = make_judge_fn()
 
     results = run_cresowlve_benchmark(triz_fn, vanilla_fn, judge_fn, limit=limit)

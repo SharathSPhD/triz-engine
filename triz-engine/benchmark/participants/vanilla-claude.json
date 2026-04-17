@@ -7,5 +7,6 @@
     "command": "claude",
     "timeout_seconds": 120
   },
+  "disable_plugin": true,
   "features": []
 }

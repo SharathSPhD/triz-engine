@@ -535,9 +535,19 @@ def build_demos(
     candidates: list[tuple[float, dict[str, Any]]] = []
 
     for row in internal:
-        if row["triz"]["trace"] or row["vanilla"]["trace"]:
-            delta = abs(score_delta_internal(row))
-            candidates.append((delta, {
+        triz_ok = (
+            row["triz"]["final_score"] is not None
+            and len(row["triz"]["trace"] or []) > 0
+        )
+        vanilla_ok = (
+            row["vanilla"]["final_score"] is not None
+            and len(row["vanilla"]["trace"] or []) > 0
+        )
+        if not (triz_ok and vanilla_ok):
+            continue
+
+        delta = abs(score_delta_internal(row))
+        candidates.append((delta, {
                 "source": "internal",
                 "problem_id": row["problem_id"],
                 "title": row["title"],
@@ -565,9 +575,13 @@ def build_demos(
             }))
 
     for row in macgyver:
-        if row["triz_trace"] or row["vanilla_trace"]:
-            delta = abs(score_delta_mg(row))
-            candidates.append((delta, {
+        triz_ok = len(row.get("triz_trace") or []) > 0
+        vanilla_ok = len(row.get("vanilla_trace") or []) > 0
+        if not (triz_ok and vanilla_ok):
+            continue
+
+        delta = abs(score_delta_mg(row))
+        candidates.append((delta, {
                 "source": "macgyver",
                 "problem_id": row["problem_id"],
                 "title": row["category"].replace("_", " ").title() or "MacGyver",

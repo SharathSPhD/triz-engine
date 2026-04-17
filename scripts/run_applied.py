@@ -15,9 +15,7 @@ stream-json traces for the dashboard "Applied" section.
 
 from __future__ import annotations
 
-import contextlib
 import json
-import subprocess
 import sys
 import time
 from pathlib import Path
@@ -26,6 +24,7 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 TRIZ_ROOT = REPO_ROOT / "triz-engine"
 sys.path.insert(0, str(TRIZ_ROOT))
 
+from benchmark._plugin_toggle import plugin_disabled  # noqa: E402
 from benchmark.runner import (  # noqa: E402
     QuotaExhaustedError,
     invoke_claude,
@@ -38,34 +37,6 @@ PROBLEMS_FILE = APPLIED_DIR / "problems.json"
 VANILLA_TIMEOUT = 180
 TRIZ_TIMEOUT = 420
 BUDGET_USD = 1.00
-PLUGIN_SLUG = "triz-engine@triz-arena"
-
-
-def _cli(*args: str) -> None:
-    """Run a claude CLI command and swallow its output (best effort)."""
-    try:
-        subprocess.run(
-            ["claude", *args],
-            capture_output=True,
-            text=True,
-            timeout=30,
-            stdin=subprocess.DEVNULL,
-            check=False,
-        )
-    except Exception:  # noqa: BLE001
-        pass
-
-
-@contextlib.contextmanager
-def plugin_disabled():
-    """Temporarily disable the TRIZ plugin so vanilla runs are truly plugin-free."""
-    print("    (disabling triz-engine plugin for vanilla run)", flush=True)
-    _cli("plugin", "disable", PLUGIN_SLUG)
-    try:
-        yield
-    finally:
-        print("    (re-enabling triz-engine plugin)", flush=True)
-        _cli("plugin", "enable", PLUGIN_SLUG)
 
 
 def load_problems() -> list[dict]:
