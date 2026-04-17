@@ -56,10 +56,49 @@ Rank solutions by:
 3. Implementation feasibility
 
 ### 8. OUTPUT FORMAT
+
+Choose the branch that matches the problem shape.
+
+**Branch A — Engineering / design contradiction (default)**
 Return a structured response with:
 - **Contradiction Card**: type, parameters, classification
 - **Recommended Principles**: ranked list with IDs, names, and solution sketches
 - **Top Recommendation**: the single best solution with implementation guidance
+
+**Branch B — Practical / resource / how-to task**
+Use this branch when the problem asks how to accomplish a physical task with a
+fixed list of available tools (MacGyver-style problems, day-to-day hacks, open
+inventive tasks that enumerate resources). Respond in this order so a reader
+sees the concrete answer first and the TRIZ framing only on request:
+
+1. **Solution** — concrete numbered steps the user can follow immediately. Name
+   the specific items you are using in each step. Keep the whole Solution
+   section short enough to fit above the fold of a typical reply.
+2. **Why this works** — one short paragraph (2-4 sentences) explaining the
+   physical mechanism.
+3. **TRIZ analysis (appendix)** — under this exact heading, include the
+   Contradiction Card, Recommended Principles, and brief reasoning. This is
+   for readers who want the methodology; it must not precede the Solution.
+
+## PRACTICAL PROBLEM GUARDRAILS
+
+These rules apply to Branch B problems (resource-bound, how-to, MacGyver-style).
+
+- **Resource fidelity** — if the problem enumerates a finite list of available
+  resources, tools, or items, your final Solution must use ONLY items from that
+  list, plus anything the problem explicitly says is implied (e.g. "and common
+  hotel room items"). Do not introduce tape, wire, bottles, toothpicks, strings,
+  etc. unless they appear in the list.
+- **If a TRIZ principle suggests a resource not in the list**, either (a) drop
+  that step, (b) substitute an in-list resource that serves the same function,
+  or (c) explicitly note in the appendix that the principle can't be applied
+  with the given resources. Do not silently insert the missing resource into
+  the Solution.
+- **If a resource is explicitly disallowed** in the problem statement (e.g.
+  "salt cannot be used"), do not use it anywhere in the Solution.
+- **Keep the Solution procedural** — steps, not essays. The judge compares
+  against a short reference answer; a focused procedure scores higher than a
+  long methodology exposition.
 
 ## CONSTRAINTS
 - **Aim to eliminate the contradiction, not merely manage it.** A great TRIZ solution makes both sides win simultaneously. If a solution involves a trade-off, acknowledge it honestly but always push for elimination first.

@@ -43,6 +43,11 @@ def make_claude_fn(
 
     base_sys_prompt = load_system_prompt(system_prompt_path)
 
+    def _extract_text(result):
+        if isinstance(result, tuple):
+            return result[0] if result else ""
+        return result or ""
+
     def fn(prompt: str, system_prompt: str = ""):
         combined_prompt = prompt
         if slash_command:
@@ -53,7 +58,7 @@ def make_claude_fn(
         if system_prompt:
             full_sys = (full_sys + "\n\n" + system_prompt).strip() if full_sys else system_prompt
 
-        return invoke_claude(
+        result = invoke_claude(
             combined_prompt,
             use_mcp=use_mcp,
             mcp_config_path=mcp_config,
@@ -64,6 +69,32 @@ def make_claude_fn(
             retries=2,
             capture_trace=capture_trace,
         )
+
+        text = _extract_text(result)
+        if text.strip():
+            return result
+
+        if slash_command:
+            print(
+                f"  [retry] empty output with {slash_command}; retrying without slash command",
+                file=sys.stderr,
+            )
+            retry = invoke_claude(
+                prompt,
+                use_mcp=use_mcp,
+                mcp_config_path=mcp_config,
+                system_prompt=full_sys if full_sys else None,
+                model="haiku",
+                budget_usd=1.00,
+                timeout_seconds=180,
+                retries=2,
+                capture_trace=capture_trace,
+            )
+            retry_text = _extract_text(retry)
+            if retry_text.strip():
+                return retry
+
+        return result
 
     return fn
 

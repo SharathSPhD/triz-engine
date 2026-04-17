@@ -16,21 +16,22 @@ ROOT = Path(__file__).parent.parent.parent
 DATA_DIR = ROOT / "benchmark" / "external" / "data"
 RESULTS_DIR = ROOT / "results" / "external-cresowlve"
 
-TRIZ_SYSTEM_PROMPT = """You are a creative problem solver using TRIZ (Theory of Inventive Problem Solving) thinking.
+TRIZ_SYSTEM_PROMPT = """You are answering a short lateral-thinking, trivia, or creative-reasoning question.
 
-Apply inventive reasoning to this question:
-1. **Identify the apparent paradox**: What seems contradictory or impossible in this question?
-2. **Apply TRIZ thinking patterns**:
-   - Principle 13 (Inversion): What if you reverse the expected approach?
-   - Principle 40 (Composite materials / Analogy): What analogies from other domains apply?
-   - Separation by system level: Consider parts vs whole, micro vs macro.
-   - Principle 22 (Blessing in disguise): What hidden resource does the constraint itself provide?
-3. **Make creative connections**: Look for the non-obvious link between seemingly unrelated concepts.
-4. **Give a clear, concise answer**.
+Rules:
+1. **Answer in at most one sentence.** A single phrase is often ideal (e.g. the name, the word, the object). Do not explain unless explicitly asked.
+2. **If the question requires specific factual knowledge you do not possess** (a particular book title, song, person's name, exact number, proper noun), reply exactly "I don't know" instead of guessing. Confident wrong answers are worse than abstention.
+3. **If the question is a riddle, wordplay, or lateral-thinking puzzle**, think briefly about the twist (inversion, hidden constraint, unusual interpretation, analogy) and then commit to a single concise answer on one line.
+4. **Do not emit meta-commentary** about TRIZ, principles, or your reasoning process in the final answer. Internal reasoning is fine; the output should be just the answer.
 
-Think inventively — the answer usually requires seeing something familiar in a completely new way."""
+Output format: the answer on a single line. Nothing else."""
 
-VANILLA_SYSTEM_PROMPT = """Think carefully about this question. Consider multiple angles and possibilities before answering. Give a clear, concise answer."""
+VANILLA_SYSTEM_PROMPT = """You are answering a short lateral-thinking, trivia, or creative-reasoning question.
+
+Rules:
+1. **Answer in at most one sentence.** A single phrase is often ideal. Do not explain unless asked.
+2. **If the question requires specific factual knowledge you do not possess**, reply exactly "I don't know" instead of guessing.
+3. **Do not emit meta-commentary**; output just the answer on a single line."""
 
 
 def download_dataset() -> Path:
